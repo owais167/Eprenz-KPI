@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eprenz KPI Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0f1117;--card:#1a1d27;--accent:#6366f1;--accent2:#22d3ee;--accent3:#f59e0b;--accent4:#10b981;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--border:#2d3148;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+header{background:var(--card);border-bottom:1px solid var(--border);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.logo{font-size:1.25rem;font-weight:700;color:var(--accent);}.logo span{color:var(--text);font-weight:400;}
+.hdr-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.tgl{display:flex;background:var(--bg);border-radius:8px;padding:3px;border:1px solid var(--border);}
+.tgl-btn{padding:5px 14px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;font-size:.82rem;font-weight:500;transition:all .2s;}
+.tgl-btn.on{background:var(--accent);color:#fff;}
+.last-upd{font-size:.73rem;color:var(--muted);}
+.main{padding:16px 22px;max-width:1420px;margin:0 auto;}
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:18px;}
+.kc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:13px 15px;position:relative;overflow:hidden;}
+.kc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--kc-color,var(--accent));}
+.kc-lbl{font-size:.69rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.kc-val{font-size:1.65rem;font-weight:700;line-height:1;}
+.kc-d{font-size:.73rem;margin-top:5px;}
+.up{color:var(--accent4);}.dn{color:var(--red);}.neu{color:var(--muted);}
+/* Tabs */
+.tabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{padding:8px 16px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:.84rem;font-weight:500;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover{color:var(--text);}
+.tc{display:none;}.tc.on{display:block;}
+/* Charts */
+.cg{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-bottom:13px;}
+.cg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px;}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px;}
+.cc.w2{grid-column:span 2;}.cc.full{grid-column:1/-1;}
+.ct{font-size:.87rem;font-weight:600;margin-bottom:2px;}
+.cs{font-size:.71rem;color:var(--muted);margin-bottom:13px;}
+.cw{position:relative;height:205px;}.cw.t{height:275px;}
+/* Compare */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px;}
+.cmp-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px;}
+.era-lbl{font-size:.77rem;font-weight:700;padding:5px 11px;border-radius:6px;display:inline-block;margin-bottom:13px;}
+.era-a{background:rgba(99,102,241,.15);color:var(--accent);}
+.era-b{background:rgba(34,211,238,.15);color:var(--accent2);}
+.era-c{background:rgba(245,158,11,.15);color:var(--accent3);}
+.cr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.8rem;}
+.cr:last-child{border-bottom:none;}
+.cr-lbl{color:var(--muted);}.cr-val{font-weight:600;}
+/* Rep cards */
+.rep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:11px;margin-bottom:16px;}
+.rep{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;}
+.rep-n{font-size:.87rem;font-weight:700;margin-bottom:2px;}
+.rep-s{font-size:.67rem;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:9px;}
+.sa{background:rgba(16,185,129,.15);color:var(--accent4);}
+.sd{background:rgba(239,68,68,.15);color:var(--red);}
+.rr{display:flex;justify-content:space-between;font-size:.76rem;padding:2.5px 0;}
+.rr-l{color:var(--muted);}.rr-v{font-weight:600;}
+/* Insight box */
+.insight{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:13px 15px;font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.insight strong{color:var(--accent3);}
+.insight .tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:.7rem;font-weight:600;margin-left:4px;}
+.tag-g{background:rgba(16,185,129,.15);color:var(--accent4);}
+.tag-r{background:rgba(239,68,68,.15);color:var(--red);}
+.info-box{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:11px 14px;font-size:.79rem;color:var(--muted);margin-bottom:16px;}
+.info-box strong{color:var(--accent);}
+/* Era divider on charts */
+.era-note{font-size:.68rem;color:var(--muted);margin-top:6px;}
+@media(max-width:768px){.cg,.cmp-grid{grid-template-columns:1fr;}.cc.w2{grid-column:span 1;}.cg3{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Eprenz <span>KPI Dashboard</span></div>
+  <div class="hdr-right">
+    <div class="tgl">
+      <button class="tgl-btn on" onclick="setView('weekly',this)">Weekly</button>
+      <button class="tgl-btn" onclick="setView('monthly',this)">Monthly</button>
+    </div>
+    <span class="last-upd">Last data: W23 · Jun 10, 2026</span>
+  </div>
+</header>
+
+<div class="main">
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('overview',this)">Overview</button>
+    <button class="tab" onclick="showTab('survey',this)">Survey Funnel</button>
+    <button class="tab" onclick="showTab('team',this)">Team Performance</button>
+    <button class="tab" onclick="showTab('network',this)">Member Network</button>
+    <button class="tab" onclick="showTab('traffic',this)">Website Traffic</button>
+    <button class="tab" onclick="showTab('meetings',this)">Meetings & Pipeline</button>
+    <button class="tab" onclick="showTab('video',this)">🎬 Video Impact</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tc on">
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Survey Pipeline — Weekly</div>
+        <div class="cs">LI Onboarded + Followups → Survey Responses → Completions (W13–W23)</div>
+        <div class="cw t"><canvas id="c_pipeline"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Conversion Rates</div>
+        <div class="cs">Completion Rate % (Completed / Responses) per week</div>
+        <div class="cw"><canvas id="c_conv"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Meetings & New MN Members</div>
+        <div class="cs">Weekly meetings held vs new member network joiners</div>
+        <div class="cw"><canvas id="c_mtg_mn"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Website Traffic</div>
+        <div class="cs">Total weekly site visits (W13–W23)</div>
+        <div class="cw"><canvas id="c_traffic_ov"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Top-of-Funnel: LI Onboarded</div>
+        <div class="cs">Total LinkedIn onboarded per week — team combined</div>
+        <div class="cw"><canvas id="c_li_ov"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SURVEY FUNNEL -->
+  <div id="tab-survey" class="tc">
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Full Survey Funnel — Weekly</div>
+        <div class="cs">Survey Visits Δ → Responses → Completed → Partial (W13–W23)</div>
+        <div class="cw t"><canvas id="c_funnel"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Survey Visits Δ vs Responses Δ</div>
+        <div class="cs">New visits added each week vs new responses received</div>
+        <div class="cw"><canvas id="c_sv_r"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Completion Rate % per Week</div>
+        <div class="cs">Completed / Total Responses — quality signal</div>
+        <div class="cw"><canvas id="c_cr_rate"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">MN Said YES vs Survey Completed</div>
+        <div class="cs">Community opt-in from completions (W13–W20)</div>
+        <div class="cw"><canvas id="c_mn_yes"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">LI Onboarded + Followups (Top of Funnel)</div>
+        <div class="cs">Weekly outreach volume feeding the survey</div>
+        <div class="cw"><canvas id="c_li_fu"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM PERFORMANCE -->
+  <div id="tab-team" class="tc">
+    <div class="insight">
+      <strong>⚡ Key Insight:</strong>
+      Kewin's LI outreach (avg <strong>157/wk</strong> W20–W23) <span class="tag tag-g">+37% vs C+AL</span> — but survey completions avg <strong>28/wk</strong> vs C+AL's <strong>66/wk</strong> <span class="tag tag-r">−58%</span>.<br>
+      <strong>Volume is up. Conversion quality is the gap.</strong> Onboarding-to-completion ratio dropped from ~57% (C+AL era) to ~18% (Kewin era). David contributes SC from residual pipeline. Focus: improve onboarding-to-survey conversion for Kewin's leads.
+    </div>
+    <div class="rep-grid" id="repCards"></div>
+    <div class="cmp-grid" id="cmpCards"></div>
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">LinkedIn Onboarded — Per Rep Per Week (W13–W23)</div>
+        <div class="cs">Stacked. Christian+AL active W13–W18 · Kewin takes over W20+</div>
+        <div class="cw t"><canvas id="c_rep_li"></canvas></div>
+        <div class="era-note">◀ W13–W18: Christian + AL era &nbsp;|&nbsp; W19–W23: Kewin-led era ▶</div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Survey Completions — Per Rep Per Week (W13–W23)</div>
+        <div class="cs">Completions driven by each rep. Post-departure residual completions visible for Christian+AL.</div>
+        <div class="cw t"><canvas id="c_rep_sc"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">LI → Survey Completion Conversion Rate</div>
+        <div class="cs">Completions / LI Onboarded — efficiency metric</div>
+        <div class="cw"><canvas id="c_conv_rate"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Kewin vs Christian+AL — Weekly SC Comparison</div>
+        <div class="cs">Kewin completions (W20–W23) vs C+AL combined best equivalent weeks</div>
+        <div class="cw"><canvas id="c_kew_vs_cal"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBER NETWORK -->
+  <div id="tab-network" class="tc">
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Member Network — Full History (W5–W23)</div>
+        <div class="cs">New members per week (bars) + Total members trend (line)</div>
+        <div class="cw t"><canvas id="c_mn_full"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Active Rate % vs Contribution Rate %</div>
+        <div class="cs">% of total members active or contributing each week</div>
+        <div class="cw"><canvas id="c_mn_rates"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Total Contributions per Week</div>
+        <div class="cs">Community content / engagement activity</div>
+        <div class="cw"><canvas id="c_mn_contrib"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRAFFIC -->
+  <div id="tab-traffic" class="tc">
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Weekly Website Traffic by Source (W13–W23)</div>
+        <div class="cs">Stacked bars by channel + total visits line</div>
+        <div class="cw t"><canvas id="c_traffic_full"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Traffic Source Mix — Cumulative W13–W23</div>
+        <div class="cs">Channel attribution totals</div>
+        <div class="cw"><canvas id="c_traffic_pie"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">EN Survey Visits vs Calendly Clicks</div>
+        <div class="cs">Survey engagement vs booking intent per week</div>
+        <div class="cw"><canvas id="c_surv_cal"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO IMPACT -->
+  <div id="tab-video" class="tc">
+    <div class="info-box">
+      <strong>🎬 Video added: April 13, 2026 (mid-W15)</strong> &nbsp;·&nbsp; Pre-video = W13–W14 (full team, no video) &nbsp;·&nbsp; Post-video full team = W16–W18 &nbsp;·&nbsp; Post-video lean team = W19–W23 &nbsp;·&nbsp; W15 excluded (transition week)
+    </div>
+
+    <!-- Verdict banner -->
+    <div id="videoBanner" style="margin-bottom:16px;"></div>
+
+    <!-- Metric verdict cards -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px;" id="videoVerdictCards"></div>
+
+    <!-- Era comparison cards -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px;" id="videoEraCards"></div>
+
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Completion Rate % — Full Timeline with Video Launch Marker</div>
+        <div class="cs">Completion Rate = Completed / Total Responses. Vertical line = video added Apr 13</div>
+        <div class="cw t"><canvas id="c_vid_cr_trend"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Survey Responses vs Completed — 3 Eras</div>
+        <div class="cs">Avg/week per era. Absolute drop = team size, not video.</div>
+        <div class="cw"><canvas id="c_vid_funnel_era"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Completion Rate % by Era</div>
+        <div class="cs">Isolates video quality signal from team volume changes</div>
+        <div class="cw"><canvas id="c_vid_cr_era"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Response Rate vs Survey Visits — by Era</div>
+        <div class="cs">Responses Δ / Survey Visits Δ % — does video drive more responses per visit?</div>
+        <div class="cw"><canvas id="c_vid_resp_rate"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Weekly CR% Trend — Pre vs Post Video</div>
+        <div class="cs">Each week's completion rate. Dashed line = video launch W15.</div>
+        <div class="cw"><canvas id="c_vid_weekly_cr"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEETINGS -->
+  <div id="tab-meetings" class="tc">
+    <div class="cg">
+      <div class="cc w2">
+        <div class="ct">Meetings & Leads Pipeline — Full History (W1–W19)</div>
+        <div class="cs">Meetings held (line) + New Leads + 1st Follow-up (bars)</div>
+        <div class="cw t"><canvas id="c_mtg_full"></canvas></div>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cc">
+        <div class="ct">Meetings Trend (W13–W19)</div>
+        <div class="cs">Recent meeting cadence</div>
+        <div class="cw"><canvas id="c_mtg_trend"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ct">Pipeline Stage Totals (W13–W19)</div>
+        <div class="cs">Aggregated leads by pipeline stage</div>
+        <div class="cw"><canvas id="c_pipeline_stg"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ DATA ═══════════════════════════════════════════════════════════════════
+
+const WEEKS = ['W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23'];
+const MONTHS = ['March','April','May','June'];
+
+// Sheet1 weekly summaries W13–W23
+const d = {
+  totalOnboarded:    [137, 139, 130, 123, 118, 146, 140, 300, 106, 127,  96],
+  totalFollowups:    [725, 271, 483, 370, 225, 152,   0,   0,   0,  57,   0],
+  surveyVisitsDelta: [201, 212, 162, 132, 117,  99, 140,  59, 144,  53,  51],
+  surveyResponses:   [ 89,  82,  74,  73,  61,  50,  29,  37,  60,  32,  32],
+  completed:         [ 59,  47,  45,  38,  36,  30,  20,  25,  39,  21,  20],
+  crRate:            [ 66,  57,  61,  52,  59,  60,  69,  68,  65,  66,  63],
+  partial:           [ 30,  35,  29,  35,  25,  20,   6,  12,  21,  11,  12],
+  mnNew:             [  9,  11,  10,   7,   6,   7,   2,   5,   8,   3,   7],
+  mnYes:             [ 71,  63,  56,  45,  40,  39,  23,   0,   0,   0,   0],
+  meetings:          [ 21,  25,  20,  33,  31,  31,  33,  26,   0,   0,   0], // W21-23 not tracked
+
+  // Per-rep LI Onboarded (W13–W23)
+  rep_li: {
+    Christian: [105, 91, 103, 90, 107, 45,  0,  0,  0,  0,  0],
+    AL:        [ 32, 48,  27, 33,  11,  0,  0,  0,  0,  0,  0],
+    Mohammed:  [  0,  0,   0,  0,   0, 64,  0,  0,  0,  0,  0],
+    Kewin:     [  0,  0,   0,  0,   0,  5,  0,300,106,127, 96],
+    David:     [  0,  0,   0,  0,   0, 16,  0,  0,  0,  0,  0]
+  },
+  // Per-rep Survey Completed (W13–W23)
+  rep_sc: {
+    Christian: [39, 56, 46, 62, 56, 23,  2,  5,  4,  2,  2],
+    AL:        [49, 24, 24, 11,  4,  2,  3,  2,  1,  0,  1],
+    Mohammed:  [ 0,  0,  0,  0,  0, 12,  5,  0,  0,  0,  0],
+    Kewin:     [ 0,  0,  0,  0,  0,  4, 10, 14, 39, 29, 29],
+    David:     [ 0,  0,  0,  0,  0,  9,  6, 16, 15,  1,  0]
+  }
+};
+
+// MN_Weekly W5–W23
+const mn = {
+  labels: ['W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23'],
+  newMembers:   [13,36,23,22,21,24,17,11, 9,11,10, 7, 6, 7, 2, 5, 8, 3, 7],
+  totalMembers: [1546,1582,1605,1627,1648,1673,1690,1702,1709,1720,1730,1737,1743,1750,1749,1754,1762,1765,1772],
+  activeRate:   [3,6,10,9,10,10,5,4,4,5,3,2,3,2,2,2,5,4,5],
+  contribRate:  [42,44,15,17,23,30,35,32,31,29,26,24,42,38,34,38,39,30,24],
+  contributions:[29,99,244,345,514,151,241,84,105,272,105,23,72,83,52,93,0,0,0]
+};
+
+// GA_Weekly W13–W23
+const ga = {
+  labels: ['W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23'],
+  total:   [ 987,1492, 581, 616, 472, 600, 577, 991, 595, 422, 382],
+  landing: [ 130, 150,  87, 113, 129, 214, 156, 140, 144, 121, 133],
+  organic: [ 437, 314, 125, 114,  50,  31,  34,  86, 117,  44,  66],
+  direct:  [ 250, 908, 192, 223, 281, 383, 326, 716, 323, 284, 214],
+  paid:    [  79,  79,  81,  61,  11,   3,   1,   6,   7,   4,   6],
+  referral:[   3,   3,  12,   4,   0,   6,   5,   4,  16,   5,   6],
+  enSurvey:[127, 105,  72,  95,  86,  75,  51,  59,   0,   0,   0],
+  calendly:[ 62,  53,  48,  71,  46,  66,  46,  39,   0,   0,   0]
+};
+
+// Meetings pipeline W1–W19
+const mp = {
+  labels: ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19'],
+  meetings:[7,10,7,10,10,10,5,9,9,10,13,20,21,25,20,33,31,31,33],
+  newLeads:[8,16,0,34,3,47,203,3,201,18,211,58,56,42,32,41,44,47,35],
+  fup1:    [12,15,0,0,0,2,4,17,18,4,160,45,1,18,16,2,1,2,3],
+  fup2:    [6,4,0,1,0,1,0,3,0,0,11,0,0,0,0,0,1,0,0]
+};
+
+// ═══ HELPERS ════════════════════════════════════════════════════════════════
+
+let currentView = 'weekly';
+let charts = {};
+
+const C = {
+  purple:'#6366f1',cyan:'#22d3ee',amber:'#f59e0b',
+  green:'#10b981',red:'#ef4444',pink:'#f472b6',
+  blue:'#60a5fa',orange:'#fb923c',lime:'#a3e635',teal:'#2dd4bf'
+};
+
+function a(hex,op){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${op})`;
+}
+
+const gOpts = {
+  responsive:true,maintainAspectRatio:false,
+  plugins:{
+    legend:{labels:{color:'#94a3b8',font:{size:10.5},boxWidth:11,padding:9}},
+    tooltip:{backgroundColor:'#1a1d27',borderColor:'#2d3148',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#94a3b8',padding:10}
+  },
+  scales:{
+    x:{ticks:{color:'#64748b',font:{size:9.5}},grid:{color:'#1e2234'}},
+    y:{ticks:{color:'#64748b',font:{size:9.5}},grid:{color:'#1e2234'}}
+  }
+};
+
+function mk(id, cfg){
+  if(charts[id]) charts[id].destroy();
+  const ctx=document.getElementById(id);
+  if(!ctx) return;
+  const opts = JSON.parse(JSON.stringify(gOpts));
+  // deep-merge cfg.options
+  if(cfg.options){
+    if(cfg.options.plugins){ Object.assign(opts.plugins, cfg.options.plugins); }
+    if(cfg.options.scales){ Object.assign(opts.scales, cfg.options.scales); }
+    if(cfg.options.indexAxis) opts.indexAxis = cfg.options.indexAxis;
+  }
+  charts[id] = new Chart(ctx, {type:cfg.type||'bar', data:cfg.data, options:opts});
+}
+
+// Monthly aggregation (March=W13, April=W14-17, May=W18-20, June=W21-23)
+function mSum(arr){
+  return [arr[0], arr[1]+arr[2]+arr[3]+arr[4], arr[5]+arr[6]+arr[7], arr[8]+arr[9]+arr[10]];
+}
+function mAvg(arr){
+  return [arr[0], Math.round((arr[1]+arr[2]+arr[3]+arr[4])/4),
+          Math.round((arr[5]+arr[6]+arr[7])/3), Math.round((arr[8]+arr[9]+arr[10])/3)];
+}
+
+function getLbl(){ return currentView==='weekly'?WEEKS:MONTHS; }
+function gA(arr){ return currentView==='weekly'?arr:mSum(arr); }
+function gAvg(arr){ return currentView==='weekly'?arr:mAvg(arr); }
+
+// ═══ KPI CARDS ═══════════════════════════════════════════════════════════════
+
+function renderKPI(){
+  // Latest = W23 (index 10), prev = W22 (index 9)
+  const last=10, prev=9;
+  function delt(arr,i,j){
+    const v=arr[i]-arr[j], p=arr[j]?Math.round(v/arr[j]*100):0, s=v>=0?'+':'';
+    return {v,p,s};
+  }
+  const kpis=[
+    {lbl:'Meetings (W19 last)',val:d.meetings[6],d:delt(d.meetings,6,5),c:C.purple},
+    {lbl:'Completed Responses W23',val:d.completed[last],d:delt(d.completed,last,prev),c:C.green},
+    {lbl:'Completion Rate W23',val:d.crRate[last]+'%',d:delt(d.crRate,last,prev),c:C.cyan},
+    {lbl:'LI Onboarded W23',val:d.totalOnboarded[last],d:delt(d.totalOnboarded,last,prev),c:C.purple},
+    {lbl:'Survey Responses W23',val:d.surveyResponses[last],d:delt(d.surveyResponses,last,prev),c:C.blue},
+    {lbl:'MN New Members W23',val:d.mnNew[last],d:delt(d.mnNew,last,prev),c:C.pink},
+    {lbl:'Total MN Members',val:'1,772',d:{v:0,p:0,s:''},c:C.teal},
+    {lbl:'Website Traffic W23',val:ga.total[10].toLocaleString(),d:{v:ga.total[10]-ga.total[9],p:Math.round((ga.total[10]-ga.total[9])/ga.total[9]*100),s:ga.total[10]>=ga.total[9]?'+':''},c:C.amber}
+  ];
+  document.getElementById('kpiGrid').innerHTML=kpis.map(k=>{
+    const cls=k.d.v>0?'up':k.d.v<0?'dn':'neu';
+    const arrow=k.d.v>0?'▲':k.d.v<0?'▼':'—';
+    return `<div class="kc" style="--kc-color:${k.c}">
+      <div class="kc-lbl">${k.lbl}</div>
+      <div class="kc-val">${k.val}</div>
+      <div class="kc-d ${cls}">${arrow} ${k.d.s}${k.d.v} (${k.d.s}${k.d.p}%)</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ OVERVIEW ════════════════════════════════════════════════════════════════
+
+function renderOverview(){
+  const lbl=getLbl(), ob=gA(d.totalOnboarded), fu=gA(d.totalFollowups),
+        sv=gA(d.surveyVisitsDelta), resp=gA(d.surveyResponses), comp=gA(d.completed);
+
+  mk('c_pipeline',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'LI Onboarded',data:ob,backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1,order:2},
+    {label:'Followups',data:fu,backgroundColor:a(C.blue,.45),borderColor:C.blue,borderWidth:1,order:2},
+    {label:'Responses Δ',data:resp,backgroundColor:a(C.cyan,.65),borderColor:C.cyan,borderWidth:1,order:2},
+    {label:'Completed',data:comp,backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1,order:2},
+    {label:'Survey Visits Δ',data:sv,type:'line',borderColor:C.amber,pointBackgroundColor:C.amber,tension:.4,yAxisID:'y1',order:1,fill:false,pointRadius:4}
+  ]},options:{scales:{y:{...gOpts.scales.y,title:{display:true,text:'Count',color:'#64748b',font:{size:9}}},y1:{type:'linear',position:'right',ticks:{color:'#64748b',font:{size:9}},grid:{drawOnChartArea:false},title:{display:true,text:'Visits Δ',color:'#64748b',font:{size:9}}}}}});
+
+  mk('c_conv',{type:'line',data:{labels:lbl,datasets:[
+    {label:'Completion Rate %',data:gAvg(d.crRate),borderColor:C.green,backgroundColor:a(C.green,.1),fill:true,tension:.4,pointRadius:4,pointBackgroundColor:C.green}
+  ]},options:{scales:{y:{...gOpts.scales.y,max:100,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  mk('c_mtg_mn',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'Meetings (W13-W20)',data:gA(d.meetings),backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1},
+    {label:'MN New Members',data:gA(d.mnNew),backgroundColor:a(C.pink,.65),borderColor:C.pink,borderWidth:1}
+  ]}});
+
+  mk('c_traffic_ov',{type:'line',data:{labels:lbl,datasets:[
+    {label:'Total Visits',data:gA(ga.total),borderColor:C.amber,backgroundColor:a(C.amber,.1),fill:true,tension:.4,pointRadius:4,pointBackgroundColor:C.amber}
+  ]}});
+
+  mk('c_li_ov',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'LI Onboarded',data:gA(d.totalOnboarded),backgroundColor:lbl.map((_,i)=>i<6?a(C.purple,.7):a(C.cyan,.7)),borderColor:lbl.map((_,i)=>i<6?C.purple:C.cyan),borderWidth:1}
+  ]},options:{plugins:{legend:{display:false},tooltip:{...gOpts.plugins.tooltip}}}});
+}
+
+// ═══ SURVEY ══════════════════════════════════════════════════════════════════
+
+function renderSurvey(){
+  const lbl=getLbl();
+  mk('c_funnel',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'Survey Visits Δ',data:gA(d.surveyVisitsDelta),backgroundColor:a(C.blue,.55),borderColor:C.blue,borderWidth:1},
+    {label:'Responses Δ',data:gA(d.surveyResponses),backgroundColor:a(C.cyan,.65),borderColor:C.cyan,borderWidth:1},
+    {label:'Completed',data:gA(d.completed),backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1},
+    {label:'Partial',data:gA(d.partial),backgroundColor:a(C.amber,.55),borderColor:C.amber,borderWidth:1}
+  ]}});
+
+  mk('c_sv_r',{type:'line',data:{labels:lbl,datasets:[
+    {label:'Survey Visits Δ',data:gA(d.surveyVisitsDelta),borderColor:C.blue,backgroundColor:a(C.blue,.1),fill:true,tension:.4,pointRadius:3},
+    {label:'Responses Δ',data:gA(d.surveyResponses),borderColor:C.cyan,backgroundColor:a(C.cyan,.1),fill:true,tension:.4,pointRadius:3}
+  ]}});
+
+  mk('c_cr_rate',{type:'line',data:{labels:lbl,datasets:[
+    {label:'Completion Rate %',data:gAvg(d.crRate),borderColor:C.green,backgroundColor:a(C.green,.15),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:C.green,borderWidth:2.5}
+  ]},options:{scales:{y:{...gOpts.scales.y,min:40,max:100,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  mk('c_mn_yes',{type:'bar',data:{labels:lbl.slice(0,8),datasets:[
+    {label:'Survey Completed',data:d.completed.slice(0,8),backgroundColor:a(C.purple,.6),borderColor:C.purple,borderWidth:1},
+    {label:'MN Said YES',data:d.mnYes.slice(0,8),backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1}
+  ]}});
+
+  mk('c_li_fu',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'LI Onboarded',data:gA(d.totalOnboarded),backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1},
+    {label:'Followups',data:gA(d.totalFollowups),backgroundColor:a(C.blue,.45),borderColor:C.blue,borderWidth:1}
+  ]}});
+}
+
+// ═══ TEAM ════════════════════════════════════════════════════════════════════
+
+function renderTeam(){
+  // Rep totals
+  const sum = arr => arr.reduce((a,b)=>a+b,0);
+  // W13-W18 (full team): indices 0-5
+  // W19-W23 (lean team): indices 6-10
+  const reps=[
+    {n:'Christian',s:'Departed ~W18',cls:'sd',
+     li_full:sum(d.rep_li.Christian.slice(0,6)), li_lean:sum(d.rep_li.Christian.slice(6)),
+     sc_full:sum(d.rep_sc.Christian.slice(0,6)), sc_lean:sum(d.rep_sc.Christian.slice(6))},
+    {n:'AL',s:'Departed ~W18',cls:'sd',
+     li_full:sum(d.rep_li.AL.slice(0,6)), li_lean:sum(d.rep_li.AL.slice(6)),
+     sc_full:sum(d.rep_sc.AL.slice(0,6)), sc_lean:sum(d.rep_sc.AL.slice(6))},
+    {n:'Kewin',s:'Active — Primary',cls:'sa',
+     li_full:sum(d.rep_li.Kewin.slice(0,6)), li_lean:sum(d.rep_li.Kewin.slice(6)),
+     sc_full:sum(d.rep_sc.Kewin.slice(0,6)), sc_lean:sum(d.rep_sc.Kewin.slice(6))},
+    {n:'David',s:'Active',cls:'sa',
+     li_full:sum(d.rep_li.David.slice(0,6)), li_lean:sum(d.rep_li.David.slice(6)),
+     sc_full:sum(d.rep_sc.David.slice(0,6)), sc_lean:sum(d.rep_sc.David.slice(6))},
+    {n:'Mohammed',s:'Active',cls:'sa',
+     li_full:sum(d.rep_li.Mohammed.slice(0,6)), li_lean:sum(d.rep_li.Mohammed.slice(6)),
+     sc_full:sum(d.rep_sc.Mohammed.slice(0,6)), sc_lean:sum(d.rep_sc.Mohammed.slice(6))}
+  ];
+
+  document.getElementById('repCards').innerHTML=reps.map(r=>`
+    <div class="rep">
+      <div class="rep-n">${r.n}</div>
+      <div class="rep-s ${r.cls}">${r.s}</div>
+      <div class="rr"><span class="rr-l">LI (full team era)</span><span class="rr-v">${r.li_full}</span></div>
+      <div class="rr"><span class="rr-l">LI (lean era W19+)</span><span class="rr-v">${r.li_lean}</span></div>
+      <div class="rr"><span class="rr-l">SC (full team era)</span><span class="rr-v">${r.sc_full}</span></div>
+      <div class="rr"><span class="rr-l">SC (lean era W19+)</span><span class="rr-v">${r.sc_lean}</span></div>
+    </div>`).join('');
+
+  // Era comparison averages
+  const n_full=6, n_lean=5; // weeks in each era
+  const cal_li_avg = Math.round((sum(d.rep_li.Christian.slice(0,6))+sum(d.rep_li.AL.slice(0,6)))/n_full);
+  const cal_sc_avg = Math.round((sum(d.rep_sc.Christian.slice(0,6))+sum(d.rep_sc.AL.slice(0,6)))/n_full);
+  const kew_li_avg = Math.round(sum(d.rep_li.Kewin.slice(6))/n_lean);
+  const kew_sc_avg = Math.round(sum(d.rep_sc.Kewin.slice(6))/n_lean);
+  const dav_sc_avg = Math.round(sum(d.rep_sc.David.slice(6))/n_lean);
+  const lean_sc_avg = kew_sc_avg + dav_sc_avg;
+
+  const fullTeamOnb = Math.round(sum(d.totalOnboarded.slice(0,6))/n_full);
+  const leanTeamOnb = Math.round(sum(d.totalOnboarded.slice(6))/n_lean);
+  const fullTeamSC  = Math.round(sum(d.completed.slice(0,6))/n_full);
+  const leanTeamSC  = Math.round(sum(d.completed.slice(6))/n_lean);
+  const fullTeamCR  = Math.round(d.crRate.slice(0,6).reduce((a,b)=>a+b,0)/n_full);
+  const leanTeamCR  = Math.round(d.crRate.slice(6).reduce((a,b)=>a+b,0)/n_lean);
+
+  function pct(a,b){const p=Math.round((a-b)/b*100);return `<small style="font-weight:400;font-size:.7rem;color:${p>=0?'var(--accent4)':'var(--red)'}">${p>=0?'+':''}${p}%</small>`;}
+
+  document.getElementById('cmpCards').innerHTML=`
+    <div class="cmp-card">
+      <div class="era-lbl era-a">FULL TEAM — W13–W18 (avg/wk)</div>
+      <div class="cr"><span class="cr-lbl">C+AL LI Onboarded/wk</span><span class="cr-val">${cal_li_avg}</span></div>
+      <div class="cr"><span class="cr-lbl">C+AL Survey Completed/wk</span><span class="cr-val">${cal_sc_avg}</span></div>
+      <div class="cr"><span class="cr-lbl">Total LI Onboarded/wk</span><span class="cr-val">${fullTeamOnb}</span></div>
+      <div class="cr"><span class="cr-lbl">Total Completed/wk</span><span class="cr-val">${fullTeamSC}</span></div>
+      <div class="cr"><span class="cr-lbl">Avg Completion Rate</span><span class="cr-val">${fullTeamCR}%</span></div>
+      <div class="cr"><span class="cr-lbl">LI→SC Conversion</span><span class="cr-val">${Math.round(fullTeamSC/fullTeamOnb*100)}%</span></div>
+    </div>
+    <div class="cmp-card">
+      <div class="era-lbl era-b">LEAN TEAM — W19–W23 (avg/wk)</div>
+      <div class="cr"><span class="cr-lbl">Kewin LI Onboarded/wk</span><span class="cr-val">${kew_li_avg} ${pct(kew_li_avg,cal_li_avg)}</span></div>
+      <div class="cr"><span class="cr-lbl">Kewin+David SC/wk</span><span class="cr-val">${lean_sc_avg} ${pct(lean_sc_avg,cal_sc_avg)}</span></div>
+      <div class="cr"><span class="cr-lbl">Total LI Onboarded/wk</span><span class="cr-val">${leanTeamOnb} ${pct(leanTeamOnb,fullTeamOnb)}</span></div>
+      <div class="cr"><span class="cr-lbl">Total Completed/wk</span><span class="cr-val">${leanTeamSC} ${pct(leanTeamSC,fullTeamSC)}</span></div>
+      <div class="cr"><span class="cr-lbl">Avg Completion Rate</span><span class="cr-val">${leanTeamCR}% ${pct(leanTeamCR,fullTeamCR)}</span></div>
+      <div class="cr"><span class="cr-lbl">LI→SC Conversion</span><span class="cr-val">${Math.round(leanTeamSC/leanTeamOnb*100)}% ${pct(Math.round(leanTeamSC/leanTeamOnb*100),Math.round(fullTeamSC/fullTeamOnb*100))}</span></div>
+    </div>`;
+
+  // Per-rep LI stacked
+  mk('c_rep_li',{type:'bar',data:{labels:WEEKS,datasets:[
+    {label:'Christian',data:d.rep_li.Christian,backgroundColor:a(C.purple,.8),borderColor:C.purple,borderWidth:1},
+    {label:'AL',data:d.rep_li.AL,backgroundColor:a(C.cyan,.8),borderColor:C.cyan,borderWidth:1},
+    {label:'Mohammed',data:d.rep_li.Mohammed,backgroundColor:a(C.green,.8),borderColor:C.green,borderWidth:1},
+    {label:'Kewin',data:d.rep_li.Kewin,backgroundColor:a(C.amber,.8),borderColor:C.amber,borderWidth:1},
+    {label:'David',data:d.rep_li.David,backgroundColor:a(C.pink,.8),borderColor:C.pink,borderWidth:1}
+  ]},options:{scales:{x:{...gOpts.scales.x,stacked:true},y:{...gOpts.scales.y,stacked:true}}}});
+
+  // Per-rep SC stacked
+  mk('c_rep_sc',{type:'bar',data:{labels:WEEKS,datasets:[
+    {label:'Christian',data:d.rep_sc.Christian,backgroundColor:a(C.purple,.8),borderColor:C.purple,borderWidth:1},
+    {label:'AL',data:d.rep_sc.AL,backgroundColor:a(C.cyan,.8),borderColor:C.cyan,borderWidth:1},
+    {label:'Mohammed',data:d.rep_sc.Mohammed,backgroundColor:a(C.green,.8),borderColor:C.green,borderWidth:1},
+    {label:'Kewin',data:d.rep_sc.Kewin,backgroundColor:a(C.amber,.8),borderColor:C.amber,borderWidth:1},
+    {label:'David',data:d.rep_sc.David,backgroundColor:a(C.pink,.8),borderColor:C.pink,borderWidth:1}
+  ]},options:{scales:{x:{...gOpts.scales.x,stacked:true},y:{...gOpts.scales.y,stacked:true}}}});
+
+  // LI→SC conversion rate per week (team total)
+  const convRates = WEEKS.map((_,i)=>{
+    const li=d.totalOnboarded[i];
+    const sc=d.completed[i];
+    return li>0?Math.round(sc/li*100):null;
+  });
+  mk('c_conv_rate',{type:'line',data:{labels:WEEKS,datasets:[
+    {label:'LI→Completion %',data:convRates,borderColor:C.orange,backgroundColor:a(C.orange,.12),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:WEEKS.map((_,i)=>i<6?C.purple:C.orange),borderWidth:2.5,spanGaps:true}
+  ]},options:{scales:{y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'},title:{display:true,text:'Completions / Onboarded %',color:'#64748b',font:{size:9}}}}}});
+
+  // Kewin (W20-23) vs C+AL weekly SC — side by side
+  const kew_sc_lean = d.rep_sc.Kewin.slice(7);  // W20-23
+  const cal_sc_top4 = d.rep_sc.Christian.slice(0,4).map((v,i)=>v+d.rep_sc.AL[i]); // best 4 weeks of C+AL
+  mk('c_kew_vs_cal',{type:'bar',data:{
+    labels:['W20 vs W13','W21 vs W14','W22 vs W15','W23 vs W16'],
+    datasets:[
+      {label:'Kewin SC (W20–W23)',data:kew_sc_lean,backgroundColor:a(C.amber,.75),borderColor:C.amber,borderWidth:1},
+      {label:'C+AL SC (W13–W16, benchmark)',data:cal_sc_top4,backgroundColor:a(C.purple,.5),borderColor:C.purple,borderWidth:1}
+    ]
+  }});
+}
+
+// ═══ NETWORK ═════════════════════════════════════════════════════════════════
+
+function renderNetwork(){
+  mk('c_mn_full',{type:'bar',data:{labels:mn.labels,datasets:[
+    {label:'New Members',data:mn.newMembers,backgroundColor:a(C.pink,.65),borderColor:C.pink,borderWidth:1,order:2},
+    {label:'Total Members',data:mn.totalMembers,type:'line',borderColor:C.purple,pointBackgroundColor:C.purple,tension:.4,yAxisID:'y1',order:1,fill:false,pointRadius:3}
+  ]},options:{scales:{y:{...gOpts.scales.y,title:{display:true,text:'New Members',color:'#64748b',font:{size:9}}},y1:{type:'linear',position:'right',ticks:{color:'#64748b',font:{size:9}},grid:{drawOnChartArea:false},title:{display:true,text:'Total',color:'#64748b',font:{size:9}},min:1500}}}});
+
+  mk('c_mn_rates',{type:'line',data:{labels:mn.labels,datasets:[
+    {label:'Active Rate %',data:mn.activeRate,borderColor:C.cyan,backgroundColor:a(C.cyan,.1),fill:true,tension:.4,pointRadius:3},
+    {label:'Contribution Rate %',data:mn.contribRate,borderColor:C.amber,backgroundColor:a(C.amber,.1),fill:true,tension:.4,pointRadius:3}
+  ]},options:{scales:{y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  mk('c_mn_contrib',{type:'bar',data:{labels:mn.labels.slice(0,16),datasets:[
+    {label:'Contributions',data:mn.contributions.slice(0,16),backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1}
+  ]}});
+}
+
+// ═══ TRAFFIC ═════════════════════════════════════════════════════════════════
+
+function renderTraffic(){
+  mk('c_traffic_full',{type:'bar',data:{labels:ga.labels,datasets:[
+    {label:'Direct',data:ga.direct,backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1,stack:'s'},
+    {label:'Organic',data:ga.organic,backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1,stack:'s'},
+    {label:'Paid',data:ga.paid,backgroundColor:a(C.amber,.65),borderColor:C.amber,borderWidth:1,stack:'s'},
+    {label:'Referral',data:ga.referral,backgroundColor:a(C.pink,.65),borderColor:C.pink,borderWidth:1,stack:'s'},
+    {label:'Total',data:ga.total,type:'line',borderColor:C.cyan,pointBackgroundColor:C.cyan,tension:.4,fill:false,pointRadius:4,borderDash:[5,3],order:0}
+  ]},options:{scales:{x:{...gOpts.scales.x,stacked:true},y:{...gOpts.scales.y,stacked:true}}}});
+
+  const tot={Direct:ga.direct.reduce((a,b)=>a+b,0),Organic:ga.organic.reduce((a,b)=>a+b,0),Paid:ga.paid.reduce((a,b)=>a+b,0),Referral:ga.referral.reduce((a,b)=>a+b,0)};
+  mk('c_traffic_pie',{type:'doughnut',data:{
+    labels:Object.keys(tot),
+    datasets:[{data:Object.values(tot),backgroundColor:[a(C.purple,.8),a(C.green,.8),a(C.amber,.8),a(C.pink,.8)],borderColor:'#0f1117',borderWidth:2}]
+  },options:{scales:{x:{display:false},y:{display:false}},plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:10.5}}}}}});
+
+  mk('c_surv_cal',{type:'bar',data:{labels:ga.labels.slice(0,8),datasets:[
+    {label:'EN Survey Visits',data:ga.enSurvey.slice(0,8),backgroundColor:a(C.cyan,.65),borderColor:C.cyan,borderWidth:1},
+    {label:'Calendly Clicks',data:ga.calendly.slice(0,8),backgroundColor:a(C.amber,.65),borderColor:C.amber,borderWidth:1}
+  ]}});
+}
+
+// ═══ MEETINGS ════════════════════════════════════════════════════════════════
+
+function renderMeetings(){
+  mk('c_mtg_full',{type:'bar',data:{labels:mp.labels,datasets:[
+    {label:'New Leads',data:mp.newLeads,backgroundColor:a(C.blue,.55),borderColor:C.blue,borderWidth:1},
+    {label:'1st Follow-up',data:mp.fup1,backgroundColor:a(C.amber,.55),borderColor:C.amber,borderWidth:1},
+    {label:'Meetings Held',data:mp.meetings,type:'line',borderColor:C.purple,pointBackgroundColor:C.purple,tension:.4,fill:false,pointRadius:4,order:0}
+  ]},options:{scales:{x:{...gOpts.scales.x,stacked:false},y:{...gOpts.scales.y,stacked:false}}}});
+
+  mk('c_mtg_trend',{type:'line',data:{
+    labels:['W13','W14','W15','W16','W17','W18','W19'],
+    datasets:[{label:'Meetings Held',data:[21,25,20,33,31,31,33],borderColor:C.purple,backgroundColor:a(C.purple,.15),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:C.purple,borderWidth:2.5}]
+  },options:{scales:{y:{...gOpts.scales.y,min:15,max:40}}}});
+
+  const stages={'New Leads':[56,42,32,41,44,47,35].reduce((a,b)=>a+b),'1st FU':[1,18,16,2,1,2,3].reduce((a,b)=>a+b),'2nd FU':[0,0,0,0,1,0,0].reduce((a,b)=>a+b),'Meetings→Deal':[0,0,0,0,1,0,0].reduce((a,b)=>a+b)};
+  mk('c_pipeline_stg',{type:'bar',data:{
+    labels:Object.keys(stages),
+    datasets:[{label:'Total W13–W19',data:Object.values(stages),backgroundColor:[a(C.cyan,.7),a(C.amber,.7),a(C.orange,.7),a(C.green,.7)],borderColor:[C.cyan,C.amber,C.orange,C.green],borderWidth:1}]
+  },options:{indexAxis:'y',plugins:{legend:{display:false}}}});
+}
+
+// ═══ VIDEO IMPACT ════════════════════════════════════════════════════════════
+// Video added Apr 13 = mid-W15
+// Era 0 (pre-video):           W13,W14       → indices 0,1
+// Era 1 (post-video fullteam): W16,W17,W18   → indices 3,4,5
+// Era 2 (post-video lean):     W19–W23       → indices 6–10
+// W15 (index 2) excluded — transition week
+
+function avg(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+
+function renderVideo(){
+  const pre_idx  = [0,1];
+  const full_idx = [3,4,5];
+  const lean_idx = [6,7,8,9,10];
+
+  function sliceAvg(arr,idxs){ return avg(idxs.map(i=>arr[i])); }
+
+  const eras=[
+    {lbl:'Pre-Video',  sub:'W13–W14 · Full Team',    color:C.purple, idxs:pre_idx },
+    {lbl:'Post-Video', sub:'W16–W18 · Full Team',    color:C.cyan,   idxs:full_idx},
+    {lbl:'Post-Video', sub:'W19–W23 · Lean Team',    color:C.green,  idxs:lean_idx}
+  ];
+
+  const es=eras.map(e=>({
+    ...e,
+    avgResp:  Math.round(sliceAvg(d.surveyResponses,  e.idxs)),
+    avgComp:  Math.round(sliceAvg(d.completed,        e.idxs)),
+    avgCR:    Math.round(sliceAvg(d.crRate,           e.idxs)),
+    avgVisits:Math.round(sliceAvg(d.surveyVisitsDelta,e.idxs)),
+    avgLI:    Math.round(sliceAvg(d.totalOnboarded,   e.idxs))
+  }));
+  es.forEach(e=>{
+    e.respRate=e.avgVisits>0 ? +(e.avgResp/e.avgVisits*100).toFixed(1) : 0;
+    e.liConv  =e.avgLI>0    ? +(e.avgComp/e.avgLI*100).toFixed(1)     : 0;
+  });
+
+  const base=es[0];  // pre-video baseline
+
+  // ── Verdict logic ──────────────────────────────────────────────────────────
+  // Use lean era (W19-23) as the stable post-video signal — full team period
+  // is confounded by Christian/AL departure mid-era
+  const cur=es[2];
+  const crDelta   = +(cur.avgCR   - base.avgCR).toFixed(1);
+  const rrDelta   = +(cur.respRate- base.respRate).toFixed(1);
+  const liDelta   = +(cur.liConv  - base.liConv).toFixed(1);
+  const posCount  = [crDelta>=0, rrDelta>=0].filter(Boolean).length; // 2 key quality metrics
+  const overallOK = posCount >= 1 && rrDelta >= 0; // resp/visit is the cleanest signal
+
+  // ── OVERALL VERDICT BANNER ────────────────────────────────────────────────
+  const bannerBg  = overallOK ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
+  const bannerBdr = overallOK ? 'rgba(16,185,129,.3)' : 'rgba(239,68,68,.3)';
+  const bannerIcon= overallOK ? '✅' : '❌';
+  const bannerTxt = overallOK
+    ? 'Video is <strong style="color:#10b981">WORKING</strong> — response-to-visit rate improved post-video. Quality of completions held or improved vs pre-video baseline.'
+    : 'Video impact <strong style="color:#ef4444">UNCLEAR</strong> — key conversion metrics have not improved vs pre-video baseline.';
+
+  document.getElementById('videoBanner').innerHTML=`
+    <div style="background:${bannerBg};border:1px solid ${bannerBdr};border-radius:12px;padding:16px 20px;display:flex;align-items:flex-start;gap:14px;">
+      <div style="font-size:2rem;line-height:1">${bannerIcon}</div>
+      <div>
+        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--text)">Overall Verdict</div>
+        <div style="font-size:.84rem;color:var(--muted);line-height:1.6">${bannerTxt}</div>
+        <div style="margin-top:10px;font-size:.75rem;color:var(--muted)">Comparison: lean team era (W19–W23, cleanest post-video signal) vs pre-video (W13–W14). Raw volume drop = team size change, not video performance.</div>
+      </div>
+    </div>`;
+
+  // ── METRIC VERDICT CARDS ──────────────────────────────────────────────────
+  const verdicts=[
+    {
+      metric:'Response / Survey Visit %',
+      icon:'👁️',
+      pre: base.respRate+'%',
+      post: cur.respRate+'%',
+      delta: rrDelta,
+      verdict: rrDelta>=3 ? '✅ Significantly better' : rrDelta>=0 ? '✅ Holding steady' : '❌ Declined',
+      note:'Best signal: are visitors who watch video more likely to respond?',
+      good: rrDelta>=0
+    },
+    {
+      metric:'Completion Rate %',
+      icon:'🎯',
+      pre: base.avgCR+'%',
+      post: cur.avgCR+'%',
+      delta: crDelta,
+      verdict: crDelta>=3 ? '✅ Significantly better' : crDelta>=0 ? '✅ Holding steady' : '❌ Declined',
+      note:'Responders who complete the full survey — quality signal.',
+      good: crDelta>=0
+    },
+    {
+      metric:'LI → Completion %',
+      icon:'🔗',
+      pre: base.liConv+'%',
+      post: cur.liConv+'%',
+      delta: liDelta,
+      verdict: liDelta>=0 ? '✅ Improved' : '❌ Declined',
+      note:'End-to-end: LinkedIn onboard → survey completion. Confounded by rep change.',
+      good: liDelta>=0
+    }
+  ];
+
+  document.getElementById('videoVerdictCards').innerHTML=verdicts.map(v=>{
+    const bg  = v.good ? 'rgba(16,185,129,.07)' : 'rgba(239,68,68,.07)';
+    const bdr = v.good ? 'rgba(16,185,129,.2)'  : 'rgba(239,68,68,.2)';
+    const dc  = v.good ? '#10b981' : '#ef4444';
+    const pp  = v.delta>=0 ? `+${v.delta}pp` : `${v.delta}pp`;
+    return `<div style="background:${bg};border:1px solid ${bdr};border-radius:11px;padding:16px;">
+      <div style="font-size:1.3rem;margin-bottom:6px">${v.icon}</div>
+      <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:10px">${v.metric}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="text-align:center;">
+          <div style="font-size:.65rem;color:var(--muted);margin-bottom:2px">PRE-VIDEO</div>
+          <div style="font-size:1.4rem;font-weight:700;color:var(--muted)">${v.pre}</div>
+        </div>
+        <div style="font-size:1.4rem;color:${dc};font-weight:700">${v.delta>=0?'▲':'▼'}</div>
+        <div style="text-align:center;">
+          <div style="font-size:.65rem;color:var(--muted);margin-bottom:2px">POST-VIDEO</div>
+          <div style="font-size:1.4rem;font-weight:700;color:${dc}">${v.post}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.65rem;color:var(--muted);margin-bottom:2px">CHANGE</div>
+          <div style="font-size:1.1rem;font-weight:700;color:${dc}">${pp}</div>
+        </div>
+      </div>
+      <div style="font-size:.75rem;font-weight:600;color:${dc};margin-bottom:4px">${v.verdict}</div>
+      <div style="font-size:.7rem;color:var(--muted);line-height:1.4">${v.note}</div>
+    </div>`;
+  }).join('');
+
+  // ── ERA COMPARISON CARDS ───────────────────────────────────────────────────
+  document.getElementById('videoEraCards').innerHTML=es.map((e,i)=>`
+    <div class="cmp-card">
+      <div class="era-lbl" style="background:${a(e.color,.12)};color:${e.color}">${e.lbl} · ${e.sub}</div>
+      <div class="cr"><span class="cr-lbl">Avg Responses/wk</span><span class="cr-val">${e.avgResp}${i>0?` <small style="color:${e.avgResp>=base.avgResp?'var(--accent4)':'var(--red)'};">(${e.avgResp>=base.avgResp?'+':''}${e.avgResp-base.avgResp})</small>`:''}</span></div>
+      <div class="cr"><span class="cr-lbl">Avg Completed/wk</span><span class="cr-val">${e.avgComp}${i>0?` <small style="color:${e.avgComp>=base.avgComp?'var(--accent4)':'var(--red)'};">(${e.avgComp>=base.avgComp?'+':''}${e.avgComp-base.avgComp})</small>`:''}</span></div>
+      <div class="cr"><span class="cr-lbl">Completion Rate %</span><span class="cr-val" style="color:${i>0?(e.avgCR>=base.avgCR?'var(--accent4)':'var(--red)'):'var(--text)'}">${e.avgCR}%${i>0?` (${e.avgCR>=base.avgCR?'+':''}${e.avgCR-base.avgCR}pp)`:''}</span></div>
+      <div class="cr"><span class="cr-lbl">Response/Visit %</span><span class="cr-val" style="color:${i>0?(e.respRate>=base.respRate?'var(--accent4)':'var(--red)'):'var(--text)'}">${e.respRate}%${i>0?` (${e.respRate>=base.respRate?'+':''}${(e.respRate-base.respRate).toFixed(1)}pp)`:''}</span></div>
+      <div class="cr"><span class="cr-lbl">LI→Completion %</span><span class="cr-val" style="color:${i>0?(e.liConv>=base.liConv?'var(--accent4)':'var(--red)'):'var(--text)'}">${e.liConv}%${i>0?` (${e.liConv>=base.liConv?'+':''}${(e.liConv-base.liConv).toFixed(1)}pp)`:''}</span></div>
+      <div class="cr"><span class="cr-lbl">Avg Survey Visits Δ/wk</span><span class="cr-val">${e.avgVisits}</span></div>
+    </div>`).join('');
+
+  // ── CHARTS ────────────────────────────────────────────────────────────────
+  mk('c_vid_cr_trend',{type:'line',data:{labels:WEEKS,datasets:[
+    {label:'Pre-Video (W13–14)',     data:WEEKS.map((_,i)=>i<2?d.crRate[i]:null),   borderColor:C.purple,backgroundColor:a(C.purple,.12),fill:true,tension:.4,pointRadius:6,pointBackgroundColor:C.purple,borderWidth:2.5,spanGaps:false},
+    {label:'W15 Transition ⚡',      data:WEEKS.map((_,i)=>i===2?d.crRate[i]:null),borderColor:C.amber, backgroundColor:a(C.amber,.1), fill:false,pointRadius:8,pointBackgroundColor:C.amber,pointStyle:'triangle',borderWidth:2,spanGaps:false},
+    {label:'Post-Video Full (W16–18)',data:WEEKS.map((_,i)=>i>=3&&i<=5?d.crRate[i]:null),borderColor:C.cyan, backgroundColor:a(C.cyan,.1), fill:true,tension:.4,pointRadius:6,pointBackgroundColor:C.cyan, borderWidth:2.5,spanGaps:false},
+    {label:'Post-Video Lean (W19–23)',data:WEEKS.map((_,i)=>i>=6?d.crRate[i]:null),  borderColor:C.green,backgroundColor:a(C.green,.1),fill:true,tension:.4,pointRadius:6,pointBackgroundColor:C.green,borderWidth:2.5,spanGaps:false},
+    {label:`Pre-video avg ${base.avgCR}%`, data:Array(11).fill(base.avgCR),borderColor:a(C.purple,.45),borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false},
+    {label:`Post-video avg ${Math.round(avg(d.crRate.slice(3)))}%`,data:Array(11).fill(Math.round(avg(d.crRate.slice(3)))),borderColor:a(C.green,.45),borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false}
+  ]},options:{scales:{y:{...gOpts.scales.y,min:40,max:85,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  mk('c_vid_funnel_era',{type:'bar',data:{
+    labels:['Pre-Video (W13-14)','Post-Video Full (W16-18)','Post-Video Lean (W19-23)'],
+    datasets:[
+      {label:'Avg Responses/wk', data:es.map(e=>e.avgResp),backgroundColor:[a(C.purple,.65),a(C.cyan,.65),a(C.green,.65)],borderColor:[C.purple,C.cyan,C.green],borderWidth:1},
+      {label:'Avg Completed/wk', data:es.map(e=>e.avgComp),backgroundColor:[a(C.purple,.3), a(C.cyan,.3), a(C.green,.3)], borderColor:[C.purple,C.cyan,C.green],borderWidth:1}
+    ]
+  }});
+
+  mk('c_vid_cr_era',{type:'bar',data:{
+    labels:['Pre-Video\n(W13-14)','Post-Video\nFull Team\n(W16-18)','Post-Video\nLean Team\n(W19-23)'],
+    datasets:[{
+      label:'Completion Rate %',
+      data:es.map(e=>e.avgCR),
+      backgroundColor:[a(C.purple,.75),a(C.cyan,.75),a(C.green,.75)],
+      borderColor:[C.purple,C.cyan,C.green],borderWidth:1.5,borderRadius:6
+    }]
+  },options:{plugins:{legend:{display:false}},scales:{y:{...gOpts.scales.y,min:40,max:80,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  mk('c_vid_resp_rate',{type:'bar',data:{
+    labels:['Pre-Video (W13-14)','Post-Video Full (W16-18)','Post-Video Lean (W19-23)'],
+    datasets:[
+      {label:'Response/Visit %',  data:es.map(e=>e.respRate),backgroundColor:[a(C.blue,.7),a(C.blue,.7),a(C.blue,.7)],borderColor:C.blue,borderWidth:1},
+      {label:'LI→Completion %',   data:es.map(e=>e.liConv),  backgroundColor:[a(C.amber,.7),a(C.amber,.7),a(C.amber,.7)],borderColor:C.amber,borderWidth:1}
+    ]
+  },options:{scales:{y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  mk('c_vid_weekly_cr',{type:'line',data:{labels:WEEKS,datasets:[{
+    label:'Completion Rate %',
+    data:d.crRate,
+    borderColor:C.green,backgroundColor:a(C.green,.07),fill:true,tension:.4,
+    pointRadius:6,
+    pointBackgroundColor:WEEKS.map((_,i)=>i<2?C.purple:i===2?C.amber:i<=5?C.cyan:C.green),
+    pointBorderColor:WEEKS.map((_,i)=>i<2?C.purple:i===2?C.amber:i<=5?C.cyan:C.green),
+    borderWidth:2.5
+  }]},options:{plugins:{legend:{display:false}},scales:{y:{...gOpts.scales.y,min:40,max:85,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+}
+
+// ═══ INIT ════════════════════════════════════════════════════════════════════
+
+function setView(v,btn){
+  currentView=v;
+  document.querySelectorAll('.tgl-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderAll();
+}
+
+function showTab(id,btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function renderAll(){
+  renderKPI();
+  renderOverview();
+  renderSurvey();
+  renderTeam();
+  renderNetwork();
+  renderTraffic();
+  renderMeetings();
+  renderVideo();
+}
+
+document.addEventListener('DOMContentLoaded', renderAll);
+</script>
+</body>
+</html>

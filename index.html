@@ -3,932 +3,689 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eprenz KPI Dashboard</title>
+<title>Eprenz Growth KPI Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f1117;--card:#1a1d27;--accent:#6366f1;--accent2:#22d3ee;--accent3:#f59e0b;--accent4:#10b981;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--border:#2d3148;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
-header{background:var(--card);border-bottom:1px solid var(--border);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-.logo{font-size:1.25rem;font-weight:700;color:var(--accent);}.logo span{color:var(--text);font-weight:400;}
-.hdr-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.tgl{display:flex;background:var(--bg);border-radius:8px;padding:3px;border:1px solid var(--border);}
-.tgl-btn{padding:5px 14px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;font-size:.82rem;font-weight:500;transition:all .2s;}
-.tgl-btn.on{background:var(--accent);color:#fff;}
-.last-upd{font-size:.73rem;color:var(--muted);}
-.main{padding:16px 22px;max-width:1420px;margin:0 auto;}
-/* KPI cards */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:18px;}
-.kc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:13px 15px;position:relative;overflow:hidden;}
-.kc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--kc-color,var(--accent));}
-.kc-lbl{font-size:.69rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
-.kc-val{font-size:1.65rem;font-weight:700;line-height:1;}
-.kc-d{font-size:.73rem;margin-top:5px;}
-.up{color:var(--accent4);}.dn{color:var(--red);}.neu{color:var(--muted);}
-/* Tabs */
-.tabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--border);overflow-x:auto;}
-.tab{padding:8px 16px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:.84rem;font-weight:500;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
-.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
-.tab:hover{color:var(--text);}
-.tc{display:none;}.tc.on{display:block;}
-/* Charts */
-.cg{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-bottom:13px;}
-.cg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px;}
-.cc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px;}
-.cc.w2{grid-column:span 2;}.cc.full{grid-column:1/-1;}
-.ct{font-size:.87rem;font-weight:600;margin-bottom:2px;}
-.cs{font-size:.71rem;color:var(--muted);margin-bottom:13px;}
-.cw{position:relative;height:205px;}.cw.t{height:275px;}
-/* Compare */
-.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px;}
-.cmp-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px;}
-.era-lbl{font-size:.77rem;font-weight:700;padding:5px 11px;border-radius:6px;display:inline-block;margin-bottom:13px;}
-.era-a{background:rgba(99,102,241,.15);color:var(--accent);}
-.era-b{background:rgba(34,211,238,.15);color:var(--accent2);}
-.era-c{background:rgba(245,158,11,.15);color:var(--accent3);}
-.cr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.8rem;}
-.cr:last-child{border-bottom:none;}
-.cr-lbl{color:var(--muted);}.cr-val{font-weight:600;}
-/* Rep cards */
-.rep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:11px;margin-bottom:16px;}
-.rep{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;}
-.rep-n{font-size:.87rem;font-weight:700;margin-bottom:2px;}
-.rep-s{font-size:.67rem;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:9px;}
-.sa{background:rgba(16,185,129,.15);color:var(--accent4);}
-.sd{background:rgba(239,68,68,.15);color:var(--red);}
-.rr{display:flex;justify-content:space-between;font-size:.76rem;padding:2.5px 0;}
-.rr-l{color:var(--muted);}.rr-v{font-weight:600;}
-/* Insight box */
-.insight{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:13px 15px;font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.6;}
-.insight strong{color:var(--accent3);}
-.insight .tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:.7rem;font-weight:600;margin-left:4px;}
-.tag-g{background:rgba(16,185,129,.15);color:var(--accent4);}
-.tag-r{background:rgba(239,68,68,.15);color:var(--red);}
-.info-box{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:11px 14px;font-size:.79rem;color:var(--muted);margin-bottom:16px;}
-.info-box strong{color:var(--accent);}
-/* Era divider on charts */
-.era-note{font-size:.68rem;color:var(--muted);margin-top:6px;}
-@media(max-width:768px){.cg,.cmp-grid{grid-template-columns:1fr;}.cc.w2{grid-column:span 1;}.cg3{grid-template-columns:1fr;}}
+:root{--bg:#F7F5F0;--ink:#1A3329;--gold:#C4943A;--sage:#5E7D6C;--line:#E3DED2;--card:#FFF;--muted:#6B7A72;--red:#B4533A;--soft:#EFEAE0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3,.num{font-family:'Fraunces',serif}
+.wrap{max-width:1260px;margin:0 auto;padding:0 24px 80px}
+.topbar{position:sticky;top:0;z-index:60;background:var(--ink);color:#F7F5F0;padding:11px 0;box-shadow:0 2px 14px rgba(26,51,41,.28)}
+.topbar-in{max-width:1260px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.brand h1{font-size:19px;font-weight:600}
+.brand span{font-size:10.5px;color:var(--gold);letter-spacing:.13em;text-transform:uppercase}
+.tr{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.toggle{display:flex;background:rgba(255,255,255,.08);border-radius:99px;padding:4px}
+.toggle button{background:none;border:none;color:#CFDAD3;font-family:'DM Sans';font-size:13px;font-weight:600;padding:6px 15px;border-radius:99px;cursor:pointer}
+.toggle button.on{background:var(--gold);color:#1A3329}
+.range{font-size:11.5px;color:#9DB3A7}
+.csvbtn{background:none;border:1px solid #40584C;color:#CFDAD3;border-radius:99px;padding:6px 15px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans'}
+.csvbtn:hover{border-color:var(--gold);color:var(--gold)}
+.secnav{position:sticky;top:50px;z-index:55;background:var(--bg);border-bottom:1px solid var(--line);padding:9px 0;overflow-x:auto}
+.secnav-in{max-width:1260px;margin:0 auto;padding:0 24px;display:flex;gap:7px;white-space:nowrap}
+.secnav a{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 12px;border-radius:99px;border:1px solid transparent}
+.secnav a:hover{color:var(--ink);background:var(--soft);border-color:var(--line)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.chips .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-right:3px}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:99px;padding:5px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'DM Sans'}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.chip.off{opacity:.32;filter:grayscale(.6)}
+.chip:hover{border-color:var(--gold)}
+section{margin-top:40px;scroll-margin-top:100px}
+.sec-head{display:flex;align-items:baseline;gap:13px;margin-bottom:17px;border-bottom:2px solid var(--ink);padding-bottom:8px;flex-wrap:wrap}
+.sec-head h2{font-size:23px;font-weight:600}
+.sec-head p{font-size:12.5px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:20px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px;position:relative;overflow:hidden}
+.kpi:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gold)}
+.kpi .plab{position:absolute;top:9px;right:11px;font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--gold);text-transform:uppercase}
+.kpi .num{font-size:28px;font-weight:600;line-height:1.12}
+.kpi .lab{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+.kpi .sub{font-size:11.5px;margin-top:5px;font-weight:700}
+.up{color:var(--sage)}.dn{color:var(--red)}.fl{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid32{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+.grid23{display:grid;grid-template-columns:2fr 3fr;gap:16px}
+@media(max-width:980px){.grid2,.grid3,.grid32,.grid23{grid-template-columns:1fr}}
+.card h3{font-size:15.5px;font-weight:600;margin-bottom:3px}
+.card .hint{font-size:11.5px;color:var(--muted);margin-bottom:13px}
+.chart-box{position:relative;height:260px}
+.chart-tall{height:310px}
+.f-row{display:flex;align-items:center;gap:12px;margin-bottom:7px}
+.f-lab{width:205px;font-size:12.5px;font-weight:600;text-align:right;flex-shrink:0}
+.f-wrap{flex:1;background:var(--soft);border-radius:7px;height:34px}
+.f-bar{height:100%;border-radius:7px;background:var(--ink);color:#F7F5F0;display:flex;align-items:center;justify-content:flex-end;padding-right:11px;font-family:'Fraunces';font-size:14px;font-weight:600;min-width:46px;transition:width .5s}
+.f-pct{width:110px;font-size:11.5px;color:var(--gold);font-weight:700;flex-shrink:0}
+@media(max-width:700px){.f-lab{width:105px;font-size:11px}.f-pct{width:74px}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:8px 9px;border-bottom:2px solid var(--ink);white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:8px 9px;border-bottom:1px solid var(--line)}
+tbody tr.click{cursor:pointer}
+tbody tr:hover td{background:#FBFAF6}
+tbody tr.sel td{background:#F3EEDF}
+.cmp td.cur,.cmp th.cur{background:#F3EEDF;font-weight:700}
+.rep-name{font-weight:700;white-space:nowrap}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:99px;margin-left:7px;vertical-align:1px}
+.tag.off{background:#F4E3DE;color:var(--red)}
+.tag.on{background:#E4EDE7;color:var(--sage)}
+.tag.gone{background:#E8E4DA;color:#6B7A72}
+.tag.lead{background:#FBF0DA;color:#8A6A22}
+.best{color:var(--sage);font-weight:700}.worst{color:var(--red);font-weight:700}
+.spark{vertical-align:middle}
+.drill{display:none;margin-top:16px;border:2px solid var(--gold);border-radius:13px;background:var(--card);padding:20px}
+.drill.open{display:block}
+.drill-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+.drill-head h3{font-family:'Fraunces';font-size:19px}
+.drill-close{background:none;border:1px solid var(--line);border-radius:99px;padding:4px 13px;cursor:pointer;font-family:'DM Sans';font-size:11.5px;font-weight:600;color:var(--muted)}
+.drill-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));gap:9px;margin-bottom:16px}
+.dk{background:var(--soft);border-radius:9px;padding:11px}
+.dk .num{font-size:21px;font-weight:600}
+.dk .lab{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.var-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:13px;margin-bottom:16px}
+.var-card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:17px;position:relative}
+.var-card.win{border:2px solid var(--gold);box-shadow:0 4px 18px rgba(196,148,58,.18)}
+.var-card .vl{font-family:'Fraunces';font-size:21px;font-weight:700}
+.var-card .vn{font-size:11.5px;color:var(--muted);margin-bottom:11px}
+.var-card .vm{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;border-top:1px dashed var(--line)}
+.var-card .vm b{font-family:'Fraunces';font-size:14.5px}
+.crown{position:absolute;top:-11px;right:13px;background:var(--gold);color:#1A3329;font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:99px}
+.insights{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+@media(max-width:980px){.insights{grid-template-columns:1fr}}
+.ins{background:var(--ink);color:#EDE9DE;border-radius:13px;padding:18px;font-size:13.5px;line-height:1.6}
+.ins b{color:var(--gold)}
+.ins .it{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9DB3A7;margin-bottom:7px;font-weight:700}
+.note{font-size:11.5px;color:var(--muted);margin-top:9px;font-style:italic}
+.caution{background:#FBF3E4;border:1px solid #E8D5AC;border-radius:9px;padding:11px 15px;font-size:12.5px;color:#7A5B1E;margin-top:13px}
+.hm{display:grid;grid-template-columns:42px repeat(24,1fr);gap:3px;font-size:10px}
+.hm .hlab{color:var(--muted);font-weight:700;display:flex;align-items:center}
+.hm .cell{aspect-ratio:1.15;border-radius:3px;background:var(--soft);position:relative}
+.hm .cell:hover:after{content:attr(data-t);position:absolute;bottom:118%;left:50%;transform:translateX(-50%);background:var(--ink);color:#F7F5F0;padding:4px 8px;border-radius:6px;white-space:nowrap;font-size:11px;z-index:20}
+.hm .toplab{color:var(--muted);text-align:center;font-size:9px}
+.hm-legend{display:flex;gap:6px;align-items:center;margin-top:11px;font-size:11px;color:var(--muted)}
+.hm-legend .sw{width:16px;height:10px;border-radius:2px}
+.actions{counter-reset:act}
+.act{display:flex;gap:15px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.act:last-child{border-bottom:none}
+.act:before{counter-increment:act;content:counter(act);font-family:'Fraunces';font-size:19px;font-weight:700;color:var(--gold);min-width:24px}
+.act b{display:block;margin-bottom:2px}
+.act p{font-size:13px;color:#3D4F46}
+.act .impact{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sage);margin-top:4px}
+.tpl-body{font-size:12px;color:#3D4F46;background:var(--soft);border-radius:8px;padding:10px 12px;margin-top:7px;line-height:1.5}
+.bar-mini{height:7px;border-radius:4px;background:var(--gold);display:inline-block;vertical-align:middle}
+.dq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px}
+.dq{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px}
+.dq .num{font-size:22px;font-weight:600}
+.dq .lab{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.dq.warn{border-color:#E8D5AC;background:#FDF9F1}
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--muted);margin-right:5px}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Eprenz <span>KPI Dashboard</span></div>
-  <div class="hdr-right">
-    <div class="tgl">
-      <button class="tgl-btn on" onclick="setView('weekly',this)">Weekly</button>
-      <button class="tgl-btn" onclick="setView('monthly',this)">Monthly</button>
-    </div>
-    <span class="last-upd">Last data: W23 · Jun 10, 2026</span>
+<div class="topbar"><div class="topbar-in">
+  <div class="brand"><h1>Eprenz Growth Dashboard</h1><span>Sales · Survey · Outreach · A/B · Lead Quality</span></div>
+  <div class="tr">
+    <div class="range" id="rangeLbl"></div>
+    <button class="csvbtn" onclick="exportCSV()">Export CSV</button>
+    <div class="toggle"><button data-p="W" class="on">Weekly</button><button data-p="M">Monthly</button><button data-p="Q">Quarterly</button></div>
   </div>
-</header>
+</div></div>
 
-<div class="main">
-  <div class="kpi-grid" id="kpiGrid"></div>
+<div class="secnav"><div class="secnav-in">
+  <a href="#s-cmp">Period comparison</a><a href="#s-sum">Summary</a><a href="#s-act">Actions</a>
+  <a href="#s-funnel">Funnel</a><a href="#s-reps">Reps</a><a href="#s-engine">Outreach engine</a>
+  <a href="#s-tpl">Message templates</a><a href="#s-offers">Offer mix</a><a href="#s-quality">Lead quality</a>
+  <a href="#s-time">Timing</a><a href="#s-ab">A/B test</a><a href="#s-mn">Mighty Networks</a><a href="#s-dq">Data quality</a>
+</div></div>
 
-  <div class="tabs">
-    <button class="tab on" onclick="showTab('overview',this)">Overview</button>
-    <button class="tab" onclick="showTab('survey',this)">Survey Funnel</button>
-    <button class="tab" onclick="showTab('team',this)">Team Performance</button>
-    <button class="tab" onclick="showTab('network',this)">Member Network</button>
-    <button class="tab" onclick="showTab('traffic',this)">Website Traffic</button>
-    <button class="tab" onclick="showTab('meetings',this)">Meetings & Pipeline</button>
-    <button class="tab" onclick="showTab('video',this)">🎬 Video Impact</button>
-  </div>
+<div class="wrap">
+<div class="chips" id="chips"><span class="lbl">Filter reps</span></div>
+<div class="kpis" id="kpiRow"></div>
 
-  <!-- OVERVIEW -->
-  <div id="tab-overview" class="tc on">
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Survey Pipeline — Weekly</div>
-        <div class="cs">LI Onboarded + Followups → Survey Responses → Completions (W13–W23)</div>
-        <div class="cw t"><canvas id="c_pipeline"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Conversion Rates</div>
-        <div class="cs">Completion Rate % (Completed / Responses) per week</div>
-        <div class="cw"><canvas id="c_conv"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Meetings & New MN Members</div>
-        <div class="cs">Weekly meetings held vs new member network joiners</div>
-        <div class="cw"><canvas id="c_mtg_mn"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Website Traffic</div>
-        <div class="cs">Total weekly site visits (W13–W23)</div>
-        <div class="cw"><canvas id="c_traffic_ov"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Top-of-Funnel: LI Onboarded</div>
-        <div class="cs">Total LinkedIn onboarded per week — team combined</div>
-        <div class="cw"><canvas id="c_li_ov"></canvas></div>
-      </div>
+<section id="s-cmp">
+  <div class="sec-head"><h2>Period Comparison</h2><p id="cmpHint"></p></div>
+  <div class="card" style="overflow-x:auto"><table class="cmp" id="cmpTable"></table></div>
+</section>
+
+<section id="s-sum">
+  <div class="sec-head"><h2>Executive Summary</h2><p>Auto-computed, respects rep filter</p></div>
+  <div class="insights" id="insBox"></div>
+</section>
+
+<section id="s-act">
+  <div class="sec-head"><h2>Recommended Actions</h2><p>Ranked by expected impact</p></div>
+  <div class="card actions" id="actBox"></div>
+</section>
+
+<section id="s-funnel">
+  <div class="sec-head"><h2>Acquisition Funnel</h2><p>Outreach through community join</p></div>
+  <div class="card"><div id="funnelBox"></div>
+  <div class="note">Survey visits = Switchy link clicks. Qualified = completed survey, invests 26 USD per month or more, open to matching. Hot = 251 USD per month or more and matching yes.</div></div>
+</section>
+
+<section id="s-reps">
+  <div class="sec-head"><h2>Sales Rep Performance</h2><p>Click any row to drill down</p></div>
+  <div class="card" style="overflow-x:auto"><table id="repTable"></table></div>
+  <div class="drill" id="drill">
+    <div class="drill-head"><h3 id="drillName"></h3><button class="drill-close" onclick="closeDrill()">Close</button></div>
+    <div class="drill-kpis" id="drillKpis"></div>
+    <div class="grid32">
+      <div><h3 style="font-size:14px;margin-bottom:7px">Weekly responses and completion</h3><div class="chart-box"><canvas id="chDrill"></canvas></div></div>
+      <div><h3 style="font-size:14px;margin-bottom:7px">Templates this rep used</h3><div id="drillTpl"></div></div>
     </div>
   </div>
-
-  <!-- SURVEY FUNNEL -->
-  <div id="tab-survey" class="tc">
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Full Survey Funnel — Weekly</div>
-        <div class="cs">Survey Visits Δ → Responses → Completed → Partial (W13–W23)</div>
-        <div class="cw t"><canvas id="c_funnel"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Survey Visits Δ vs Responses Δ</div>
-        <div class="cs">New visits added each week vs new responses received</div>
-        <div class="cw"><canvas id="c_sv_r"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Completion Rate % per Week</div>
-        <div class="cs">Completed / Total Responses — quality signal</div>
-        <div class="cw"><canvas id="c_cr_rate"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">MN Said YES vs Survey Completed</div>
-        <div class="cs">Community opt-in from completions (W13–W20)</div>
-        <div class="cw"><canvas id="c_mn_yes"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">LI Onboarded + Followups (Top of Funnel)</div>
-        <div class="cs">Weekly outreach volume feeding the survey</div>
-        <div class="cw"><canvas id="c_li_fu"></canvas></div>
-      </div>
-    </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card"><h3>Survey responses trend</h3><div class="hint">Stacked by rep, per selected period</div><div class="chart-box chart-tall"><canvas id="chTrend"></canvas></div></div>
+    <div class="card"><h3>Qualified and hot leads by rep</h3><div class="hint">Full period</div><div class="chart-box chart-tall"><canvas id="chQual"></canvas></div></div>
   </div>
-
-  <!-- TEAM PERFORMANCE -->
-  <div id="tab-team" class="tc">
-    <div class="insight">
-      <strong>⚡ Key Insight:</strong>
-      Kewin's LI outreach (avg <strong>157/wk</strong> W20–W23) <span class="tag tag-g">+37% vs C+AL</span> — but survey completions avg <strong>28/wk</strong> vs C+AL's <strong>66/wk</strong> <span class="tag tag-r">−58%</span>.<br>
-      <strong>Volume is up. Conversion quality is the gap.</strong> Onboarding-to-completion ratio dropped from ~57% (C+AL era) to ~18% (Kewin era). David contributes SC from residual pipeline. Focus: improve onboarding-to-survey conversion for Kewin's leads.
-    </div>
-    <div class="rep-grid" id="repCards"></div>
-    <div class="cmp-grid" id="cmpCards"></div>
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">LinkedIn Onboarded — Per Rep Per Week (W13–W23)</div>
-        <div class="cs">Stacked. Christian+AL active W13–W18 · Kewin takes over W20+</div>
-        <div class="cw t"><canvas id="c_rep_li"></canvas></div>
-        <div class="era-note">◀ W13–W18: Christian + AL era &nbsp;|&nbsp; W19–W23: Kewin-led era ▶</div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Survey Completions — Per Rep Per Week (W13–W23)</div>
-        <div class="cs">Completions driven by each rep. Post-departure residual completions visible for Christian+AL.</div>
-        <div class="cw t"><canvas id="c_rep_sc"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">LI → Survey Completion Conversion Rate</div>
-        <div class="cs">Completions / LI Onboarded — efficiency metric</div>
-        <div class="cw"><canvas id="c_conv_rate"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Kewin vs Christian+AL — Weekly SC Comparison</div>
-        <div class="cs">Kewin completions (W20–W23) vs C+AL combined best equivalent weeks</div>
-        <div class="cw"><canvas id="c_kew_vs_cal"></canvas></div>
-      </div>
-    </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card"><h3>Survey visits per rep</h3><div class="hint">Switchy clicks, old plus new links, per period</div><div class="chart-box"><canvas id="chClicks"></canvas></div></div>
+    <div class="card"><h3>Visit to start rate by rep</h3><div class="hint">Share of visits that begin the survey, full period</div><div class="chart-box"><canvas id="chStart"></canvas></div></div>
   </div>
+</section>
 
-  <!-- MEMBER NETWORK -->
-  <div id="tab-network" class="tc">
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Member Network — Full History (W5–W23)</div>
-        <div class="cs">New members per week (bars) + Total members trend (line)</div>
-        <div class="cw t"><canvas id="c_mn_full"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Active Rate % vs Contribution Rate %</div>
-        <div class="cs">% of total members active or contributing each week</div>
-        <div class="cw"><canvas id="c_mn_rates"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Total Contributions per Week</div>
-        <div class="cs">Community content / engagement activity</div>
-        <div class="cw"><canvas id="c_mn_contrib"></canvas></div>
-      </div>
-    </div>
+<section id="s-engine">
+  <div class="sec-head"><h2>Outreach Engine</h2><p>New logging method, live since Jul 9: onboarding and three follow-up stages</p></div>
+  <div class="kpis" id="engKpis"></div>
+  <div class="grid32" style="margin-top:16px">
+    <div class="card"><h3>Daily outreach mix by stage</h3><div class="hint">Onboarding, first follow-up, second follow-up, post-completion follow-up</div><div class="chart-box chart-tall"><canvas id="chStages"></canvas></div></div>
+    <div class="card"><h3>Outreach cascade</h3><div class="hint">Volume at each stage and drop between stages</div><div id="cascadeBox"></div>
+      <div class="note" id="cascadeNote"></div></div>
   </div>
-
-  <!-- TRAFFIC -->
-  <div id="tab-traffic" class="tc">
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Weekly Website Traffic by Source (W13–W23)</div>
-        <div class="cs">Stacked bars by channel + total visits line</div>
-        <div class="cw t"><canvas id="c_traffic_full"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Traffic Source Mix — Cumulative W13–W23</div>
-        <div class="cs">Channel attribution totals</div>
-        <div class="cw"><canvas id="c_traffic_pie"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">EN Survey Visits vs Calendly Clicks</div>
-        <div class="cs">Survey engagement vs booking intent per week</div>
-        <div class="cw"><canvas id="c_surv_cal"></canvas></div>
-      </div>
-    </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card"><h3>Effort versus outcome</h3><div class="hint">Total outreach messages logged per day against survey responses that day</div><div class="chart-box"><canvas id="chEffort"></canvas></div></div>
+    <div class="card"><h3>Old logging method versus new</h3><div class="hint">Old way tracked one number, new way tracks four stages plus meetings and deals</div><div id="oldNewBox"></div></div>
   </div>
+</section>
 
-  <!-- VIDEO IMPACT -->
-  <div id="tab-video" class="tc">
-    <div class="info-box">
-      <strong>🎬 Video added: April 13, 2026 (mid-W15)</strong> &nbsp;·&nbsp; Pre-video = W13–W14 (full team, no video) &nbsp;·&nbsp; Post-video full team = W16–W18 &nbsp;·&nbsp; Post-video lean team = W19–W23 &nbsp;·&nbsp; W15 excluded (transition week)
-    </div>
-
-    <!-- Verdict banner -->
-    <div id="videoBanner" style="margin-bottom:16px;"></div>
-
-    <!-- Metric verdict cards -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px;" id="videoVerdictCards"></div>
-
-    <!-- Era comparison cards -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px;" id="videoEraCards"></div>
-
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Completion Rate % — Full Timeline with Video Launch Marker</div>
-        <div class="cs">Completion Rate = Completed / Total Responses. Vertical line = video added Apr 13</div>
-        <div class="cw t"><canvas id="c_vid_cr_trend"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Survey Responses vs Completed — 3 Eras</div>
-        <div class="cs">Avg/week per era. Absolute drop = team size, not video.</div>
-        <div class="cw"><canvas id="c_vid_funnel_era"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Completion Rate % by Era</div>
-        <div class="cs">Isolates video quality signal from team volume changes</div>
-        <div class="cw"><canvas id="c_vid_cr_era"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Response Rate vs Survey Visits — by Era</div>
-        <div class="cs">Responses Δ / Survey Visits Δ % — does video drive more responses per visit?</div>
-        <div class="cw"><canvas id="c_vid_resp_rate"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Weekly CR% Trend — Pre vs Post Video</div>
-        <div class="cs">Each week's completion rate. Dashed line = video launch W15.</div>
-        <div class="cw"><canvas id="c_vid_weekly_cr"></canvas></div>
-      </div>
-    </div>
+<section id="s-tpl">
+  <div class="sec-head"><h2>Message Template Performance</h2><p>Which script actually produces responses and completions</p></div>
+  <div class="card" style="overflow-x:auto;margin-bottom:16px"><table id="tplTable"></table>
+    <div class="note">Attribution: responses counted for the rep on the days that template was logged. Days with several templates in the same stage are attributed to each. Because the first and second follow-up scripts were almost always logged on the same days, their attributed response numbers are near identical; compare them on messages sent and on completion rate, not on raw responses. Small samples, treat as direction not proof.</div></div>
+  <div class="grid2">
+    <div class="card"><h3>Onboarding templates: responses per 100 messages</h3><div class="hint">The number that decides which script scales</div><div class="chart-box"><canvas id="chTplOn"></canvas></div></div>
+    <div class="card"><h3>Follow-up templates: completion rate on days used</h3><div class="hint">First and second follow-up scripts</div><div class="chart-box"><canvas id="chTplFu"></canvas></div></div>
   </div>
+  <div class="card" style="margin-top:16px"><h3>Template library</h3><div class="hint">Codes assigned automatically by clustering the logged message text</div><div id="tplLib"></div></div>
+</section>
 
-  <!-- MEETINGS -->
-  <div id="tab-meetings" class="tc">
-    <div class="cg">
-      <div class="cc w2">
-        <div class="ct">Meetings & Leads Pipeline — Full History (W1–W19)</div>
-        <div class="cs">Meetings held (line) + New Leads + 1st Follow-up (bars)</div>
-        <div class="cw t"><canvas id="c_mtg_full"></canvas></div>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cc">
-        <div class="ct">Meetings Trend (W13–W19)</div>
-        <div class="cs">Recent meeting cadence</div>
-        <div class="cw"><canvas id="c_mtg_trend"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ct">Pipeline Stage Totals (W13–W19)</div>
-        <div class="cs">Aggregated leads by pipeline stage</div>
-        <div class="cw"><canvas id="c_pipeline_stg"></canvas></div>
-      </div>
-    </div>
+<section id="s-offers">
+  <div class="sec-head"><h2>Offer Mix After Completion</h2><p>What reps actually pitch once someone finishes the survey</p></div>
+  <div class="grid23">
+    <div class="card"><h3>Offers pitched</h3><div class="hint">Times each offer appeared in the post-completion message</div><div class="chart-box"><canvas id="chOffers"></canvas></div></div>
+    <div class="card"><h3>Offer pitched against demand signal</h3><div class="hint">What reps pitch next to what respondents actually ask for</div><div id="offerGap"></div></div>
   </div>
+</section>
+
+<section id="s-quality">
+  <div class="sec-head"><h2>Lead Quality</h2><p>Who is coming through the funnel</p></div>
+  <div class="grid23">
+    <div class="card"><h3>Financial readiness</h3><div class="hint">Monthly investment capacity of respondents who answered</div><div class="chart-box"><canvas id="chReady"></canvas></div></div>
+    <div class="card"><h3>Biggest challenge stated</h3><div class="hint">Direct signal for Compass and partner targeting</div><div class="chart-box"><canvas id="chChal"></canvas></div></div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card"><h3>Business stage mix</h3><div class="hint">Where respondents sit in the founder journey</div><div class="chart-box"><canvas id="chStage"></canvas></div></div>
+    <div class="card"><h3>Revenue range</h3><div class="hint">Annual revenue of respondents who answered</div><div class="chart-box"><canvas id="chRev"></canvas></div></div>
+  </div>
+</section>
+
+<section id="s-time">
+  <div class="sec-head"><h2>Response Timing</h2><p>When responses arrive, weekday by hour</p></div>
+  <div class="card"><div class="hm" id="heatmap"></div><div class="hm-legend" id="hmLegend"></div><div class="note" id="hmNote"></div></div>
+</section>
+
+<section id="s-ab">
+  <div class="sec-head"><h2>A/B/C/D Landing Page Test</h2><p>Live since Jul 2, with significance check</p></div>
+  <div class="var-grid" id="varGrid"></div>
+  <div class="grid2">
+    <div class="card"><h3>Daily survey visits by variant</h3><div class="hint">Test link clicks per variant</div><div class="chart-box"><canvas id="chVarClicks"></canvas></div></div>
+    <div class="card"><h3>Variant funnel: visits to completed</h3><div class="hint">Visit to started survey to completed</div><div class="chart-box"><canvas id="chVarFunnel"></canvas></div></div>
+  </div>
+  <div class="ins" id="sigBox" style="margin-top:14px"></div>
+</section>
+
+<section id="s-mn">
+  <div class="sec-head"><h2>Mighty Networks Conversion</h2><p>Survey intent against actual joins</p></div>
+  <div class="grid2">
+    <div class="card"><h3>Said yes against actually joined</h3><div class="hint">Per period</div><div class="chart-box"><canvas id="chMN"></canvas></div></div>
+    <div class="card"><h3>Join-through rate and cumulative loss</h3><div class="hint">Joins as share of yes, plus warm members never onboarded</div><div class="chart-box"><canvas id="chMNRate"></canvas></div></div>
+  </div>
+</section>
+
+<section id="s-dq">
+  <div class="sec-head"><h2>Data Quality</h2><p>How much of this dashboard rests on complete inputs</p></div>
+  <div class="dq-grid" id="dqBox"></div>
+  <div class="card" style="margin-top:14px"><h3>Rep log coverage since new method started</h3><div class="hint">Green means a log exists for that rep-day, red means the dashboard is blind</div><div id="covBox" style="overflow-x:auto"></div></div>
+</section>
+
 </div>
 
 <script>
-// ═══ DATA ═══════════════════════════════════════════════════════════════════
-
-const WEEKS = ['W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23'];
-const MONTHS = ['March','April','May','June'];
-
-// Sheet1 weekly summaries W13–W23
-const d = {
-  totalOnboarded:    [137, 139, 130, 123, 118, 146, 140, 300, 106, 127,  96],
-  totalFollowups:    [725, 271, 483, 370, 225, 152,   0,   0,   0,  57,   0],
-  surveyVisitsDelta: [201, 212, 162, 132, 117,  99, 140,  59, 144,  53,  51],
-  surveyResponses:   [ 89,  82,  74,  73,  61,  50,  29,  37,  60,  32,  32],
-  completed:         [ 59,  47,  45,  38,  36,  30,  20,  25,  39,  21,  20],
-  crRate:            [ 66,  57,  61,  52,  59,  60,  69,  68,  65,  66,  63],
-  partial:           [ 30,  35,  29,  35,  25,  20,   6,  12,  21,  11,  12],
-  mnNew:             [  9,  11,  10,   7,   6,   7,   2,   5,   8,   3,   7],
-  mnYes:             [ 71,  63,  56,  45,  40,  39,  23,   0,   0,   0,   0],
-  meetings:          [ 21,  25,  20,  33,  31,  31,  33,  26,   0,   0,   0], // W21-23 not tracked
-
-  // Per-rep LI Onboarded (W13–W23)
-  rep_li: {
-    Christian: [105, 91, 103, 90, 107, 45,  0,  0,  0,  0,  0],
-    AL:        [ 32, 48,  27, 33,  11,  0,  0,  0,  0,  0,  0],
-    Mohammed:  [  0,  0,   0,  0,   0, 64,  0,  0,  0,  0,  0],
-    Kewin:     [  0,  0,   0,  0,   0,  5,  0,300,106,127, 96],
-    David:     [  0,  0,   0,  0,   0, 16,  0,  0,  0,  0,  0]
-  },
-  // Per-rep Survey Completed (W13–W23)
-  rep_sc: {
-    Christian: [39, 56, 46, 62, 56, 23,  2,  5,  4,  2,  2],
-    AL:        [49, 24, 24, 11,  4,  2,  3,  2,  1,  0,  1],
-    Mohammed:  [ 0,  0,  0,  0,  0, 12,  5,  0,  0,  0,  0],
-    Kewin:     [ 0,  0,  0,  0,  0,  4, 10, 14, 39, 29, 29],
-    David:     [ 0,  0,  0,  0,  0,  9,  6, 16, 15,  1,  0]
-  }
-};
-
-// MN_Weekly W5–W23
-const mn = {
-  labels: ['W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23'],
-  newMembers:   [13,36,23,22,21,24,17,11, 9,11,10, 7, 6, 7, 2, 5, 8, 3, 7],
-  totalMembers: [1546,1582,1605,1627,1648,1673,1690,1702,1709,1720,1730,1737,1743,1750,1749,1754,1762,1765,1772],
-  activeRate:   [3,6,10,9,10,10,5,4,4,5,3,2,3,2,2,2,5,4,5],
-  contribRate:  [42,44,15,17,23,30,35,32,31,29,26,24,42,38,34,38,39,30,24],
-  contributions:[29,99,244,345,514,151,241,84,105,272,105,23,72,83,52,93,0,0,0]
-};
-
-// GA_Weekly W13–W23
-const ga = {
-  labels: ['W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23'],
-  total:   [ 987,1492, 581, 616, 472, 600, 577, 991, 595, 422, 382],
-  landing: [ 130, 150,  87, 113, 129, 214, 156, 140, 144, 121, 133],
-  organic: [ 437, 314, 125, 114,  50,  31,  34,  86, 117,  44,  66],
-  direct:  [ 250, 908, 192, 223, 281, 383, 326, 716, 323, 284, 214],
-  paid:    [  79,  79,  81,  61,  11,   3,   1,   6,   7,   4,   6],
-  referral:[   3,   3,  12,   4,   0,   6,   5,   4,  16,   5,   6],
-  enSurvey:[127, 105,  72,  95,  86,  75,  51,  59,   0,   0,   0],
-  calendly:[ 62,  53,  48,  71,  46,  66,  46,  39,   0,   0,   0]
-};
-
-// Meetings pipeline W1–W19
-const mp = {
-  labels: ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19'],
-  meetings:[7,10,7,10,10,10,5,9,9,10,13,20,21,25,20,33,31,31,33],
-  newLeads:[8,16,0,34,3,47,203,3,201,18,211,58,56,42,32,41,44,47,35],
-  fup1:    [12,15,0,0,0,2,4,17,18,4,160,45,1,18,16,2,1,2,3],
-  fup2:    [6,4,0,1,0,1,0,3,0,0,11,0,0,0,0,0,1,0,0]
-};
-
-// ═══ HELPERS ════════════════════════════════════════════════════════════════
-
-let currentView = 'weekly';
-let charts = {};
-
-const C = {
-  purple:'#6366f1',cyan:'#22d3ee',amber:'#f59e0b',
-  green:'#10b981',red:'#ef4444',pink:'#f472b6',
-  blue:'#60a5fa',orange:'#fb923c',lime:'#a3e635',teal:'#2dd4bf'
-};
-
-function a(hex,op){
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${op})`;
-}
-
-const gOpts = {
-  responsive:true,maintainAspectRatio:false,
-  plugins:{
-    legend:{labels:{color:'#94a3b8',font:{size:10.5},boxWidth:11,padding:9}},
-    tooltip:{backgroundColor:'#1a1d27',borderColor:'#2d3148',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#94a3b8',padding:10}
-  },
-  scales:{
-    x:{ticks:{color:'#64748b',font:{size:9.5}},grid:{color:'#1e2234'}},
-    y:{ticks:{color:'#64748b',font:{size:9.5}},grid:{color:'#1e2234'}}
-  }
-};
-
-function mk(id, cfg){
-  if(charts[id]) charts[id].destroy();
-  const ctx=document.getElementById(id);
-  if(!ctx) return;
-  const opts = JSON.parse(JSON.stringify(gOpts));
-  // deep-merge cfg.options
-  if(cfg.options){
-    if(cfg.options.plugins){ Object.assign(opts.plugins, cfg.options.plugins); }
-    if(cfg.options.scales){ Object.assign(opts.scales, cfg.options.scales); }
-    if(cfg.options.indexAxis) opts.indexAxis = cfg.options.indexAxis;
-  }
-  charts[id] = new Chart(ctx, {type:cfg.type||'bar', data:cfg.data, options:opts});
-}
-
-// Monthly aggregation (March=W13, April=W14-17, May=W18-20, June=W21-23)
-function mSum(arr){
-  return [arr[0], arr[1]+arr[2]+arr[3]+arr[4], arr[5]+arr[6]+arr[7], arr[8]+arr[9]+arr[10]];
-}
-function mAvg(arr){
-  return [arr[0], Math.round((arr[1]+arr[2]+arr[3]+arr[4])/4),
-          Math.round((arr[5]+arr[6]+arr[7])/3), Math.round((arr[8]+arr[9]+arr[10])/3)];
-}
-
-function getLbl(){ return currentView==='weekly'?WEEKS:MONTHS; }
-function gA(arr){ return currentView==='weekly'?arr:mSum(arr); }
-function gAvg(arr){ return currentView==='weekly'?arr:mAvg(arr); }
-
-// ═══ KPI CARDS ═══════════════════════════════════════════════════════════════
-
-function renderKPI(){
-  // Latest = W23 (index 10), prev = W22 (index 9)
-  const last=10, prev=9;
-  function delt(arr,i,j){
-    const v=arr[i]-arr[j], p=arr[j]?Math.round(v/arr[j]*100):0, s=v>=0?'+':'';
-    return {v,p,s};
-  }
-  const kpis=[
-    {lbl:'Meetings (W19 last)',val:d.meetings[6],d:delt(d.meetings,6,5),c:C.purple},
-    {lbl:'Completed Responses W23',val:d.completed[last],d:delt(d.completed,last,prev),c:C.green},
-    {lbl:'Completion Rate W23',val:d.crRate[last]+'%',d:delt(d.crRate,last,prev),c:C.cyan},
-    {lbl:'LI Onboarded W23',val:d.totalOnboarded[last],d:delt(d.totalOnboarded,last,prev),c:C.purple},
-    {lbl:'Survey Responses W23',val:d.surveyResponses[last],d:delt(d.surveyResponses,last,prev),c:C.blue},
-    {lbl:'MN New Members W23',val:d.mnNew[last],d:delt(d.mnNew,last,prev),c:C.pink},
-    {lbl:'Total MN Members',val:'1,772',d:{v:0,p:0,s:''},c:C.teal},
-    {lbl:'Website Traffic W23',val:ga.total[10].toLocaleString(),d:{v:ga.total[10]-ga.total[9],p:Math.round((ga.total[10]-ga.total[9])/ga.total[9]*100),s:ga.total[10]>=ga.total[9]?'+':''},c:C.amber}
-  ];
-  document.getElementById('kpiGrid').innerHTML=kpis.map(k=>{
-    const cls=k.d.v>0?'up':k.d.v<0?'dn':'neu';
-    const arrow=k.d.v>0?'▲':k.d.v<0?'▼':'—';
-    return `<div class="kc" style="--kc-color:${k.c}">
-      <div class="kc-lbl">${k.lbl}</div>
-      <div class="kc-val">${k.val}</div>
-      <div class="kc-d ${cls}">${arrow} ${k.d.s}${k.d.v} (${k.d.s}${k.d.p}%)</div>
-    </div>`;
-  }).join('');
-}
-
-// ═══ OVERVIEW ════════════════════════════════════════════════════════════════
-
-function renderOverview(){
-  const lbl=getLbl(), ob=gA(d.totalOnboarded), fu=gA(d.totalFollowups),
-        sv=gA(d.surveyVisitsDelta), resp=gA(d.surveyResponses), comp=gA(d.completed);
-
-  mk('c_pipeline',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'LI Onboarded',data:ob,backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1,order:2},
-    {label:'Followups',data:fu,backgroundColor:a(C.blue,.45),borderColor:C.blue,borderWidth:1,order:2},
-    {label:'Responses Δ',data:resp,backgroundColor:a(C.cyan,.65),borderColor:C.cyan,borderWidth:1,order:2},
-    {label:'Completed',data:comp,backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1,order:2},
-    {label:'Survey Visits Δ',data:sv,type:'line',borderColor:C.amber,pointBackgroundColor:C.amber,tension:.4,yAxisID:'y1',order:1,fill:false,pointRadius:4}
-  ]},options:{scales:{y:{...gOpts.scales.y,title:{display:true,text:'Count',color:'#64748b',font:{size:9}}},y1:{type:'linear',position:'right',ticks:{color:'#64748b',font:{size:9}},grid:{drawOnChartArea:false},title:{display:true,text:'Visits Δ',color:'#64748b',font:{size:9}}}}}});
-
-  mk('c_conv',{type:'line',data:{labels:lbl,datasets:[
-    {label:'Completion Rate %',data:gAvg(d.crRate),borderColor:C.green,backgroundColor:a(C.green,.1),fill:true,tension:.4,pointRadius:4,pointBackgroundColor:C.green}
-  ]},options:{scales:{y:{...gOpts.scales.y,max:100,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-
-  mk('c_mtg_mn',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'Meetings (W13-W20)',data:gA(d.meetings),backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1},
-    {label:'MN New Members',data:gA(d.mnNew),backgroundColor:a(C.pink,.65),borderColor:C.pink,borderWidth:1}
-  ]}});
-
-  mk('c_traffic_ov',{type:'line',data:{labels:lbl,datasets:[
-    {label:'Total Visits',data:gA(ga.total),borderColor:C.amber,backgroundColor:a(C.amber,.1),fill:true,tension:.4,pointRadius:4,pointBackgroundColor:C.amber}
-  ]}});
-
-  mk('c_li_ov',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'LI Onboarded',data:gA(d.totalOnboarded),backgroundColor:lbl.map((_,i)=>i<6?a(C.purple,.7):a(C.cyan,.7)),borderColor:lbl.map((_,i)=>i<6?C.purple:C.cyan),borderWidth:1}
-  ]},options:{plugins:{legend:{display:false},tooltip:{...gOpts.plugins.tooltip}}}});
-}
-
-// ═══ SURVEY ══════════════════════════════════════════════════════════════════
-
-function renderSurvey(){
-  const lbl=getLbl();
-  mk('c_funnel',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'Survey Visits Δ',data:gA(d.surveyVisitsDelta),backgroundColor:a(C.blue,.55),borderColor:C.blue,borderWidth:1},
-    {label:'Responses Δ',data:gA(d.surveyResponses),backgroundColor:a(C.cyan,.65),borderColor:C.cyan,borderWidth:1},
-    {label:'Completed',data:gA(d.completed),backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1},
-    {label:'Partial',data:gA(d.partial),backgroundColor:a(C.amber,.55),borderColor:C.amber,borderWidth:1}
-  ]}});
-
-  mk('c_sv_r',{type:'line',data:{labels:lbl,datasets:[
-    {label:'Survey Visits Δ',data:gA(d.surveyVisitsDelta),borderColor:C.blue,backgroundColor:a(C.blue,.1),fill:true,tension:.4,pointRadius:3},
-    {label:'Responses Δ',data:gA(d.surveyResponses),borderColor:C.cyan,backgroundColor:a(C.cyan,.1),fill:true,tension:.4,pointRadius:3}
-  ]}});
-
-  mk('c_cr_rate',{type:'line',data:{labels:lbl,datasets:[
-    {label:'Completion Rate %',data:gAvg(d.crRate),borderColor:C.green,backgroundColor:a(C.green,.15),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:C.green,borderWidth:2.5}
-  ]},options:{scales:{y:{...gOpts.scales.y,min:40,max:100,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-
-  mk('c_mn_yes',{type:'bar',data:{labels:lbl.slice(0,8),datasets:[
-    {label:'Survey Completed',data:d.completed.slice(0,8),backgroundColor:a(C.purple,.6),borderColor:C.purple,borderWidth:1},
-    {label:'MN Said YES',data:d.mnYes.slice(0,8),backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1}
-  ]}});
-
-  mk('c_li_fu',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'LI Onboarded',data:gA(d.totalOnboarded),backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1},
-    {label:'Followups',data:gA(d.totalFollowups),backgroundColor:a(C.blue,.45),borderColor:C.blue,borderWidth:1}
-  ]}});
-}
-
-// ═══ TEAM ════════════════════════════════════════════════════════════════════
-
-function renderTeam(){
-  // Rep totals
-  const sum = arr => arr.reduce((a,b)=>a+b,0);
-  // W13-W18 (full team): indices 0-5
-  // W19-W23 (lean team): indices 6-10
-  const reps=[
-    {n:'Christian',s:'Departed ~W18',cls:'sd',
-     li_full:sum(d.rep_li.Christian.slice(0,6)), li_lean:sum(d.rep_li.Christian.slice(6)),
-     sc_full:sum(d.rep_sc.Christian.slice(0,6)), sc_lean:sum(d.rep_sc.Christian.slice(6))},
-    {n:'AL',s:'Departed ~W18',cls:'sd',
-     li_full:sum(d.rep_li.AL.slice(0,6)), li_lean:sum(d.rep_li.AL.slice(6)),
-     sc_full:sum(d.rep_sc.AL.slice(0,6)), sc_lean:sum(d.rep_sc.AL.slice(6))},
-    {n:'Kewin',s:'Active — Primary',cls:'sa',
-     li_full:sum(d.rep_li.Kewin.slice(0,6)), li_lean:sum(d.rep_li.Kewin.slice(6)),
-     sc_full:sum(d.rep_sc.Kewin.slice(0,6)), sc_lean:sum(d.rep_sc.Kewin.slice(6))},
-    {n:'David',s:'Active',cls:'sa',
-     li_full:sum(d.rep_li.David.slice(0,6)), li_lean:sum(d.rep_li.David.slice(6)),
-     sc_full:sum(d.rep_sc.David.slice(0,6)), sc_lean:sum(d.rep_sc.David.slice(6))},
-    {n:'Mohammed',s:'Active',cls:'sa',
-     li_full:sum(d.rep_li.Mohammed.slice(0,6)), li_lean:sum(d.rep_li.Mohammed.slice(6)),
-     sc_full:sum(d.rep_sc.Mohammed.slice(0,6)), sc_lean:sum(d.rep_sc.Mohammed.slice(6))}
-  ];
-
-  document.getElementById('repCards').innerHTML=reps.map(r=>`
-    <div class="rep">
-      <div class="rep-n">${r.n}</div>
-      <div class="rep-s ${r.cls}">${r.s}</div>
-      <div class="rr"><span class="rr-l">LI (full team era)</span><span class="rr-v">${r.li_full}</span></div>
-      <div class="rr"><span class="rr-l">LI (lean era W19+)</span><span class="rr-v">${r.li_lean}</span></div>
-      <div class="rr"><span class="rr-l">SC (full team era)</span><span class="rr-v">${r.sc_full}</span></div>
-      <div class="rr"><span class="rr-l">SC (lean era W19+)</span><span class="rr-v">${r.sc_lean}</span></div>
-    </div>`).join('');
-
-  // Era comparison averages
-  const n_full=6, n_lean=5; // weeks in each era
-  const cal_li_avg = Math.round((sum(d.rep_li.Christian.slice(0,6))+sum(d.rep_li.AL.slice(0,6)))/n_full);
-  const cal_sc_avg = Math.round((sum(d.rep_sc.Christian.slice(0,6))+sum(d.rep_sc.AL.slice(0,6)))/n_full);
-  const kew_li_avg = Math.round(sum(d.rep_li.Kewin.slice(6))/n_lean);
-  const kew_sc_avg = Math.round(sum(d.rep_sc.Kewin.slice(6))/n_lean);
-  const dav_sc_avg = Math.round(sum(d.rep_sc.David.slice(6))/n_lean);
-  const lean_sc_avg = kew_sc_avg + dav_sc_avg;
-
-  const fullTeamOnb = Math.round(sum(d.totalOnboarded.slice(0,6))/n_full);
-  const leanTeamOnb = Math.round(sum(d.totalOnboarded.slice(6))/n_lean);
-  const fullTeamSC  = Math.round(sum(d.completed.slice(0,6))/n_full);
-  const leanTeamSC  = Math.round(sum(d.completed.slice(6))/n_lean);
-  const fullTeamCR  = Math.round(d.crRate.slice(0,6).reduce((a,b)=>a+b,0)/n_full);
-  const leanTeamCR  = Math.round(d.crRate.slice(6).reduce((a,b)=>a+b,0)/n_lean);
-
-  function pct(a,b){const p=Math.round((a-b)/b*100);return `<small style="font-weight:400;font-size:.7rem;color:${p>=0?'var(--accent4)':'var(--red)'}">${p>=0?'+':''}${p}%</small>`;}
-
-  document.getElementById('cmpCards').innerHTML=`
-    <div class="cmp-card">
-      <div class="era-lbl era-a">FULL TEAM — W13–W18 (avg/wk)</div>
-      <div class="cr"><span class="cr-lbl">C+AL LI Onboarded/wk</span><span class="cr-val">${cal_li_avg}</span></div>
-      <div class="cr"><span class="cr-lbl">C+AL Survey Completed/wk</span><span class="cr-val">${cal_sc_avg}</span></div>
-      <div class="cr"><span class="cr-lbl">Total LI Onboarded/wk</span><span class="cr-val">${fullTeamOnb}</span></div>
-      <div class="cr"><span class="cr-lbl">Total Completed/wk</span><span class="cr-val">${fullTeamSC}</span></div>
-      <div class="cr"><span class="cr-lbl">Avg Completion Rate</span><span class="cr-val">${fullTeamCR}%</span></div>
-      <div class="cr"><span class="cr-lbl">LI→SC Conversion</span><span class="cr-val">${Math.round(fullTeamSC/fullTeamOnb*100)}%</span></div>
-    </div>
-    <div class="cmp-card">
-      <div class="era-lbl era-b">LEAN TEAM — W19–W23 (avg/wk)</div>
-      <div class="cr"><span class="cr-lbl">Kewin LI Onboarded/wk</span><span class="cr-val">${kew_li_avg} ${pct(kew_li_avg,cal_li_avg)}</span></div>
-      <div class="cr"><span class="cr-lbl">Kewin+David SC/wk</span><span class="cr-val">${lean_sc_avg} ${pct(lean_sc_avg,cal_sc_avg)}</span></div>
-      <div class="cr"><span class="cr-lbl">Total LI Onboarded/wk</span><span class="cr-val">${leanTeamOnb} ${pct(leanTeamOnb,fullTeamOnb)}</span></div>
-      <div class="cr"><span class="cr-lbl">Total Completed/wk</span><span class="cr-val">${leanTeamSC} ${pct(leanTeamSC,fullTeamSC)}</span></div>
-      <div class="cr"><span class="cr-lbl">Avg Completion Rate</span><span class="cr-val">${leanTeamCR}% ${pct(leanTeamCR,fullTeamCR)}</span></div>
-      <div class="cr"><span class="cr-lbl">LI→SC Conversion</span><span class="cr-val">${Math.round(leanTeamSC/leanTeamOnb*100)}% ${pct(Math.round(leanTeamSC/leanTeamOnb*100),Math.round(fullTeamSC/fullTeamOnb*100))}</span></div>
-    </div>`;
-
-  // Per-rep LI stacked
-  mk('c_rep_li',{type:'bar',data:{labels:WEEKS,datasets:[
-    {label:'Christian',data:d.rep_li.Christian,backgroundColor:a(C.purple,.8),borderColor:C.purple,borderWidth:1},
-    {label:'AL',data:d.rep_li.AL,backgroundColor:a(C.cyan,.8),borderColor:C.cyan,borderWidth:1},
-    {label:'Mohammed',data:d.rep_li.Mohammed,backgroundColor:a(C.green,.8),borderColor:C.green,borderWidth:1},
-    {label:'Kewin',data:d.rep_li.Kewin,backgroundColor:a(C.amber,.8),borderColor:C.amber,borderWidth:1},
-    {label:'David',data:d.rep_li.David,backgroundColor:a(C.pink,.8),borderColor:C.pink,borderWidth:1}
-  ]},options:{scales:{x:{...gOpts.scales.x,stacked:true},y:{...gOpts.scales.y,stacked:true}}}});
-
-  // Per-rep SC stacked
-  mk('c_rep_sc',{type:'bar',data:{labels:WEEKS,datasets:[
-    {label:'Christian',data:d.rep_sc.Christian,backgroundColor:a(C.purple,.8),borderColor:C.purple,borderWidth:1},
-    {label:'AL',data:d.rep_sc.AL,backgroundColor:a(C.cyan,.8),borderColor:C.cyan,borderWidth:1},
-    {label:'Mohammed',data:d.rep_sc.Mohammed,backgroundColor:a(C.green,.8),borderColor:C.green,borderWidth:1},
-    {label:'Kewin',data:d.rep_sc.Kewin,backgroundColor:a(C.amber,.8),borderColor:C.amber,borderWidth:1},
-    {label:'David',data:d.rep_sc.David,backgroundColor:a(C.pink,.8),borderColor:C.pink,borderWidth:1}
-  ]},options:{scales:{x:{...gOpts.scales.x,stacked:true},y:{...gOpts.scales.y,stacked:true}}}});
-
-  // LI→SC conversion rate per week (team total)
-  const convRates = WEEKS.map((_,i)=>{
-    const li=d.totalOnboarded[i];
-    const sc=d.completed[i];
-    return li>0?Math.round(sc/li*100):null;
-  });
-  mk('c_conv_rate',{type:'line',data:{labels:WEEKS,datasets:[
-    {label:'LI→Completion %',data:convRates,borderColor:C.orange,backgroundColor:a(C.orange,.12),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:WEEKS.map((_,i)=>i<6?C.purple:C.orange),borderWidth:2.5,spanGaps:true}
-  ]},options:{scales:{y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'},title:{display:true,text:'Completions / Onboarded %',color:'#64748b',font:{size:9}}}}}});
-
-  // Kewin (W20-23) vs C+AL weekly SC — side by side
-  const kew_sc_lean = d.rep_sc.Kewin.slice(7);  // W20-23
-  const cal_sc_top4 = d.rep_sc.Christian.slice(0,4).map((v,i)=>v+d.rep_sc.AL[i]); // best 4 weeks of C+AL
-  mk('c_kew_vs_cal',{type:'bar',data:{
-    labels:['W20 vs W13','W21 vs W14','W22 vs W15','W23 vs W16'],
-    datasets:[
-      {label:'Kewin SC (W20–W23)',data:kew_sc_lean,backgroundColor:a(C.amber,.75),borderColor:C.amber,borderWidth:1},
-      {label:'C+AL SC (W13–W16, benchmark)',data:cal_sc_top4,backgroundColor:a(C.purple,.5),borderColor:C.purple,borderWidth:1}
-    ]
-  }});
-}
-
-// ═══ NETWORK ═════════════════════════════════════════════════════════════════
-
-function renderNetwork(){
-  mk('c_mn_full',{type:'bar',data:{labels:mn.labels,datasets:[
-    {label:'New Members',data:mn.newMembers,backgroundColor:a(C.pink,.65),borderColor:C.pink,borderWidth:1,order:2},
-    {label:'Total Members',data:mn.totalMembers,type:'line',borderColor:C.purple,pointBackgroundColor:C.purple,tension:.4,yAxisID:'y1',order:1,fill:false,pointRadius:3}
-  ]},options:{scales:{y:{...gOpts.scales.y,title:{display:true,text:'New Members',color:'#64748b',font:{size:9}}},y1:{type:'linear',position:'right',ticks:{color:'#64748b',font:{size:9}},grid:{drawOnChartArea:false},title:{display:true,text:'Total',color:'#64748b',font:{size:9}},min:1500}}}});
-
-  mk('c_mn_rates',{type:'line',data:{labels:mn.labels,datasets:[
-    {label:'Active Rate %',data:mn.activeRate,borderColor:C.cyan,backgroundColor:a(C.cyan,.1),fill:true,tension:.4,pointRadius:3},
-    {label:'Contribution Rate %',data:mn.contribRate,borderColor:C.amber,backgroundColor:a(C.amber,.1),fill:true,tension:.4,pointRadius:3}
-  ]},options:{scales:{y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-
-  mk('c_mn_contrib',{type:'bar',data:{labels:mn.labels.slice(0,16),datasets:[
-    {label:'Contributions',data:mn.contributions.slice(0,16),backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1}
-  ]}});
-}
-
-// ═══ TRAFFIC ═════════════════════════════════════════════════════════════════
-
-function renderTraffic(){
-  mk('c_traffic_full',{type:'bar',data:{labels:ga.labels,datasets:[
-    {label:'Direct',data:ga.direct,backgroundColor:a(C.purple,.65),borderColor:C.purple,borderWidth:1,stack:'s'},
-    {label:'Organic',data:ga.organic,backgroundColor:a(C.green,.65),borderColor:C.green,borderWidth:1,stack:'s'},
-    {label:'Paid',data:ga.paid,backgroundColor:a(C.amber,.65),borderColor:C.amber,borderWidth:1,stack:'s'},
-    {label:'Referral',data:ga.referral,backgroundColor:a(C.pink,.65),borderColor:C.pink,borderWidth:1,stack:'s'},
-    {label:'Total',data:ga.total,type:'line',borderColor:C.cyan,pointBackgroundColor:C.cyan,tension:.4,fill:false,pointRadius:4,borderDash:[5,3],order:0}
-  ]},options:{scales:{x:{...gOpts.scales.x,stacked:true},y:{...gOpts.scales.y,stacked:true}}}});
-
-  const tot={Direct:ga.direct.reduce((a,b)=>a+b,0),Organic:ga.organic.reduce((a,b)=>a+b,0),Paid:ga.paid.reduce((a,b)=>a+b,0),Referral:ga.referral.reduce((a,b)=>a+b,0)};
-  mk('c_traffic_pie',{type:'doughnut',data:{
-    labels:Object.keys(tot),
-    datasets:[{data:Object.values(tot),backgroundColor:[a(C.purple,.8),a(C.green,.8),a(C.amber,.8),a(C.pink,.8)],borderColor:'#0f1117',borderWidth:2}]
-  },options:{scales:{x:{display:false},y:{display:false}},plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:10.5}}}}}});
-
-  mk('c_surv_cal',{type:'bar',data:{labels:ga.labels.slice(0,8),datasets:[
-    {label:'EN Survey Visits',data:ga.enSurvey.slice(0,8),backgroundColor:a(C.cyan,.65),borderColor:C.cyan,borderWidth:1},
-    {label:'Calendly Clicks',data:ga.calendly.slice(0,8),backgroundColor:a(C.amber,.65),borderColor:C.amber,borderWidth:1}
-  ]}});
-}
-
-// ═══ MEETINGS ════════════════════════════════════════════════════════════════
-
-function renderMeetings(){
-  mk('c_mtg_full',{type:'bar',data:{labels:mp.labels,datasets:[
-    {label:'New Leads',data:mp.newLeads,backgroundColor:a(C.blue,.55),borderColor:C.blue,borderWidth:1},
-    {label:'1st Follow-up',data:mp.fup1,backgroundColor:a(C.amber,.55),borderColor:C.amber,borderWidth:1},
-    {label:'Meetings Held',data:mp.meetings,type:'line',borderColor:C.purple,pointBackgroundColor:C.purple,tension:.4,fill:false,pointRadius:4,order:0}
-  ]},options:{scales:{x:{...gOpts.scales.x,stacked:false},y:{...gOpts.scales.y,stacked:false}}}});
-
-  mk('c_mtg_trend',{type:'line',data:{
-    labels:['W13','W14','W15','W16','W17','W18','W19'],
-    datasets:[{label:'Meetings Held',data:[21,25,20,33,31,31,33],borderColor:C.purple,backgroundColor:a(C.purple,.15),fill:true,tension:.4,pointRadius:5,pointBackgroundColor:C.purple,borderWidth:2.5}]
-  },options:{scales:{y:{...gOpts.scales.y,min:15,max:40}}}});
-
-  const stages={'New Leads':[56,42,32,41,44,47,35].reduce((a,b)=>a+b),'1st FU':[1,18,16,2,1,2,3].reduce((a,b)=>a+b),'2nd FU':[0,0,0,0,1,0,0].reduce((a,b)=>a+b),'Meetings→Deal':[0,0,0,0,1,0,0].reduce((a,b)=>a+b)};
-  mk('c_pipeline_stg',{type:'bar',data:{
-    labels:Object.keys(stages),
-    datasets:[{label:'Total W13–W19',data:Object.values(stages),backgroundColor:[a(C.cyan,.7),a(C.amber,.7),a(C.orange,.7),a(C.green,.7)],borderColor:[C.cyan,C.amber,C.orange,C.green],borderWidth:1}]
-  },options:{indexAxis:'y',plugins:{legend:{display:false}}}});
-}
-
-// ═══ VIDEO IMPACT ════════════════════════════════════════════════════════════
-// Video added Apr 13 = mid-W15
-// Era 0 (pre-video):           W13,W14       → indices 0,1
-// Era 1 (post-video fullteam): W16,W17,W18   → indices 3,4,5
-// Era 2 (post-video lean):     W19–W23       → indices 6–10
-// W15 (index 2) excluded — transition week
-
-function avg(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
-
-function renderVideo(){
-  const pre_idx  = [0,1];
-  const full_idx = [3,4,5];
-  const lean_idx = [6,7,8,9,10];
-
-  function sliceAvg(arr,idxs){ return avg(idxs.map(i=>arr[i])); }
-
-  const eras=[
-    {lbl:'Pre-Video',  sub:'W13–W14 · Full Team',    color:C.purple, idxs:pre_idx },
-    {lbl:'Post-Video', sub:'W16–W18 · Full Team',    color:C.cyan,   idxs:full_idx},
-    {lbl:'Post-Video', sub:'W19–W23 · Lean Team',    color:C.green,  idxs:lean_idx}
-  ];
-
-  const es=eras.map(e=>({
-    ...e,
-    avgResp:  Math.round(sliceAvg(d.surveyResponses,  e.idxs)),
-    avgComp:  Math.round(sliceAvg(d.completed,        e.idxs)),
-    avgCR:    Math.round(sliceAvg(d.crRate,           e.idxs)),
-    avgVisits:Math.round(sliceAvg(d.surveyVisitsDelta,e.idxs)),
-    avgLI:    Math.round(sliceAvg(d.totalOnboarded,   e.idxs))
-  }));
-  es.forEach(e=>{
-    e.respRate=e.avgVisits>0 ? +(e.avgResp/e.avgVisits*100).toFixed(1) : 0;
-    e.liConv  =e.avgLI>0    ? +(e.avgComp/e.avgLI*100).toFixed(1)     : 0;
-  });
-
-  const base=es[0];  // pre-video baseline
-
-  // ── Verdict logic ──────────────────────────────────────────────────────────
-  // Use lean era (W19-23) as the stable post-video signal — full team period
-  // is confounded by Christian/AL departure mid-era
-  const cur=es[2];
-  const crDelta   = +(cur.avgCR   - base.avgCR).toFixed(1);
-  const rrDelta   = +(cur.respRate- base.respRate).toFixed(1);
-  const liDelta   = +(cur.liConv  - base.liConv).toFixed(1);
-  const posCount  = [crDelta>=0, rrDelta>=0].filter(Boolean).length; // 2 key quality metrics
-  const overallOK = posCount >= 1 && rrDelta >= 0; // resp/visit is the cleanest signal
-
-  // ── OVERALL VERDICT BANNER ────────────────────────────────────────────────
-  const bannerBg  = overallOK ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
-  const bannerBdr = overallOK ? 'rgba(16,185,129,.3)' : 'rgba(239,68,68,.3)';
-  const bannerIcon= overallOK ? '✅' : '❌';
-  const bannerTxt = overallOK
-    ? 'Video is <strong style="color:#10b981">WORKING</strong> — response-to-visit rate improved post-video. Quality of completions held or improved vs pre-video baseline.'
-    : 'Video impact <strong style="color:#ef4444">UNCLEAR</strong> — key conversion metrics have not improved vs pre-video baseline.';
-
-  document.getElementById('videoBanner').innerHTML=`
-    <div style="background:${bannerBg};border:1px solid ${bannerBdr};border-radius:12px;padding:16px 20px;display:flex;align-items:flex-start;gap:14px;">
-      <div style="font-size:2rem;line-height:1">${bannerIcon}</div>
-      <div>
-        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--text)">Overall Verdict</div>
-        <div style="font-size:.84rem;color:var(--muted);line-height:1.6">${bannerTxt}</div>
-        <div style="margin-top:10px;font-size:.75rem;color:var(--muted)">Comparison: lean team era (W19–W23, cleanest post-video signal) vs pre-video (W13–W14). Raw volume drop = team size change, not video performance.</div>
-      </div>
-    </div>`;
-
-  // ── METRIC VERDICT CARDS ──────────────────────────────────────────────────
-  const verdicts=[
-    {
-      metric:'Response / Survey Visit %',
-      icon:'👁️',
-      pre: base.respRate+'%',
-      post: cur.respRate+'%',
-      delta: rrDelta,
-      verdict: rrDelta>=3 ? '✅ Significantly better' : rrDelta>=0 ? '✅ Holding steady' : '❌ Declined',
-      note:'Best signal: are visitors who watch video more likely to respond?',
-      good: rrDelta>=0
-    },
-    {
-      metric:'Completion Rate %',
-      icon:'🎯',
-      pre: base.avgCR+'%',
-      post: cur.avgCR+'%',
-      delta: crDelta,
-      verdict: crDelta>=3 ? '✅ Significantly better' : crDelta>=0 ? '✅ Holding steady' : '❌ Declined',
-      note:'Responders who complete the full survey — quality signal.',
-      good: crDelta>=0
-    },
-    {
-      metric:'LI → Completion %',
-      icon:'🔗',
-      pre: base.liConv+'%',
-      post: cur.liConv+'%',
-      delta: liDelta,
-      verdict: liDelta>=0 ? '✅ Improved' : '❌ Declined',
-      note:'End-to-end: LinkedIn onboard → survey completion. Confounded by rep change.',
-      good: liDelta>=0
-    }
-  ];
-
-  document.getElementById('videoVerdictCards').innerHTML=verdicts.map(v=>{
-    const bg  = v.good ? 'rgba(16,185,129,.07)' : 'rgba(239,68,68,.07)';
-    const bdr = v.good ? 'rgba(16,185,129,.2)'  : 'rgba(239,68,68,.2)';
-    const dc  = v.good ? '#10b981' : '#ef4444';
-    const pp  = v.delta>=0 ? `+${v.delta}pp` : `${v.delta}pp`;
-    return `<div style="background:${bg};border:1px solid ${bdr};border-radius:11px;padding:16px;">
-      <div style="font-size:1.3rem;margin-bottom:6px">${v.icon}</div>
-      <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:10px">${v.metric}</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="text-align:center;">
-          <div style="font-size:.65rem;color:var(--muted);margin-bottom:2px">PRE-VIDEO</div>
-          <div style="font-size:1.4rem;font-weight:700;color:var(--muted)">${v.pre}</div>
-        </div>
-        <div style="font-size:1.4rem;color:${dc};font-weight:700">${v.delta>=0?'▲':'▼'}</div>
-        <div style="text-align:center;">
-          <div style="font-size:.65rem;color:var(--muted);margin-bottom:2px">POST-VIDEO</div>
-          <div style="font-size:1.4rem;font-weight:700;color:${dc}">${v.post}</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:.65rem;color:var(--muted);margin-bottom:2px">CHANGE</div>
-          <div style="font-size:1.1rem;font-weight:700;color:${dc}">${pp}</div>
-        </div>
-      </div>
-      <div style="font-size:.75rem;font-weight:600;color:${dc};margin-bottom:4px">${v.verdict}</div>
-      <div style="font-size:.7rem;color:var(--muted);line-height:1.4">${v.note}</div>
-    </div>`;
-  }).join('');
-
-  // ── ERA COMPARISON CARDS ───────────────────────────────────────────────────
-  document.getElementById('videoEraCards').innerHTML=es.map((e,i)=>`
-    <div class="cmp-card">
-      <div class="era-lbl" style="background:${a(e.color,.12)};color:${e.color}">${e.lbl} · ${e.sub}</div>
-      <div class="cr"><span class="cr-lbl">Avg Responses/wk</span><span class="cr-val">${e.avgResp}${i>0?` <small style="color:${e.avgResp>=base.avgResp?'var(--accent4)':'var(--red)'};">(${e.avgResp>=base.avgResp?'+':''}${e.avgResp-base.avgResp})</small>`:''}</span></div>
-      <div class="cr"><span class="cr-lbl">Avg Completed/wk</span><span class="cr-val">${e.avgComp}${i>0?` <small style="color:${e.avgComp>=base.avgComp?'var(--accent4)':'var(--red)'};">(${e.avgComp>=base.avgComp?'+':''}${e.avgComp-base.avgComp})</small>`:''}</span></div>
-      <div class="cr"><span class="cr-lbl">Completion Rate %</span><span class="cr-val" style="color:${i>0?(e.avgCR>=base.avgCR?'var(--accent4)':'var(--red)'):'var(--text)'}">${e.avgCR}%${i>0?` (${e.avgCR>=base.avgCR?'+':''}${e.avgCR-base.avgCR}pp)`:''}</span></div>
-      <div class="cr"><span class="cr-lbl">Response/Visit %</span><span class="cr-val" style="color:${i>0?(e.respRate>=base.respRate?'var(--accent4)':'var(--red)'):'var(--text)'}">${e.respRate}%${i>0?` (${e.respRate>=base.respRate?'+':''}${(e.respRate-base.respRate).toFixed(1)}pp)`:''}</span></div>
-      <div class="cr"><span class="cr-lbl">LI→Completion %</span><span class="cr-val" style="color:${i>0?(e.liConv>=base.liConv?'var(--accent4)':'var(--red)'):'var(--text)'}">${e.liConv}%${i>0?` (${e.liConv>=base.liConv?'+':''}${(e.liConv-base.liConv).toFixed(1)}pp)`:''}</span></div>
-      <div class="cr"><span class="cr-lbl">Avg Survey Visits Δ/wk</span><span class="cr-val">${e.avgVisits}</span></div>
-    </div>`).join('');
-
-  // ── CHARTS ────────────────────────────────────────────────────────────────
-  mk('c_vid_cr_trend',{type:'line',data:{labels:WEEKS,datasets:[
-    {label:'Pre-Video (W13–14)',     data:WEEKS.map((_,i)=>i<2?d.crRate[i]:null),   borderColor:C.purple,backgroundColor:a(C.purple,.12),fill:true,tension:.4,pointRadius:6,pointBackgroundColor:C.purple,borderWidth:2.5,spanGaps:false},
-    {label:'W15 Transition ⚡',      data:WEEKS.map((_,i)=>i===2?d.crRate[i]:null),borderColor:C.amber, backgroundColor:a(C.amber,.1), fill:false,pointRadius:8,pointBackgroundColor:C.amber,pointStyle:'triangle',borderWidth:2,spanGaps:false},
-    {label:'Post-Video Full (W16–18)',data:WEEKS.map((_,i)=>i>=3&&i<=5?d.crRate[i]:null),borderColor:C.cyan, backgroundColor:a(C.cyan,.1), fill:true,tension:.4,pointRadius:6,pointBackgroundColor:C.cyan, borderWidth:2.5,spanGaps:false},
-    {label:'Post-Video Lean (W19–23)',data:WEEKS.map((_,i)=>i>=6?d.crRate[i]:null),  borderColor:C.green,backgroundColor:a(C.green,.1),fill:true,tension:.4,pointRadius:6,pointBackgroundColor:C.green,borderWidth:2.5,spanGaps:false},
-    {label:`Pre-video avg ${base.avgCR}%`, data:Array(11).fill(base.avgCR),borderColor:a(C.purple,.45),borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false},
-    {label:`Post-video avg ${Math.round(avg(d.crRate.slice(3)))}%`,data:Array(11).fill(Math.round(avg(d.crRate.slice(3)))),borderColor:a(C.green,.45),borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false}
-  ]},options:{scales:{y:{...gOpts.scales.y,min:40,max:85,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-
-  mk('c_vid_funnel_era',{type:'bar',data:{
-    labels:['Pre-Video (W13-14)','Post-Video Full (W16-18)','Post-Video Lean (W19-23)'],
-    datasets:[
-      {label:'Avg Responses/wk', data:es.map(e=>e.avgResp),backgroundColor:[a(C.purple,.65),a(C.cyan,.65),a(C.green,.65)],borderColor:[C.purple,C.cyan,C.green],borderWidth:1},
-      {label:'Avg Completed/wk', data:es.map(e=>e.avgComp),backgroundColor:[a(C.purple,.3), a(C.cyan,.3), a(C.green,.3)], borderColor:[C.purple,C.cyan,C.green],borderWidth:1}
-    ]
-  }});
-
-  mk('c_vid_cr_era',{type:'bar',data:{
-    labels:['Pre-Video\n(W13-14)','Post-Video\nFull Team\n(W16-18)','Post-Video\nLean Team\n(W19-23)'],
-    datasets:[{
-      label:'Completion Rate %',
-      data:es.map(e=>e.avgCR),
-      backgroundColor:[a(C.purple,.75),a(C.cyan,.75),a(C.green,.75)],
-      borderColor:[C.purple,C.cyan,C.green],borderWidth:1.5,borderRadius:6
-    }]
-  },options:{plugins:{legend:{display:false}},scales:{y:{...gOpts.scales.y,min:40,max:80,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-
-  mk('c_vid_resp_rate',{type:'bar',data:{
-    labels:['Pre-Video (W13-14)','Post-Video Full (W16-18)','Post-Video Lean (W19-23)'],
-    datasets:[
-      {label:'Response/Visit %',  data:es.map(e=>e.respRate),backgroundColor:[a(C.blue,.7),a(C.blue,.7),a(C.blue,.7)],borderColor:C.blue,borderWidth:1},
-      {label:'LI→Completion %',   data:es.map(e=>e.liConv),  backgroundColor:[a(C.amber,.7),a(C.amber,.7),a(C.amber,.7)],borderColor:C.amber,borderWidth:1}
-    ]
-  },options:{scales:{y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-
-  mk('c_vid_weekly_cr',{type:'line',data:{labels:WEEKS,datasets:[{
-    label:'Completion Rate %',
-    data:d.crRate,
-    borderColor:C.green,backgroundColor:a(C.green,.07),fill:true,tension:.4,
-    pointRadius:6,
-    pointBackgroundColor:WEEKS.map((_,i)=>i<2?C.purple:i===2?C.amber:i<=5?C.cyan:C.green),
-    pointBorderColor:WEEKS.map((_,i)=>i<2?C.purple:i===2?C.amber:i<=5?C.cyan:C.green),
-    borderWidth:2.5
-  }]},options:{plugins:{legend:{display:false}},scales:{y:{...gOpts.scales.y,min:40,max:85,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
-}
-
-// ═══ INIT ════════════════════════════════════════════════════════════════════
-
-function setView(v,btn){
-  currentView=v;
-  document.querySelectorAll('.tgl-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderAll();
-}
-
-function showTab(id,btn){
-  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.getElementById('tab-'+id).classList.add('on');
-  btn.classList.add('on');
-}
-
-function renderAll(){
-  renderKPI();
-  renderOverview();
-  renderSurvey();
-  renderTeam();
-  renderNetwork();
-  renderTraffic();
-  renderMeetings();
-  renderVideo();
-}
-
-document.addEventListener('DOMContentLoaded', renderAll);
+const D = {"recs":[["2026-04-07",22,1,"AL",0,"",-1,"",-1,-1,1,3,119],["2026-04-07",22,1,"AL",1,"",1,"Customers/Growth",2,2,6,3,741],["2026-04-07",23,1,"AL",0,"",-1,"",-1,-1,-1,2,60],["2026-04-08",0,2,"Christian",1,"",2,"Customers/Growth",1,2,1,2,213],["2026-04-08",3,2,"Christian",1,"",0,"Marketing",2,2,1,4,437],["2026-04-08",7,2,"Christian",1,"",0,"Direction/Learning",2,1,0,1,906],["2026-04-08",8,2,"Christian",0,"",0,"Customers/Growth",2,2,2,0,443],["2026-04-08",9,2,"Christian",0,"",0,"Direction/Learning",2,2,0,1,249],["2026-04-08",10,2,"Christian",0,"",-1,"Marketing",-1,-1,0,3,494],["2026-04-08",16,2,"AL",0,"",-1,"",-1,-1,-1,3,43],["2026-04-08",17,2,"AL",1,"",5,"Networking",2,2,3,4,315],["2026-04-08",18,2,"AL",1,"",3,"Customers/Growth",2,2,0,2,249],["2026-04-08",18,2,"AL",0,"",0,"Customers/Growth",2,2,0,2,338],["2026-04-08",18,2,"AL",1,"",0,"Customers/Growth",2,2,0,2,338],["2026-04-08",19,2,"Christian",0,"",-1,"",-1,-1,-1,2,818],["2026-04-08",19,2,"Christian",0,"",2,"Customers/Growth",2,0,0,1,247],["2026-04-08",19,2,"AL",0,"",-1,"",-1,-1,-1,3,190],["2026-04-08",19,2,"Christian",0,"",0,"Networking",2,1,0,2,477],["2026-04-08",19,2,"AL",0,"",-1,"Capital/Funding",-1,-1,4,3,274],["2026-04-08",20,2,"Christian",0,"",-1,"",-1,-1,-1,1,21],["2026-04-08",20,2,"Christian",1,"",3,"Systems/Ops",2,2,1,2,822],["2026-04-08",20,2,"Christian",0,"",1,"Systems/Ops",2,2,0,2,1869],["2026-04-08",20,2,"Christian",0,"",0,"Other",1,1,0,1,178],["2026-04-08",21,2,"Christian",1,"",4,"Capital/Funding",2,2,1,1,377],["2026-04-08",22,2,"AL",0,"",-1,"",-1,-1,-1,0,34],["2026-04-08",22,2,"Christian",0,"",0,"Customers/Growth",2,2,0,2,119],["2026-04-09",1,3,"Christian",0,"",-1,"",-1,-1,-1,1,28],["2026-04-09",1,3,"Christian",0,"",0,"Other",1,-1,-1,1,146],["2026-04-09",7,3,"AL",1,"",1,"Customers/Growth",2,2,1,2,690],["2026-04-09",8,3,"AL",1,"",1,"Other",2,2,0,1,295],["2026-04-09",8,3,"Christian",1,"",0,"Customers/Growth",2,2,0,2,152],["2026-04-09",8,3,"Christian",1,"",2,"Customers/Growth",1,1,0,2,631],["2026-04-09",15,3,"Christian",1,"",2,"Customers/Growth",2,2,0,3,1508],["2026-04-10",9,4,"Christian",1,"",0,"Networking",2,2,1,2,334],["2026-04-10",15,4,"AL",0,"",-1,"",-1,-1,-1,2,50],["2026-04-10",18,4,"Kevin",0,"",-1,"",-1,-1,-1,1,17],["2026-04-10",21,4,"AL",1,"",1,"Direction/Learning",1,1,0,2,231],["2026-04-10",21,4,"Christian",1,"",2,"Customers/Growth",2,1,0,2,422],["2026-04-11",4,5,"Christian",0,"",0,"Direction/Learning",2,1,0,1,149],["2026-04-11",9,5,"Christian",1,"",0,"Marketing",2,1,0,3,1263],["2026-04-11",20,5,"AL",1,"",0,"Direction/Learning",1,2,0,2,446],["2026-04-11",23,5,"AL",0,"",0,"Networking",2,2,0,3,302],["2026-04-11",23,5,"AL",1,"",0,"Networking",2,2,0,3,197],["2026-04-12",1,6,"Christian",0,"",-1,"",-1,-1,-1,1,23],["2026-04-12",7,6,"Christian",1,"",1,"Direction/Learning",2,1,1,2,603],["2026-04-12",15,6,"Christian",0,"",-1,"",-1,-1,0,2,37],["2026-04-12",20,6,"AL",0,"",0,"Customers/Growth",1,2,3,4,297],["2026-04-12",20,6,"AL",1,"",0,"Customers/Growth",2,2,3,3,243],["2026-04-13",5,0,"Christian",1,"",-1,"Other",0,1,0,2,745],["2026-04-13",5,0,"Christian",1,"",0,"Direction/Learning",2,1,0,1,1301],["2026-04-13",7,0,"AL",0,"",2,"Capital/Funding",2,1,1,1,1316],["2026-04-13",12,0,"Christian",0,"",-1,"",-1,-1,0,0,147],["2026-04-13",13,0,"Christian",1,"",0,"Customers/Growth",1,2,2,3,326],["2026-04-13",14,0,"Christian",1,"",0,"Customers/Growth",1,2,0,2,1028],["2026-04-13",17,0,"Christian",1,"",1,"Customers/Growth",2,2,0,2,581],["2026-04-13",19,0,"Christian",1,"",0,"Direction/Learning",1,-1,-1,0,245],["2026-04-13",19,0,"AL",1,"",0,"Networking",2,2,4,3,1601],["2026-04-13",21,0,"Christian",1,"",2,"Systems/Ops",2,-1,-1,1,295],["2026-04-13",23,0,"AL",0,"",0,"Direction/Learning",2,2,0,1,141],["2026-04-14",3,1,"Christian",1,"",0,"Customers/Growth",2,2,5,3,592],["2026-04-14",3,1,"Christian",1,"",4,"Marketing",2,0,0,2,139],["2026-04-14",7,1,"Christian",1,"",3,"Marketing",2,2,0,2,399],["2026-04-14",8,1,"Christian",1,"",0,"Networking",2,2,3,3,321],["2026-04-14",9,1,"Christian",1,"",2,"Marketing",2,0,2,4,182],["2026-04-14",9,1,"Christian",1,"",6,"Capital/Funding",2,2,0,2,1383],["2026-04-14",10,1,"Christian",1,"",1,"Customers/Growth",2,2,4,2,856],["2026-04-14",11,1,"Kevin",0,"",-1,"",-1,-1,-1,3,1207],["2026-04-14",13,1,"Christian",1,"",1,"Capital/Funding",2,2,1,2,114],["2026-04-14",15,1,"Christian",1,"",-1,"Customers/Growth",2,1,0,2,322],["2026-04-14",15,1,"Christian",0,"",0,"Other",1,2,2,3,555],["2026-04-14",16,1,"Christian",1,"",0,"Other",1,2,2,3,670],["2026-04-14",16,1,"Christian",0,"",0,"Networking",1,0,0,0,181],["2026-04-14",17,1,"Christian",1,"",6,"Other",2,1,3,1,372],["2026-04-14",17,1,"Christian",0,"",-1,"Cash flow",-1,-1,-1,2,41],["2026-04-14",19,1,"Christian",0,"",0,"Networking",2,-1,-1,0,145],["2026-04-14",20,1,"AL",0,"",-1,"",-1,-1,-1,0,34],["2026-04-14",20,1,"AL",1,"",1,"Customers/Growth",1,2,1,3,840],["2026-04-14",21,1,"AL",1,"",6,"Capital/Funding",2,2,0,2,716],["2026-04-14",21,1,"AL",0,"",0,"Networking",1,-1,-1,0,79],["2026-04-14",22,1,"Christian",0,"",-1,"",-1,-1,-1,1,33],["2026-04-14",23,1,"AL",1,"",1,"Customers/Growth",2,2,1,3,463],["2026-04-15",1,2,"Christian",1,"",0,"Networking",2,-1,-1,1,229],["2026-04-15",3,2,"Christian",0,"",-1,"",-1,-1,-1,2,96],["2026-04-15",3,2,"Christian",1,"",0,"Customers/Growth",2,2,3,2,471],["2026-04-15",8,2,"AL",1,"",1,"Team/Hiring",2,-1,-1,1,575],["2026-04-15",9,2,"AL",1,"",1,"Team/Hiring",2,-1,-1,1,232],["2026-04-15",9,2,"Christian",1,"",3,"Customers/Growth",2,2,2,3,310],["2026-04-15",9,2,"Christian",1,"",1,"Customers/Growth",2,2,3,3,1150],["2026-04-15",9,2,"AL",0,"",-1,"Direction/Learning",-1,-1,-1,1,77],["2026-04-15",10,2,"Christian",0,"",-1,"Marketing",-1,-1,-1,3,261],["2026-04-15",15,2,"Christian",0,"",0,"Direction/Learning",1,0,0,2,371],["2026-04-15",19,2,"Christian",0,"",-1,"",-1,-1,-1,3,75],["2026-04-15",19,2,"Christian",0,"",-1,"",-1,-1,-1,3,31],["2026-04-15",19,2,"Christian",1,"",0,"Other",1,2,2,4,881],["2026-04-15",19,2,"AL",1,"",0,"Customers/Growth",1,2,1,3,587],["2026-04-15",20,2,"AL",1,"",0,"Capital/Funding",2,2,0,2,267],["2026-04-15",21,2,"AL",1,"",-1,"Marketing",0,2,1,3,171],["2026-04-15",21,2,"AL",0,"",-1,"Team/Hiring",-1,-1,0,2,332],["2026-04-16",0,3,"AL",1,"",0,"Capital/Funding",2,2,0,2,192],["2026-04-16",7,3,"Christian",0,"",0,"Customers/Growth",1,1,0,2,167],["2026-04-16",19,3,"Christian",1,"",0,"Systems/Ops",2,2,2,3,297],["2026-04-16",20,3,"Christian",0,"",0,"Capital/Funding",2,1,0,2,392],["2026-04-16",21,3,"AL",0,"",0,"Marketing",2,2,1,2,102],["2026-04-17",0,4,"Christian",0,"",0,"Customers/Growth",1,1,0,2,179],["2026-04-17",2,4,"AL",1,"",-1,"Networking",2,-1,-1,1,423],["2026-04-17",2,4,"AL",1,"",0,"Networking",2,2,0,2,1062],["2026-04-17",2,4,"Christian",0,"",-1,"Customers/Growth",-1,-1,-1,2,126],["2026-04-17",3,4,"Christian",0,"",-1,"",-1,-1,-1,2,205],["2026-04-17",3,4,"Christian",0,"",-1,"",-1,-1,-1,2,56],["2026-04-17",3,4,"Christian",0,"",-1,"",-1,-1,-1,1,58],["2026-04-17",3,4,"Christian",0,"",-1,"",-1,-1,-1,1,24],["2026-04-17",3,4,"Christian",1,"",0,"Capital/Funding",2,2,0,1,1855],["2026-04-17",5,4,"AL",1,"",0,"Customers/Growth",2,2,0,2,1328],["2026-04-17",9,4,"Christian",1,"",0,"Customers/Growth",2,1,1,3,183],["2026-04-17",9,4,"Christian",0,"",2,"Customers/Growth",2,2,2,2,150],["2026-04-17",10,4,"Christian",0,"",-1,"",-1,-1,-1,2,38],["2026-04-17",12,4,"Christian",0,"",-1,"",-1,-1,-1,4,131],["2026-04-17",12,4,"Christian",1,"",1,"Customers/Growth",1,2,2,4,307],["2026-04-17",13,4,"Christian",0,"",-1,"",-1,-1,-1,2,72],["2026-04-17",13,4,"Christian",1,"",0,"Direction/Learning",2,-1,-1,1,210],["2026-04-17",17,4,"Christian",1,"",0,"Networking",1,-1,-1,1,379],["2026-04-17",18,4,"AL",0,"",0,"Customers/Growth",1,1,0,0,261],["2026-04-17",18,4,"Christian",1,"",0,"Networking",1,2,6,1,304],["2026-04-17",19,4,"Christian",0,"",6,"Networking",1,0,0,1,475],["2026-04-17",20,4,"Christian",0,"",-1,"",-1,-1,-1,1,192],["2026-04-17",22,4,"Christian",0,"",-1,"",-1,-1,-1,1,32],["2026-04-17",23,4,"AL",1,"",4,"Customers/Growth",1,2,3,4,194],["2026-04-17",23,4,"Christian",0,"",-1,"Legal",-1,-1,0,1,178],["2026-04-17",23,4,"Christian",1,"",2,"Capital/Funding",2,-1,-1,2,302],["2026-04-17",23,4,"AL",0,"",-1,"",-1,-1,1,3,50],["2026-04-18",2,5,"Christian",1,"",1,"Customers/Growth",2,2,5,2,983],["2026-04-18",10,5,"Christian",1,"",0,"Direction/Learning",2,0,0,0,380],["2026-04-18",10,5,"Christian",0,"",-1,"",-1,-1,0,0,38],["2026-04-18",15,5,"Christian",1,"",0,"Customers/Growth",1,-1,-1,0,358],["2026-04-19",0,6,"Christian",1,"",4,"Capital/Funding",2,2,1,3,2219],["2026-04-19",9,6,"Christian",0,"",0,"Direction/Learning",1,1,0,0,373],["2026-04-19",9,6,"Christian",1,"",0,"Networking",1,1,0,3,504],["2026-04-19",11,6,"Christian",1,"",0,"Customers/Growth",1,2,1,2,517],["2026-04-19",12,6,"Christian",1,"",0,"Networking",2,2,0,1,228],["2026-04-19",13,6,"Christian",1,"",0,"Capital/Funding",2,2,0,2,256],["2026-04-19",14,6,"Christian",0,"",-1,"Marketing",-1,-1,0,2,90],["2026-04-19",17,6,"Christian",0,"",-1,"",-1,-1,3,3,86],["2026-04-20",2,0,"Christian",0,"",-1,"",-1,-1,-1,2,30],["2026-04-20",2,0,"Christian",1,"",0,"Customers/Growth",1,2,2,2,179],["2026-04-20",4,0,"Christian",0,"",-1,"",-1,-1,-1,2,73],["2026-04-20",10,0,"Christian",0,"",-1,"",-1,-1,-1,2,39],["2026-04-20",12,0,"Christian",0,"",-1,"",-1,-1,-1,2,168],["2026-04-20",13,0,"Christian",0,"",-1,"",-1,-1,-1,2,67],["2026-04-21",4,1,"Christian",1,"",1,"Capital/Funding",1,2,1,3,659],["2026-04-21",4,1,"Christian",1,"",3,"Networking",2,2,0,2,553],["2026-04-21",5,1,"Christian",0,"",6,"Customers/Growth",2,2,2,4,658],["2026-04-21",6,1,"Christian",1,"",0,"Direction/Learning",1,1,0,1,294],["2026-04-21",10,1,"Christian",0,"",-1,"",-1,-1,-1,2,77],["2026-04-21",14,1,"Christian",1,"",1,"Cash flow",2,2,1,2,799],["2026-04-21",14,1,"Christian",1,"",0,"Capital/Funding",2,1,2,3,174],["2026-04-21",18,1,"Christian",0,"",-1,"",-1,-1,-1,2,82],["2026-04-21",19,1,"Christian",1,"",-1,"Customers/Growth",0,0,0,2,331],["2026-04-22",3,2,"Christian",1,"",0,"Marketing",1,2,3,3,443],["2026-04-22",4,2,"AL",0,"",-1,"",-1,-1,-1,3,33],["2026-04-22",4,2,"AL",1,"",1,"Customers/Growth",1,2,1,3,318],["2026-04-22",4,2,"Christian",1,"",0,"Networking",2,2,0,1,460],["2026-04-22",8,2,"Christian",1,"",-1,"Capital/Funding",0,-1,-1,1,485],["2026-04-22",9,2,"Christian",0,"",-1,"",-1,-1,-1,3,90],["2026-04-22",10,2,"Christian",0,"",2,"Marketing",2,2,0,2,373],["2026-04-22",10,2,"Christian",1,"",2,"Marketing",2,2,0,2,243],["2026-04-22",12,2,"Christian",1,"",0,"Customers/Growth",2,1,0,2,402],["2026-04-22",15,2,"AL",1,"",0,"Networking",2,2,0,2,1856],["2026-04-22",15,2,"Christian",0,"",1,"Customers/Growth",2,2,1,3,218],["2026-04-22",16,2,"Christian",1,"",1,"Customers/Growth",2,2,1,3,123],["2026-04-22",17,2,"Christian",1,"",0,"Marketing",2,2,1,4,206],["2026-04-22",19,2,"Christian",1,"",0,"Customers/Growth",2,2,0,3,639],["2026-04-23",3,3,"Christian",0,"",-1,"",-1,-1,-1,3,159],["2026-04-23",9,3,"Christian",1,"",1,"Direction/Learning",2,1,6,3,686],["2026-04-23",12,3,"Christian",0,"",-1,"",-1,-1,-1,3,45],["2026-04-23",12,3,"Christian",0,"",-1,"",-1,-1,-1,2,868],["2026-04-23",13,3,"Christian",0,"",-1,"",-1,-1,1,2,41],["2026-04-23",16,3,"Christian",0,"",-1,"",-1,-1,-1,1,50],["2026-04-23",19,3,"Christian",1,"",0,"Capital/Funding",2,-1,-1,1,180],["2026-04-23",22,3,"Christian",1,"",-1,"Customers/Growth",0,2,0,2,558],["2026-04-23",22,3,"Christian",0,"",-1,"",-1,-1,-1,2,67],["2026-04-24",5,4,"Christian",1,"",0,"Direction/Learning",1,0,0,1,260],["2026-04-24",5,4,"Christian",0,"",-1,"",-1,-1,-1,1,42],["2026-04-24",5,4,"Christian",1,"",0,"Networking",2,2,0,1,383],["2026-04-24",7,4,"Christian",0,"",-1,"",-1,-1,-1,3,150],["2026-04-24",9,4,"Christian",1,"",0,"Networking",1,2,3,4,473],["2026-04-24",12,4,"Christian",0,"",-1,"Marketing",-1,-1,0,2,114],["2026-04-24",15,4,"Christian",0,"",-1,"",-1,-1,-1,1,32],["2026-04-24",15,4,"Christian",1,"",-1,"Direction/Learning",0,0,0,1,143],["2026-04-24",18,4,"Christian",1,"",0,"Customers/Growth",2,2,0,2,533],["2026-04-24",19,4,"Christian",1,"",0,"Customers/Growth",2,1,0,2,558],["2026-04-24",20,4,"Christian",1,"",2,"Networking",2,2,0,2,385],["2026-04-24",20,4,"AL",0,"",-1,"",-1,-1,-1,1,62],["2026-04-24",20,4,"AL",1,"",0,"Networking",2,2,5,0,323],["2026-04-24",21,4,"AL",1,"",0,"Networking",2,-1,-1,1,619],["2026-04-25",4,5,"Christian",0,"",-1,"Customers/Growth",-1,-1,3,3,116],["2026-04-25",13,5,"Christian",1,"",0,"Networking",2,1,0,1,689],["2026-04-25",21,5,"Christian",1,"",1,"Customers/Growth",1,2,1,3,694],["2026-04-26",9,6,"Christian",0,"",-1,"",-1,-1,-1,2,81],["2026-04-26",9,6,"Christian",1,"",0,"Legal",-1,0,0,2,597],["2026-04-26",9,6,"Christian",1,"",0,"Customers/Growth",1,2,0,3,778],["2026-04-26",11,6,"Christian",1,"",0,"Capital/Funding",2,2,0,1,124],["2026-04-26",13,6,"Kevin",0,"",0,"Customers/Growth",2,2,0,2,238],["2026-04-26",20,6,"Christian",0,"",-1,"",-1,-1,-1,4,214],["2026-04-26",21,6,"Christian",1,"",0,"Customers/Growth",2,2,3,4,1932],["2026-04-27",0,0,"Christian",1,"",0,"Customers/Growth",1,1,3,3,192],["2026-04-27",9,0,"Christian",1,"",0,"Customers/Growth",1,2,0,0,1207],["2026-04-27",10,0,"Christian",1,"",1,"Marketing",2,2,0,1,204],["2026-04-27",18,0,"Christian",1,"",1,"Legal",2,0,1,3,176],["2026-04-27",21,0,"Christian",0,"",-1,"",-1,-1,-1,2,40],["2026-04-28",0,1,"Christian",1,"",0,"Capital/Funding",2,2,0,2,1026],["2026-04-28",0,1,"Christian",1,"",4,"Customers/Growth",1,2,3,4,180],["2026-04-28",1,1,"Christian",0,"",-1,"Other",0,2,1,3,491],["2026-04-28",2,1,"Christian",0,"",-1,"",-1,-1,-1,3,17],["2026-04-28",3,1,"Christian",0,"",-1,"Marketing",0,2,2,2,107],["2026-04-28",4,1,"Christian",1,"",0,"Customers/Growth",2,2,1,3,211],["2026-04-28",7,1,"Christian",1,"",4,"Customers/Growth",1,2,5,4,356],["2026-04-28",10,1,"Christian",1,"",0,"Customers/Growth",2,1,2,0,631],["2026-04-28",11,1,"Christian",1,"",-1,"Networking",0,1,0,0,519],["2026-04-28",12,1,"Christian",1,"",0,"Customers/Growth",1,2,3,3,527],["2026-04-29",8,2,"Christian",1,"",0,"Customers/Growth",2,2,2,3,548],["2026-04-29",9,2,"Christian",1,"",1,"Marketing",1,2,0,2,506],["2026-04-29",12,2,"Christian",1,"",6,"Networking",2,0,0,2,342],["2026-04-29",14,2,"Christian",0,"",-1,"Direction/Learning",-1,-1,0,1,123],["2026-04-29",14,2,"Christian",0,"",-1,"Capital/Funding",-1,-1,0,2,174],["2026-04-29",14,2,"Christian",0,"",-1,"",-1,-1,-1,3,32],["2026-04-29",14,2,"Christian",0,"",1,"Capital/Funding",2,2,0,3,189],["2026-04-29",14,2,"Christian",1,"",1,"Capital/Funding",2,2,0,2,243],["2026-04-29",16,2,"Christian",1,"",0,"Marketing",2,-1,-1,2,224],["2026-04-29",17,2,"Christian",1,"",1,"Direction/Learning",2,0,0,2,226],["2026-04-29",19,2,"AL",0,"",-1,"",-1,-1,-1,4,18],["2026-04-29",20,2,"Christian",1,"",0,"Other",1,1,0,2,1463],["2026-04-29",21,2,"Christian",0,"",-1,"Customers/Growth",-1,-1,0,2,344],["2026-04-30",0,3,"Christian",1,"",-1,"Customers/Growth",0,0,3,3,447],["2026-04-30",5,3,"Christian",1,"",0,"Marketing",1,2,0,2,299],["2026-04-30",5,3,"Christian",0,"",0,"Capital/Funding",1,1,0,2,1615],["2026-04-30",10,3,"Christian",0,"",0,"Customers/Growth",2,2,0,2,239],["2026-04-30",13,3,"Christian",1,"",3,"Customers/Growth",2,2,1,2,977],["2026-04-30",14,3,"Christian",1,"",0,"Customers/Growth",2,1,2,3,457],["2026-04-30",20,3,"Christian",1,"",0,"Networking",2,2,1,2,500],["2026-04-30",22,3,"Christian",1,"",1,"Customers/Growth",2,2,0,2,525],["2026-05-01",1,4,"Christian",0,"",1,"Customers/Growth",2,2,2,3,462],["2026-05-01",3,4,"Christian",0,"",1,"Customers/Growth",2,2,0,2,398],["2026-05-01",3,4,"Christian",1,"",1,"Customers/Growth",2,2,0,2,298],["2026-05-01",4,4,"Christian",1,"",1,"Customers/Growth",2,2,1,2,1034],["2026-05-01",9,4,"Christian",1,"",0,"Other",2,2,0,2,713],["2026-05-01",16,4,"Christian",1,"",2,"Customers/Growth",2,2,1,3,112],["2026-05-01",19,4,"AL",1,"",2,"Customers/Growth",2,2,2,4,350],["2026-05-02",1,5,"David",1,"",0,"Marketing",1,1,0,2,705],["2026-05-02",2,5,"Christian",1,"",0,"Customers/Growth",1,2,4,2,570],["2026-05-02",3,5,"Christian",1,"",-1,"Networking",-1,0,6,0,772],["2026-05-02",15,5,"David",0,"",-1,"",-1,-1,3,3,131],["2026-05-02",19,5,"Christian",1,"",2,"Marketing",2,2,3,3,500],["2026-05-03",12,6,"David",1,"",1,"Customers/Growth",2,2,0,2,417],["2026-05-03",12,6,"David",0,"",-1,"",-1,-1,-1,2,40],["2026-05-03",12,6,"David",0,"",1,"Customers/Growth",2,2,0,2,378],["2026-05-03",12,6,"David",1,"",1,"Customers/Growth",2,2,1,2,295],["2026-05-03",13,6,"David",1,"",0,"Marketing",2,2,0,2,3586],["2026-05-03",14,6,"David",1,"",0,"Direction/Learning",2,0,0,2,161],["2026-05-03",17,6,"David",1,"",2,"Customers/Growth",2,2,3,3,769],["2026-05-03",21,6,"Christian",0,"",-1,"",-1,-1,-1,2,149],["2026-05-04",7,0,"Christian",0,"",0,"Marketing",1,2,1,2,1245],["2026-05-04",11,0,"Christian",1,"",-1,"Customers/Growth",-1,2,0,3,810],["2026-05-04",18,0,"Kevin",0,"",-1,"",-1,-1,-1,2,25],["2026-05-04",18,0,"Kevin",1,"",0,"Marketing",2,-1,-1,0,213],["2026-05-04",18,0,"Kevin",0,"",-1,"",-1,-1,0,1,74],["2026-05-04",20,0,"Christian",0,"",0,"Systems/Ops",2,2,0,2,246],["2026-05-04",21,0,"Mohammed",1,"",2,"Capital/Funding",1,2,1,3,452],["2026-05-04",21,0,"Kevin",0,"",-1,"",-1,-1,-1,2,45],["2026-05-04",22,0,"Mohammed",1,"",-1,"Marketing",0,2,0,2,430],["2026-05-05",0,1,"David",1,"",0,"Networking",1,2,0,2,282],["2026-05-05",1,1,"Mohammed",1,"",1,"Capital/Funding",2,2,0,2,369],["2026-05-05",1,1,"Mohammed",0,"",-1,"Customers/Growth",-1,-1,0,2,178],["2026-05-05",21,1,"Mohammed",0,"",-1,"Customers/Growth",-1,-1,1,3,460],["2026-05-05",22,1,"Mohammed",0,"",1,"Customers/Growth",2,2,1,3,475],["2026-05-05",22,1,"Mohammed",1,"",1,"Customers/Growth",2,2,1,3,278],["2026-05-06",2,2,"Mohammed",0,"",-1,"Networking",-1,-1,-1,1,152],["2026-05-06",8,2,"Christian",0,"",-1,"",-1,-1,1,2,169],["2026-05-06",20,2,"Mohammed",1,"",2,"Capital/Funding",1,-1,-1,1,416],["2026-05-06",21,2,"Mohammed",1,"",0,"Customers/Growth",2,2,1,2,418],["2026-05-06",21,2,"AL",1,"",3,"Customers/Growth",2,2,0,2,402],["2026-05-06",22,2,"Christian",0,"",0,"Customers/Growth",2,2,0,2,194],["2026-05-06",23,2,"Mohammed",0,"",-1,"",-1,-1,1,2,49],["2026-05-07",0,3,"Mohammed",1,"",0,"Customers/Growth",1,1,0,4,320],["2026-05-07",20,3,"AL",0,"",-1,"",-1,-1,-1,2,20],["2026-05-08",11,4,"AL",1,"",0,"Networking",1,1,2,1,483],["2026-05-09",1,5,"Mohammed",1,"",-1,"Capital/Funding",-1,2,1,2,324],["2026-05-09",20,5,"Mohammed",1,"",0,"Capital/Funding",2,1,0,2,359],["2026-05-10",9,6,"David",0,"",0,"Systems/Ops",2,-1,-1,0,274],["2026-05-10",11,6,"David",1,"",0,"Customers/Growth",2,2,1,0,567],["2026-05-10",19,6,"David",1,"",2,"Team/Hiring",2,-1,-1,1,218],["2026-05-11",22,0,"Christian",1,"",1,"Marketing",2,2,1,3,437],["2026-05-11",22,0,"Kevin",0,"",0,"Customers/Growth",2,2,1,3,163],["2026-05-11",22,0,"Kevin",1,"",0,"Customers/Growth",2,1,1,3,284],["2026-05-12",0,1,"Kevin",1,"",0,"Networking",1,1,0,2,727],["2026-05-12",5,1,"Christian",1,"",0,"Networking",1,1,0,2,119],["2026-05-12",8,1,"Mohammed",1,"",4,"Networking",1,2,5,3,597],["2026-05-12",8,1,"AL",1,"",0,"Customers/Growth",2,2,1,2,1696],["2026-05-12",10,1,"Kevin",0,"",-1,"",-1,-1,-1,2,233],["2026-05-12",13,1,"Mohammed",1,"",0,"Customers/Growth",1,2,0,2,137],["2026-05-12",16,1,"David",1,"",0,"Customers/Growth",1,2,0,2,638],["2026-05-12",16,1,"David",1,"",0,"Capital/Funding",1,1,0,2,201],["2026-05-12",16,1,"David",0,"",2,"Other",2,0,0,2,245],["2026-05-13",0,2,"Kevin",1,"",2,"Networking",1,2,2,4,340],["2026-05-13",16,2,"Kevin",1,"",2,"Capital/Funding",1,0,4,2,174],["2026-05-13",18,2,"Kevin",1,"",0,"Customers/Growth",2,2,1,2,484],["2026-05-13",18,2,"Kevin",0,"",-1,"",-1,-1,-1,2,23],["2026-05-13",19,2,"Kevin",1,"",0,"Cash flow",1,0,3,3,148],["2026-05-13",20,2,"Kevin",1,"",2,"Customers/Growth",2,2,1,2,1603],["2026-05-14",0,3,"Kevin",0,"",-1,"",-1,-1,2,1,87],["2026-05-14",3,3,"Kevin",1,"",0,"Capital/Funding",1,2,0,1,523],["2026-05-14",3,3,"Kevin",0,"",-1,"Capital/Funding",1,0,0,2,101],["2026-05-14",13,3,"David",1,"",1,"Customers/Growth",2,2,1,3,279],["2026-05-14",22,3,"Christian",0,"",-1,"",-1,-1,2,4,124],["2026-05-15",12,4,"Christian",0,"",-1,"",-1,-1,-1,4,45],["2026-05-16",0,5,"AL",1,"",1,"Customers/Growth",1,2,1,3,1044],["2026-05-16",5,5,"Kevin",1,"",-1,"Capital/Funding",0,-1,-1,2,273],["2026-05-16",23,5,"Kevin",1,"",-1,"Customers/Growth",0,0,0,2,107],["2026-05-17",7,6,"Kevin",1,"",0,"Marketing",2,1,0,2,166],["2026-05-17",12,6,"David",0,"",-1,"Systems/Ops",-1,-1,0,2,76],["2026-05-17",14,6,"David",1,"",1,"Capital/Funding",2,0,0,3,337],["2026-05-17",14,6,"David",0,"",-1,"Other",2,0,0,0,146],["2026-05-17",16,6,"David",1,"",0,"Other",1,0,0,0,222],["2026-05-17",17,6,"Kevin",1,"",5,"Marketing",2,2,4,2,1313],["2026-05-17",20,6,"David",1,"",1,"Customers/Growth",2,2,0,2,1123],["2026-05-17",20,6,"AL",1,"",0,"Marketing",1,1,0,0,628],["2026-05-17",22,6,"David",1,"",4,"Marketing",1,2,0,2,315],["2026-05-18",1,0,"Christian",1,"",0,"Networking",2,2,5,0,860],["2026-05-18",4,0,"David",1,"",0,"Networking",1,2,6,0,562],["2026-05-18",8,0,"David",0,"",2,"Customers/Growth",2,1,1,3,181],["2026-05-18",9,0,"David",1,"",2,"Customers/Growth",2,1,1,3,199],["2026-05-18",9,0,"David",1,"",2,"Customers/Growth",2,2,2,3,683],["2026-05-18",15,0,"Kevin",1,"",5,"Capital/Funding",2,2,0,2,514],["2026-05-18",17,0,"David",1,"",0,"Marketing",1,2,1,2,789],["2026-05-18",19,0,"David",1,"",0,"Customers/Growth",2,2,1,3,1421],["2026-05-18",19,0,"David",1,"",0,"Networking",2,2,3,2,1045],["2026-05-19",3,1,"David",1,"",0,"Marketing",1,0,0,2,505],["2026-05-19",7,1,"Christian",1,"",0,"Customers/Growth",1,2,0,2,235],["2026-05-19",13,1,"Christian",0,"",0,"Customers/Growth",2,0,0,2,928],["2026-05-19",16,1,"David",1,"",6,"Customers/Growth",2,2,2,2,195],["2026-05-19",21,1,"Kevin",1,"",3,"Customers/Growth",2,2,3,4,414],["2026-05-19",22,1,"Kevin",0,"",-1,"",-1,-1,-1,4,31],["2026-05-19",22,1,"Kevin",0,"",0,"Marketing",2,2,3,4,229],["2026-05-20",1,2,"Kevin",0,"",-1,"Networking",-1,-1,4,3,1155],["2026-05-20",6,2,"Kevin",0,"",-1,"Customers/Growth",-1,1,0,0,227],["2026-05-20",10,2,"Kevin",1,"",2,"Direction/Learning",2,-1,-1,2,146],["2026-05-21",4,3,"Kevin",0,"",-1,"",-1,-1,1,2,126],["2026-05-21",8,3,"Kevin",1,"",1,"Marketing",2,2,0,3,244],["2026-05-21",10,3,"David",1,"",1,"Direction/Learning",2,1,2,3,618],["2026-05-21",14,3,"AL",0,"",-1,"",-1,-1,0,2,151],["2026-05-21",17,3,"Kevin",1,"",0,"Customers/Growth",2,2,1,2,365],["2026-05-21",17,3,"Kevin",1,"",0,"Capital/Funding",2,0,0,2,1071],["2026-05-21",18,3,"Kevin",1,"",1,"Customers/Growth",1,1,0,2,606],["2026-05-21",19,3,"Christian",1,"",0,"Customers/Growth",2,1,1,2,688],["2026-05-21",21,3,"Kevin",1,"",0,"Other",2,2,0,0,581],["2026-05-21",21,3,"Kevin",0,"",1,"Networking",2,2,0,1,196],["2026-05-21",21,3,"Kevin",0,"",-1,"Networking",-1,-1,0,2,192],["2026-05-21",21,3,"Kevin",1,"",1,"Customers/Growth",1,2,0,2,446],["2026-05-21",21,3,"Kevin",0,"",-1,"",-1,-1,-1,0,45],["2026-05-21",21,3,"Kevin",0,"",-1,"",-1,-1,-1,3,91],["2026-05-21",22,3,"Kevin",0,"",-1,"",-1,-1,-1,3,17],["2026-05-21",22,3,"Kevin",1,"",0,"Capital/Funding",2,2,0,3,211],["2026-05-21",22,3,"Kevin",1,"",0,"Other",2,2,3,2,2739],["2026-05-21",22,3,"Kevin",1,"",0,"Team/Hiring",1,0,2,2,280],["2026-05-22",0,4,"Kevin",1,"",2,"Capital/Funding",2,2,0,2,2339],["2026-05-22",0,4,"Kevin",0,"",-1,"",-1,-1,-1,2,446],["2026-05-22",1,4,"Kevin",1,"",-1,"Marketing",0,2,1,0,262],["2026-05-22",11,4,"Kevin",0,"",-1,"",-1,-1,-1,3,479],["2026-05-22",13,4,"David",1,"",-1,"Marketing",0,1,3,2,208],["2026-05-22",21,4,"Kevin",1,"",1,"Customers/Growth",2,2,0,2,346],["2026-05-22",22,4,"Kevin",1,"",0,"Capital/Funding",2,1,0,1,438],["2026-05-23",0,5,"Kevin",1,"",1,"Customers/Growth",2,1,0,3,672],["2026-05-23",4,5,"Kevin",1,"",0,"Legal",2,-1,-1,2,510],["2026-05-23",9,5,"Kevin",0,"",-1,"",-1,-1,-1,2,21],["2026-05-24",8,6,"David",0,"",0,"Networking",2,2,1,2,397],["2026-05-24",10,6,"David",0,"",-1,"",-1,-1,1,2,87],["2026-05-24",16,6,"David",1,"",2,"Marketing",2,2,2,3,162],["2026-05-24",17,6,"Christian",0,"",-1,"",-1,-1,-1,2,36],["2026-05-24",19,6,"David",1,"",0,"Cash flow",2,2,1,3,593],["2026-05-25",2,0,"Kevin",1,"",0,"Customers/Growth",2,2,1,3,299],["2026-05-25",3,0,"David",1,"",-1,"Systems/Ops",0,2,3,4,290],["2026-05-25",5,0,"David",0,"",2,"Direction/Learning",1,1,0,2,1023],["2026-05-25",6,0,"David",1,"",0,"Marketing",1,2,1,3,311],["2026-05-25",8,0,"Christian",0,"",-1,"",-1,-1,0,0,102],["2026-05-25",12,0,"David",0,"",-1,"",-1,-1,-1,2,96],["2026-05-25",17,0,"Christian",1,"",0,"Other",1,1,1,3,596],["2026-05-25",19,0,"David",0,"",-1,"",-1,-1,-1,2,16],["2026-05-26",13,1,"David",1,"",0,"Customers/Growth",2,2,0,2,336],["2026-05-26",14,1,"David",0,"",0,"Customers/Growth",2,0,1,2,54],["2026-05-26",17,1,"Kevin",1,"",0,"Other",2,-1,-1,2,1027],["2026-05-26",17,1,"Kevin",1,"",0,"Networking",2,1,0,2,406],["2026-05-26",18,1,"David",1,"",5,"Customers/Growth",1,2,3,4,344],["2026-05-26",20,1,"Kevin",1,"",1,"Direction/Learning",1,2,1,2,2976],["2026-05-26",23,1,"Kevin",1,"",2,"Customers/Growth",1,1,1,2,523],["2026-05-27",5,2,"Kevin",1,"",4,"Other",1,1,2,1,329],["2026-05-27",6,2,"Kevin",1,"",1,"Customers/Growth",2,2,0,3,616],["2026-05-27",13,2,"Kevin",1,"",0,"Cash flow",1,2,2,3,292],["2026-05-27",15,2,"Christian",0,"",-1,"",-1,-1,-1,3,52],["2026-05-27",21,2,"Kevin",1,"",1,"Customers/Growth",2,1,0,2,434],["2026-05-27",21,2,"Kevin",0,"",-1,"",-1,-1,0,2,62],["2026-05-27",21,2,"Kevin",1,"",2,"Other",2,2,0,2,675],["2026-05-27",21,2,"Kevin",0,"",-1,"",-1,-1,-1,2,56],["2026-05-27",21,2,"Kevin",1,"",0,"Direction/Learning",2,0,0,2,230],["2026-05-27",22,2,"Kevin",1,"",0,"Customers/Growth",1,1,1,2,774],["2026-05-27",23,2,"Kevin",1,"",0,"Other",2,0,0,2,2351],["2026-05-27",23,2,"David",1,"",0,"Customers/Growth",1,2,0,2,974],["2026-05-28",6,3,"Kevin",1,"",2,"Networking",2,2,0,2,2476],["2026-05-28",13,3,"Kevin",1,"",0,"Customers/Growth",1,2,0,3,442],["2026-05-28",15,3,"Kevin",1,"",0,"Networking",1,1,1,2,523],["2026-05-28",22,3,"Kevin",1,"",1,"Networking",2,2,0,1,346],["2026-05-28",22,3,"Kevin",1,"",-1,"Customers/Growth",0,2,0,2,1368],["2026-05-28",22,3,"Kevin",0,"",0,"Customers/Growth",1,2,1,2,246],["2026-05-28",23,3,"Kevin",1,"",0,"Other",2,2,0,1,435],["2026-05-28",23,3,"Kevin",0,"",3,"Other",1,0,1,3,196],["2026-05-29",6,4,"Kevin",1,"",2,"Capital/Funding",2,2,1,2,196],["2026-05-29",13,4,"Kevin",1,"",0,"Customers/Growth",2,2,1,3,672],["2026-05-29",21,4,"Kevin",1,"",2,"Systems/Ops",2,2,1,3,503],["2026-05-29",23,4,"Kevin",0,"",-1,"",-1,-1,-1,2,28],["2026-05-30",2,5,"Kevin",1,"",1,"Other",2,2,0,2,353],["2026-05-30",19,5,"Kevin",1,"",-1,"Direction/Learning",-1,2,0,2,451],["2026-05-30",22,5,"David",0,"",0,"Systems/Ops",2,-1,-1,1,606],["2026-05-31",12,6,"Christian",0,"",-1,"",-1,-1,-1,2,27],["2026-06-01",21,0,"Kevin",1,"",1,"Customers/Growth",2,2,0,2,324],["2026-06-01",21,0,"Kevin",1,"",0,"Systems/Ops",1,-1,-1,1,567],["2026-06-02",4,1,"Kevin",1,"",0,"Direction/Learning",1,-1,-1,1,412],["2026-06-02",7,1,"Kevin",1,"",0,"Customers/Growth",1,2,0,2,215],["2026-06-02",18,1,"Kevin",1,"",3,"Customers/Growth",2,2,0,2,303],["2026-06-02",18,1,"Kevin",0,"",-1,"",-1,-1,-1,2,36],["2026-06-02",19,1,"Kevin",0,"",-1,"",-1,-1,-1,1,37],["2026-06-02",20,1,"Kevin",0,"",0,"Direction/Learning",1,-1,-1,0,127],["2026-06-02",20,1,"Kevin",0,"",1,"Customers/Growth",2,0,0,2,159],["2026-06-02",21,1,"Kevin",1,"",-1,"Other",0,2,0,0,174],["2026-06-02",21,1,"Kevin",1,"",0,"Legal",1,2,2,3,194],["2026-06-03",0,2,"Kevin",0,"",-1,"Customers/Growth",-1,-1,1,3,3201],["2026-06-03",3,2,"Kevin",0,"",-1,"",-1,-1,0,2,493],["2026-06-03",9,2,"Kevin",1,"",2,"Customers/Growth",2,2,0,3,179],["2026-06-03",9,2,"Christian",1,"",0,"Direction/Learning",2,-1,-1,1,534],["2026-06-03",16,2,"Kevin",1,"",0,"Networking",1,-1,-1,1,215],["2026-06-04",14,3,"Kevin",1,"",1,"Customers/Growth",2,2,1,3,248],["2026-06-04",23,3,"Christian",1,"",0,"Capital/Funding",1,2,1,3,375],["2026-06-04",23,3,"Kevin",0,"",-1,"",-1,-1,-1,2,110],["2026-06-04",23,3,"Kevin",1,"",-1,"Customers/Growth",-1,1,6,1,712],["2026-06-04",23,3,"Kevin",1,"",0,"Capital/Funding",2,2,0,2,496],["2026-06-04",23,3,"Kevin",0,"",-1,"Customers/Growth",-1,-1,0,2,62],["2026-06-04",23,3,"Kevin",0,"",0,"Customers/Growth",2,2,0,2,1474],["2026-06-04",23,3,"Kevin",1,"",2,"Networking",2,2,0,2,658],["2026-06-05",0,4,"Kevin",0,"",-1,"",-1,-1,-1,2,18],["2026-06-05",0,4,"Kevin",1,"",0,"Customers/Growth",2,2,0,2,487],["2026-06-05",0,4,"Kevin",0,"",0,"Legal",1,2,6,4,482],["2026-06-05",1,4,"Kevin",1,"",0,"Customers/Growth",2,2,0,2,260],["2026-06-05",4,4,"Kevin",1,"",1,"Customers/Growth",2,2,0,2,138],["2026-06-05",12,4,"Kevin",0,"",3,"Other",2,1,1,2,514],["2026-06-05",12,4,"Kevin",1,"",1,"Marketing",2,2,0,2,412],["2026-06-05",12,4,"Kevin",1,"",4,"Other",2,1,0,2,207],["2026-06-05",18,4,"Kevin",1,"",3,"Customers/Growth",2,2,0,2,189],["2026-06-06",6,5,"Kevin",1,"",2,"Customers/Growth",2,2,5,4,759],["2026-06-06",16,5,"Kevin",1,"",0,"Customers/Growth",2,2,1,3,607],["2026-06-06",20,5,"Kevin",0,"",0,"Networking",1,-1,-1,2,140],["2026-06-08",18,0,"Christian",0,"",-1,"",-1,-1,-1,2,50],["2026-06-08",19,0,"Kevin",1,"",0,"Marketing",2,2,0,2,296],["2026-06-08",19,0,"Kevin",0,"",-1,"",-1,-1,-1,2,28],["2026-06-08",19,0,"Kevin",1,"",0,"Networking",1,0,0,1,288],["2026-06-08",19,0,"Kevin",0,"",-1,"",-1,-1,-1,3,30],["2026-06-08",19,0,"Kevin",1,"",3,"Customers/Growth",2,2,1,3,364],["2026-06-08",19,0,"Kevin",1,"",1,"Networking",2,0,0,1,840],["2026-06-08",20,0,"Kevin",1,"",1,"Customers/Growth",2,0,0,2,189],["2026-06-08",23,0,"Kevin",1,"",0,"Marketing",2,2,0,2,2392],["2026-06-09",7,1,"Kevin",1,"",0,"Marketing",2,-1,-1,2,488],["2026-06-09",7,1,"Kevin",0,"",0,"Networking",1,1,0,1,168],["2026-06-10",4,2,"AL",0,"",-1,"",-1,-1,-1,3,162],["2026-06-11",0,3,"Kevin",1,"",0,"Networking",1,-1,-1,2,150],["2026-06-11",14,3,"Kevin",1,"",4,"Legal",1,2,6,3,444],["2026-06-11",16,3,"Christian",0,"",-1,"",-1,-1,-1,1,47],["2026-06-11",19,3,"Christian",0,"",-1,"",-1,-1,-1,3,62],["2026-06-11",19,3,"Christian",1,"",0,"Marketing",2,2,0,2,429],["2026-06-11",20,3,"Kevin",0,"",0,"Networking",1,1,0,1,144],["2026-06-12",7,4,"Kevin",1,"",0,"Legal",2,2,0,2,329],["2026-06-12",18,4,"Kevin",0,"",-1,"",-1,-1,0,1,334],["2026-06-12",19,4,"Kevin",0,"",-1,"Other",-1,-1,0,0,261],["2026-06-12",22,4,"Kevin",1,"",0,"Direction/Learning",2,-1,-1,1,228],["2026-06-12",22,4,"Kevin",1,"",0,"Marketing",2,2,0,2,338],["2026-06-12",22,4,"Kevin",0,"",-1,"",-1,-1,-1,2,35],["2026-06-12",23,4,"Kevin",1,"",0,"Direction/Learning",2,2,1,4,597],["2026-06-12",23,4,"Kevin",1,"",0,"Direction/Learning",2,2,1,3,215],["2026-06-13",5,5,"Kevin",1,"",3,"Customers/Growth",2,2,0,2,223],["2026-06-13",14,5,"Kevin",1,"",1,"Customers/Growth",2,2,1,3,536],["2026-06-14",10,6,"Christian",0,"",-1,"",-1,-1,0,1,97],["2026-06-14",19,6,"Kevin",1,"",0,"Direction/Learning",2,-1,-1,1,130],["2026-06-16",1,1,"John",0,"",-1,"",-1,-1,1,3,88],["2026-06-16",16,1,"Kevin",1,"",2,"Marketing",2,2,3,3,339],["2026-06-16",16,1,"Kevin",1,"",1,"Customers/Growth",2,2,0,2,168],["2026-06-16",18,1,"Kevin",0,"",-1,"",-1,-1,0,1,93],["2026-06-16",19,1,"Kevin",1,"",1,"Customers/Growth",2,2,0,3,207],["2026-06-16",23,1,"Kevin",1,"",1,"Direction/Learning",1,1,0,1,429],["2026-06-17",6,2,"Kevin",1,"",0,"Cash flow",1,2,0,0,3351],["2026-06-17",21,2,"Kevin",1,"",2,"Networking",2,2,2,2,431],["2026-06-17",21,2,"Kevin",0,"",-1,"",-1,-1,-1,2,1774],["2026-06-17",23,2,"Kevin",1,"",1,"Networking",2,1,0,2,1113],["2026-06-17",23,2,"Kevin",0,"",-1,"",-1,-1,5,4,55],["2026-06-18",0,3,"John",0,"",-1,"",-1,-1,-1,4,37],["2026-06-18",2,3,"John",1,"",0,"Customers/Growth",2,2,0,2,444],["2026-06-18",2,3,"Kevin",0,"",-1,"",-1,-1,5,4,207],["2026-06-18",3,3,"Kevin",1,"",0,"Customers/Growth",2,2,0,2,681],["2026-06-18",9,3,"Kevin",1,"",0,"Customers/Growth",2,2,0,2,400],["2026-06-18",11,3,"Kevin",1,"",0,"Networking",1,1,3,4,420],["2026-06-18",19,3,"Christian",0,"",-1,"",-1,-1,-1,2,56],["2026-06-18",19,3,"Kevin",1,"",1,"Marketing",2,2,2,1,154],["2026-06-18",21,3,"Kevin",1,"",3,"Marketing",1,1,0,2,653],["2026-06-18",21,3,"Kevin",0,"",-1,"",-1,-1,6,4,79],["2026-06-18",21,3,"John",1,"",-1,"Customers/Growth",-1,2,0,2,103],["2026-06-18",22,3,"Kevin",1,"",-1,"Customers/Growth",0,1,4,4,769],["2026-06-18",22,3,"Kevin",1,"",1,"Direction/Learning",2,2,0,1,250],["2026-06-18",23,3,"Kevin",1,"",1,"Customers/Growth",2,2,1,3,743],["2026-06-18",23,3,"John",0,"",-1,"",-1,-1,-1,2,31],["2026-06-18",23,3,"Kevin",0,"",-1,"",-1,-1,-1,3,19],["2026-06-18",23,3,"Kevin",1,"",1,"Customers/Growth",2,2,1,3,225],["2026-06-18",23,3,"John",1,"",0,"Marketing",2,2,2,2,627],["2026-06-19",0,4,"Kevin",0,"",1,"Customers/Growth",1,2,0,3,979],["2026-06-19",1,4,"Kevin",1,"",0,"Team/Hiring",1,2,2,4,267],["2026-06-19",3,4,"AL",0,"",-1,"",-1,-1,-1,2,48],["2026-06-19",6,4,"Kevin",0,"",-1,"Customers/Growth",-1,-1,0,2,191],["2026-06-19",7,4,"John",1,"",0,"Customers/Growth",1,2,1,4,1087],["2026-06-19",11,4,"Kevin",1,"",1,"Customers/Growth",1,2,0,3,457],["2026-06-19",13,4,"Kevin",1,"",6,"Networking",2,2,2,3,1233],["2026-06-19",14,4,"Kevin",1,"",1,"Customers/Growth",2,2,0,2,516],["2026-06-19",15,4,"Kevin",0,"",-1,"",-1,-1,-1,2,62],["2026-06-19",17,4,"Kevin",0,"",0,"Networking",2,0,2,4,248],["2026-06-19",20,4,"John",1,"",1,"Customers/Growth",1,2,0,2,731],["2026-06-20",0,5,"John",1,"",2,"Customers/Growth",2,2,1,3,270],["2026-06-20",2,5,"John",1,"",1,"Customers/Growth",2,2,0,3,517],["2026-06-20",23,5,"Kevin",1,"",0,"Marketing",2,2,0,1,450],["2026-06-21",14,6,"John",1,"",0,"Marketing",1,1,1,3,262],["2026-06-21",17,6,"John",1,"",1,"Direction/Learning",2,2,0,2,879],["2026-06-21",17,6,"John",0,"",-1,"Customers/Growth",-1,-1,0,2,127],["2026-06-22",14,0,"AL",1,"",1,"Networking",2,-1,-1,0,178],["2026-06-23",4,1,"John",1,"",0,"Customers/Growth",2,1,0,2,2229],["2026-06-23",15,1,"John",1,"",1,"Direction/Learning",2,2,0,2,451],["2026-06-23",22,1,"John",1,"",0,"Networking",2,2,1,2,763],["2026-06-23",22,1,"John",1,"",0,"Networking",2,2,1,2,194],["2026-06-23",22,1,"Kevin",0,"",-1,"",-1,-1,0,2,578],["2026-06-24",0,2,"Kevin",1,"",0,"Customers/Growth",2,1,0,2,393],["2026-06-24",4,2,"John",1,"",0,"Networking",2,2,1,2,283],["2026-06-24",7,2,"Kevin",1,"",1,"Customers/Growth",2,2,1,2,538],["2026-06-24",9,2,"Kevin",1,"",0,"Customers/Growth",2,2,0,3,494],["2026-06-24",17,2,"Diksha",1,"",0,"Networking",2,1,0,0,316],["2026-06-24",17,2,"Diksha",0,"",-1,"",-1,-1,-1,4,75],["2026-06-24",21,2,"Diksha",1,"",1,"Customers/Growth",2,2,1,2,706],["2026-06-24",22,2,"Kevin",1,"",2,"Networking",2,2,0,2,1700],["2026-06-24",23,2,"Kevin",1,"",0,"Direction/Learning",2,1,0,1,164],["2026-06-25",9,3,"Kevin",0,"",1,"Customers/Growth",1,2,1,3,113],["2026-06-25",17,3,"Kevin",1,"",4,"Marketing",2,2,0,0,751],["2026-06-25",17,3,"Diksha",0,"",2,"Customers/Growth",1,0,2,4,172],["2026-06-25",17,3,"Diksha",0,"",-1,"",-1,-1,-1,2,47],["2026-06-25",20,3,"Diksha",1,"",0,"Networking",1,2,1,2,1127],["2026-06-25",20,3,"Diksha",1,"",2,"Customers/Growth",2,2,3,4,239],["2026-06-25",20,3,"Diksha",0,"",-1,"",-1,-1,-1,2,15],["2026-06-25",20,3,"Kevin",1,"",2,"Systems/Ops",2,0,1,3,113],["2026-06-25",22,3,"Diksha",0,"",1,"Customers/Growth",2,2,0,2,541],["2026-06-25",22,3,"Diksha",1,"",1,"Customers/Growth",2,2,0,2,340],["2026-06-26",1,4,"Kevin",1,"",1,"Customers/Growth",2,-1,-1,2,623],["2026-06-26",2,4,"Diksha",1,"",0,"Direction/Learning",1,0,0,2,346],["2026-06-26",2,4,"Diksha",1,"",0,"Customers/Growth",1,1,0,2,1402],["2026-06-26",8,4,"AL",0,"",-1,"",-1,-1,-1,1,889],["2026-06-26",17,4,"Diksha",0,"",-1,"",-1,-1,0,2,68],["2026-06-26",18,4,"Diksha",1,"",0,"Customers/Growth",2,2,0,2,398],["2026-06-26",18,4,"Diksha",0,"",0,"Customers/Growth",1,1,0,2,137],["2026-06-26",19,4,"Diksha",0,"",-1,"Customers/Growth",-1,-1,0,1,46],["2026-06-26",19,4,"Diksha",0,"",-1,"",-1,-1,1,3,85],["2026-06-26",20,4,"Diksha",1,"",2,"Customers/Growth",2,2,2,2,516],["2026-06-26",22,4,"Diksha",1,"",0,"Marketing",1,1,1,2,469],["2026-06-26",22,4,"Diksha",0,"",-1,"",-1,-1,-1,2,33],["2026-06-26",22,4,"Diksha",1,"",1,"Direction/Learning",1,-1,-1,2,502],["2026-06-26",23,4,"Diksha",1,"",2,"Marketing",1,2,0,3,184],["2026-06-26",23,4,"Diksha",1,"",1,"Networking",2,-1,-1,2,445],["2026-06-27",12,5,"Diksha",0,"",-1,"Networking",-1,-1,1,3,466],["2026-06-27",12,5,"Diksha",1,"",1,"Networking",2,2,1,3,520],["2026-06-27",15,5,"Diksha",0,"",-1,"Networking",-1,-1,0,4,158],["2026-06-27",15,5,"Diksha",0,"",-1,"Networking",-1,-1,0,4,179],["2026-06-27",16,5,"Diksha",1,"",0,"Networking",2,2,0,4,241],["2026-06-27",16,5,"Diksha",1,"",0,"Networking",2,2,0,4,321],["2026-06-27",16,5,"Diksha",1,"",0,"Networking",2,2,0,4,471],["2026-06-27",19,5,"Diksha",1,"",0,"Marketing",1,1,0,2,2284],["2026-06-28",9,6,"Diksha",1,"",0,"Networking",2,2,0,4,366],["2026-06-28",17,6,"Diksha",0,"",-1,"Capital/Funding",-1,-1,0,2,364],["2026-06-28",17,6,"Diksha",0,"",2,"Capital/Funding",2,2,0,2,464],["2026-06-28",17,6,"Diksha",1,"",2,"Capital/Funding",2,2,0,2,315],["2026-06-28",22,6,"Kevin",0,"",2,"Capital/Funding",2,2,0,2,3191],["2026-06-29",9,0,"David",0,"",1,"Customers/Growth",2,2,0,2,723],["2026-06-29",18,0,"Diksha",0,"",-1,"",-1,-1,-1,3,48],["2026-06-29",20,0,"Diksha",1,"",0,"Customers/Growth",2,2,3,3,1168],["2026-06-29",23,0,"Diksha",1,"",1,"Cash flow",2,2,0,2,424],["2026-06-29",23,0,"Diksha",1,"",0,"Cash flow",2,2,0,2,161],["2026-06-30",1,1,"John",1,"",1,"Direction/Learning",2,2,0,2,469],["2026-06-30",4,1,"John",1,"",0,"Customers/Growth",2,2,0,2,505],["2026-06-30",6,1,"Diksha",1,"",-1,"Team/Hiring",0,0,0,2,435],["2026-06-30",7,1,"John",0,"",-1,"",-1,-1,-1,2,38],["2026-06-30",7,1,"Kevin",1,"",2,"Direction/Learning",2,2,0,1,2763],["2026-06-30",10,1,"Diksha",1,"",1,"Customers/Growth",2,2,1,2,2217],["2026-06-30",12,1,"John",1,"",0,"Networking",2,2,0,2,405],["2026-06-30",20,1,"Diksha",1,"",3,"Customers/Growth",1,1,0,3,222],["2026-06-30",21,1,"John",0,"",-1,"",-1,-1,-1,2,31],["2026-06-30",22,1,"Diksha",0,"",-1,"",-1,-1,-1,3,27],["2026-06-30",22,1,"John",1,"",0,"Customers/Growth",1,2,0,2,190],["2026-06-30",22,1,"Diksha",0,"",-1,"",-1,-1,-1,1,48],["2026-07-01",0,2,"John",1,"",0,"Marketing",2,-1,-1,1,351],["2026-07-01",2,2,"Diksha",1,"",3,"Customers/Growth",2,2,0,2,2224],["2026-07-01",7,2,"Diksha",0,"",-1,"",-1,-1,-1,3,47],["2026-07-01",17,2,"Diksha",0,"",0,"Customers/Growth",2,0,0,2,75],["2026-07-01",20,2,"Diksha",1,"",0,"Marketing",2,2,1,2,857],["2026-07-01",22,2,"Diksha",1,"",2,"Customers/Growth",-1,2,1,4,326],["2026-07-01",22,2,"Diksha",1,"",2,"Customers/Growth",2,2,2,4,839],["2026-07-01",22,2,"Diksha",0,"",-1,"Networking",-1,-1,2,4,1019],["2026-07-02",1,3,"Diksha",0,"",-1,"",-1,-1,-1,1,53],["2026-07-02",12,3,"John",0,"",-1,"Customers/Growth",-1,-1,0,2,337],["2026-07-02",12,3,"John",0,"",-1,"",-1,-1,-1,2,15],["2026-07-02",12,3,"John",1,"",0,"Customers/Growth",2,2,0,2,1246],["2026-07-02",19,3,"Kevin",1,"v1",0,"Customers/Growth",2,2,0,2,428],["2026-07-02",20,3,"Kevin",1,"nv1",0,"Customers/Growth",1,2,1,3,311],["2026-07-02",20,3,"Kevin",1,"v1",4,"Other",2,1,0,2,350],["2026-07-02",23,3,"Kevin",1,"v1",2,"Customers/Growth",2,1,0,2,1269],["2026-07-03",8,4,"John",1,"",1,"Marketing",2,2,0,2,1775],["2026-07-03",12,4,"John",1,"",3,"Direction/Learning",1,0,0,2,290],["2026-07-03",13,4,"John",0,"",0,"Customers/Growth",1,2,0,2,390],["2026-07-03",14,4,"John",0,"",0,"Customers/Growth",1,2,0,2,222],["2026-07-03",14,4,"John",1,"",1,"Customers/Growth",2,2,0,2,246],["2026-07-03",14,4,"John",0,"",1,"Networking",2,2,1,3,774],["2026-07-03",15,4,"John",1,"",1,"Networking",2,2,1,3,336],["2026-07-03",19,4,"Diksha",0,"v1",0,"Networking",2,1,0,2,1236],["2026-07-03",19,4,"Diksha",1,"nv1",0,"Customers/Growth",1,1,0,2,239],["2026-07-03",20,4,"Kevin",1,"v1",0,"Customers/Growth",1,2,0,4,2138],["2026-07-03",23,4,"John",1,"v2",1,"Customers/Growth",2,2,0,2,440],["2026-07-04",1,5,"John",1,"",0,"Capital/Funding",1,2,6,4,259],["2026-07-04",3,5,"John",1,"",0,"Direction/Learning",2,-1,-1,1,168],["2026-07-04",12,5,"Kevin",1,"",1,"Direction/Learning",2,2,0,2,35],["2026-07-04",22,5,"John",1,"",0,"Customers/Growth",2,1,0,2,1180],["2026-07-05",1,6,"Diksha",0,"",-1,"",-1,-1,-1,1,527],["2026-07-05",1,6,"Diksha",1,"",0,"Customers/Growth",2,2,1,1,1100],["2026-07-06",0,0,"Kevin",0,"v2",-1,"Direction/Learning",-1,-1,0,1,87],["2026-07-06",2,0,"Kevin",1,"nv1",3,"Other",2,1,0,2,218],["2026-07-06",11,0,"John",0,"",-1,"",-1,-1,-1,2,54],["2026-07-06",11,0,"John",0,"",-1,"",-1,-1,-1,2,24],["2026-07-06",11,0,"John",1,"",0,"Marketing",2,2,1,2,548],["2026-07-06",19,0,"Diksha",1,"v1",0,"Customers/Growth",1,2,1,2,187],["2026-07-06",22,0,"Diksha",1,"nv1",0,"Customers/Growth",2,0,0,2,121],["2026-07-07",7,1,"John",1,"v1",0,"Direction/Learning",1,1,0,1,262],["2026-07-07",9,1,"Diksha",1,"v1",0,"Exit",2,1,1,0,1094],["2026-07-07",10,1,"John",0,"",-1,"",-1,-1,-1,3,124],["2026-07-07",10,1,"David",0,"",-1,"",-1,-1,-1,2,29],["2026-07-07",10,1,"Kevin",1,"",1,"Capital/Funding",2,-1,-1,2,667],["2026-07-07",10,1,"John",1,"nv1",0,"Customers/Growth",2,2,1,3,400],["2026-07-07",15,1,"John",1,"nv1",0,"Networking",2,1,0,2,348],["2026-07-07",16,1,"Kevin",0,"",-1,"",-1,-1,-1,1,41],["2026-07-07",19,1,"Kevin",0,"nv2",-1,"Customers/Growth",-1,-1,1,0,77],["2026-07-07",20,1,"AL",0,"",-1,"Marketing",-1,-1,0,2,116],["2026-07-07",20,1,"Diksha",1,"",2,"Capital/Funding",2,0,0,2,236],["2026-07-08",8,2,"Diksha",0,"v1",-1,"",-1,-1,0,2,1171],["2026-07-08",10,2,"Diksha",1,"v2",0,"Networking",2,2,1,1,574],["2026-07-08",11,2,"Kevin",0,"",-1,"",-1,-1,-1,1,93],["2026-07-08",11,2,"John",1,"nv1",1,"Marketing",2,1,0,2,1066],["2026-07-08",11,2,"Diksha",1,"v1",1,"Customers/Growth",2,1,0,2,232],["2026-07-08",13,2,"Diksha",1,"v1",0,"Other",1,1,0,2,187],["2026-07-08",19,2,"Diksha",1,"nv1",2,"Networking",2,2,0,1,650],["2026-07-08",22,2,"Diksha",0,"v1",-1,"Customers/Growth",2,2,0,2,165],["2026-07-09",7,3,"Diksha",1,"v1",0,"Other",1,2,0,0,628],["2026-07-09",11,3,"Diksha",1,"v1",2,"Customers/Growth",2,2,2,4,595],["2026-07-09",11,3,"Diksha",0,"nv1",0,"Customers/Growth",1,1,0,2,232],["2026-07-09",11,3,"Diksha",0,"nv1",0,"Direction/Learning",2,1,0,2,149],["2026-07-09",13,3,"John",1,"nv2",1,"Marketing",2,2,1,2,246],["2026-07-09",17,3,"John",1,"nv2",1,"Customers/Growth",2,2,1,3,403],["2026-07-09",20,3,"Diksha",0,"nv2",-1,"",-1,-1,0,1,104],["2026-07-09",21,3,"John",1,"v1",1,"Networking",1,1,0,0,303],["2026-07-09",21,3,"Diksha",1,"nv2",3,"Marketing",2,2,0,2,270],["2026-07-09",22,3,"Diksha",0,"nv1",2,"Direction/Learning",2,1,2,2,229],["2026-07-10",18,4,"Diksha",1,"v1",0,"Networking",1,-1,-1,0,235],["2026-07-10",19,4,"Diksha",1,"nv1",2,"Direction/Learning",2,1,0,1,315],["2026-07-10",19,4,"John",1,"v2",0,"Customers/Growth",2,2,0,2,220],["2026-07-10",22,4,"Diksha",1,"v1",4,"Capital/Funding",2,2,1,3,2380],["2026-07-10",22,4,"Diksha",1,"v2",0,"Direction/Learning",1,1,0,2,384],["2026-07-11",1,5,"Diksha",0,"v2",0,"Direction/Learning",2,-1,-1,1,125],["2026-07-12",21,6,"John",1,"nv1",2,"Customers/Growth",1,2,0,3,524],["2026-07-13",11,0,"Diksha",1,"nv1",3,"Marketing",1,2,0,1,151],["2026-07-13",18,0,"Diksha",0,"v1",1,"Capital/Funding",2,0,1,1,120],["2026-07-13",20,0,"Diksha",1,"nv1",-1,"Customers/Growth",-1,2,1,2,788],["2026-07-13",21,0,"Diksha",0,"v1",-1,"",-1,-1,5,3,54],["2026-07-13",21,0,"John",0,"nv1",-1,"",-1,-1,-1,2,25],["2026-07-13",23,0,"Diksha",1,"v1",3,"Networking",2,2,0,2,133],["2026-07-14",0,1,"John",0,"",-1,"Other",-1,-1,0,1,185],["2026-07-14",8,1,"John",0,"v2",0,"Customers/Growth",2,2,2,3,302],["2026-07-14",9,1,"John",0,"v2",-1,"",-1,-1,-1,3,11],["2026-07-14",9,1,"John",1,"v1",0,"Customers/Growth",2,2,2,3,234],["2026-07-14",12,1,"John",1,"v2",-1,"Marketing",0,-1,-1,1,743],["2026-07-14",15,1,"Christian",1,"",0,"Customers/Growth",1,2,1,2,1074],["2026-07-14",16,1,"Christian",0,"",-1,"",-1,-1,1,3,56],["2026-07-14",18,1,"Diksha",0,"nv2",-1,"",-1,-1,-1,2,17],["2026-07-14",22,1,"John",1,"nv2",0,"Marketing",1,2,2,3,1304],["2026-07-15",1,2,"Diksha",1,"v2",3,"Customers/Growth",2,2,2,4,328],["2026-07-15",1,2,"Christian",0,"",-1,"",-1,-1,-1,2,214],["2026-07-15",2,2,"Diksha",1,"v1",0,"Networking",2,2,0,2,255],["2026-07-15",15,2,"John",0,"v2",-1,"",-1,-1,-1,2,23],["2026-07-15",15,2,"Diksha",0,"v2",-1,"",-1,-1,-1,0,459],["2026-07-15",18,2,"Diksha",1,"v2",1,"Customers/Growth",2,2,0,2,176],["2026-07-15",19,2,"Diksha",1,"v1",0,"Customers/Growth",2,2,1,3,304],["2026-07-16",10,3,"Diksha",1,"v2",1,"Customers/Growth",2,2,0,2,592],["2026-07-16",18,3,"Diksha",1,"nv1",1,"Customers/Growth",2,2,0,2,656],["2026-07-16",19,3,"Diksha",0,"v2",-1,"Capital/Funding",-1,-1,0,1,1239],["2026-07-16",22,3,"John",1,"v1",1,"Capital/Funding",2,2,3,3,970],["2026-07-16",22,3,"Diksha",0,"nv2",-1,"",-1,-1,-1,3,25],["2026-07-17",0,4,"Diksha",0,"v1",-1,"",-1,-1,-1,2,32],["2026-07-17",11,4,"John",0,"v1",0,"Customers/Growth",2,2,1,3,99],["2026-07-17",17,4,"Diksha",1,"nv2",0,"Customers/Growth",2,2,0,2,390],["2026-07-17",23,4,"Diksha",0,"nv2",-1,"",-1,-1,-1,1,28],["2026-07-18",3,5,"Kevin",0,"",-1,"",-1,-1,-1,2,30],["2026-07-18",3,5,"Kevin",1,"",2,"Other",2,2,0,2,768],["2026-07-19",16,6,"Diksha",0,"",-1,"Customers/Growth",-1,2,1,4,108],["2026-07-20",18,0,"Diksha",0,"v2",-1,"",-1,-1,-1,2,787],["2026-07-20",19,0,"Diksha",0,"nv2",-1,"",-1,-1,1,2,283],["2026-07-20",21,0,"John",1,"",0,"Customers/Growth",1,2,1,2,483],["2026-07-20",21,0,"Diksha",0,"v1",-1,"",-1,-1,-1,1,95],["2026-07-20",22,0,"John",1,"v1",1,"Customers/Growth",2,2,0,2,217],["2026-07-20",22,0,"John",1,"v2",2,"Customers/Growth",2,1,0,3,419],["2026-07-20",23,0,"John",1,"nv2",0,"Customers/Growth",2,2,0,0,251],["2026-07-20",23,0,"Christian",1,"",2,"Direction/Learning",2,-1,-1,4,380],["2026-07-21",0,1,"John",0,"nv1",-1,"",-1,-1,-1,3,17],["2026-07-21",1,1,"John",0,"nv1",1,"Customers/Growth",2,2,2,3,374],["2026-07-21",1,1,"John",0,"nv1",-1,"",-1,-1,-1,3,48],["2026-07-21",1,1,"John",1,"nv1",1,"Customers/Growth",2,2,1,3,696],["2026-07-21",4,1,"Diksha",1,"nv2",1,"Customers/Growth",2,2,1,2,522],["2026-07-21",4,1,"Christian",0,"",-1,"",-1,-1,-1,4,34],["2026-07-21",8,1,"John",1,"nv2",2,"Team/Hiring",2,0,0,2,372],["2026-07-21",9,1,"John",1,"v2",2,"Networking",2,2,0,1,413],["2026-07-21",12,1,"Diksha",1,"v1",2,"Customers/Growth",2,1,3,4,2652],["2026-07-21",22,1,"Diksha",1,"nv2",0,"Customers/Growth",2,2,0,2,304],["2026-07-21",22,1,"Diksha",1,"v2",1,"Capital/Funding",2,1,1,2,299],["2026-07-21",22,1,"Diksha",0,"v2",0,"Customers/Growth",1,2,1,3,294],["2026-07-22",1,2,"Christian",0,"",-1,"",-1,-1,5,4,149],["2026-07-22",1,2,"Christian",0,"",-1,"",-1,-1,-1,3,19],["2026-07-22",1,2,"Christian",1,"",0,"Team/Hiring",1,2,4,4,177],["2026-07-22",15,2,"Diksha",1,"v1",1,"Customers/Growth",1,2,1,2,605],["2026-07-22",16,2,"Diksha",0,"v2",-1,"Customers/Growth",-1,-1,0,0,570],["2026-07-22",17,2,"Diksha",1,"nv2",0,"Marketing",1,1,0,0,260],["2026-07-22",17,2,"Diksha",1,"nv2",0,"Direction/Learning",2,2,0,0,980],["2026-07-22",18,2,"Diksha",0,"v2",-1,"",-1,-1,-1,2,47],["2026-07-22",18,2,"Diksha",1,"v2",1,"Customers/Growth",2,-1,-1,2,293],["2026-07-22",18,2,"Diksha",1,"v2",1,"Customers/Growth",1,1,0,2,572],["2026-07-22",19,2,"Christian",0,"",-1,"",-1,-1,-1,2,21],["2026-07-22",19,2,"Diksha",1,"v2",6,"Capital/Funding",1,1,0,2,866],["2026-07-22",20,2,"Diksha",1,"v1",0,"Customers/Growth",2,2,0,0,576],["2026-07-22",21,2,"Diksha",0,"nv2",-1,"Networking",0,0,0,2,102],["2026-07-23",1,3,"John",1,"nv1",0,"Customers/Growth",2,2,1,3,643],["2026-07-23",3,3,"Diksha",0,"nv1",-1,"",-1,-1,1,1,571],["2026-07-23",15,3,"Diksha",1,"nv2",0,"Customers/Growth",2,1,0,2,551],["2026-07-23",15,3,"Diksha",0,"nv1",-1,"",-1,-1,-1,2,18],["2026-07-23",16,3,"Diksha",0,"nv1",-1,"",-1,-1,-1,0,32],["2026-07-23",16,3,"Diksha",1,"nv1",0,"Customers/Growth",2,2,1,1,862],["2026-07-23",16,3,"Kevin",1,"",3,"Marketing",2,1,0,2,268],["2026-07-23",20,3,"Diksha",1,"v2",1,"Customers/Growth",1,2,1,3,721],["2026-07-23",21,3,"Diksha",0,"nv2",-1,"",-1,-1,-1,2,33],["2026-07-24",0,4,"Diksha",0,"nv2",-1,"",-1,-1,-1,2,46],["2026-07-24",7,4,"David",1,"",-1,"Capital/Funding",0,1,1,2,1394],["2026-07-24",12,4,"David",0,"",1,"Networking",1,1,2,2,357],["2026-07-24",12,4,"David",1,"",-1,"Marketing",0,0,0,1,483],["2026-07-24",15,4,"Diksha",1,"v1",0,"Marketing",2,2,0,2,183],["2026-07-24",21,4,"AL",0,"",-1,"Marketing",-1,2,1,2,118],["2026-07-24",22,4,"Diksha",0,"nv2",0,"Networking",2,1,6,3,797],["2026-07-24",22,4,"Diksha",1,"nv2",0,"Networking",2,1,6,3,269],["2026-07-24",23,4,"Diksha",1,"v1",-1,"Customers/Growth",0,2,4,4,316],["2026-07-25",0,5,"Diksha",0,"nv2",-1,"",-1,-1,-1,1,58],["2026-07-25",1,5,"Diksha",1,"nv2",0,"Marketing",2,2,0,1,504],["2026-07-25",10,5,"Diksha",1,"nv1",4,"Customers/Growth",2,2,0,2,507],["2026-07-25",14,5,"Diksha",1,"v1",1,"Marketing",2,2,0,1,522],["2026-07-25",23,5,"David",0,"",2,"Customers/Growth",2,2,1,3,521],["2026-07-26",9,6,"Christian",0,"",-1,"",-1,-1,-1,2,31],["2026-07-26",11,6,"Kevin",1,"",-1,"Direction/Learning",0,-1,-1,4,220],["2026-07-26",11,6,"AL",0,"",-1,"",-1,-1,-1,2,21],["2026-07-26",11,6,"AL",1,"",0,"Marketing",2,1,0,2,571],["2026-07-26",11,6,"AL",0,"",-1,"",-1,-1,-1,2,33],["2026-07-27",8,0,"Diksha",1,"nv2",0,"Customers/Growth",2,2,2,0,1653],["2026-07-27",14,0,"Diksha",0,"nv2",2,"Customers/Growth",2,2,0,2,632],["2026-07-27",14,0,"Diksha",1,"nv2",2,"Customers/Growth",2,2,0,2,256],["2026-07-27",14,0,"AL",1,"",1,"Direction/Learning",2,-1,-1,1,230],["2026-07-27",18,0,"Diksha",0,"v1",-1,"",-1,-1,-1,3,67],["2026-07-27",19,0,"Diksha",1,"nv1",0,"Networking",1,0,0,1,175],["2026-07-27",19,0,"Diksha",0,"v1",-1,"Direction/Learning",0,-1,-1,1,130],["2026-07-27",19,0,"Diksha",0,"v1",-1,"",-1,-1,-1,2,42],["2026-07-27",19,0,"Diksha",0,"v2",0,"Marketing",1,2,0,0,985],["2026-07-27",21,0,"Diksha",1,"v1",6,"Marketing",2,2,1,3,177],["2026-07-27",22,0,"Diksha",1,"",0,"Capital/Funding",2,2,0,2,172],["2026-07-27",23,0,"Diksha",0,"nv2",-1,"Customers/Growth",2,2,0,3,121],["2026-07-27",23,0,"Diksha",1,"nv2",-1,"Customers/Growth",-1,2,0,3,90],["2026-07-28",0,1,"Diksha",0,"nv2",2,"Customers/Growth",2,2,0,1,2075],["2026-07-28",2,1,"Diksha",0,"nv1",-1,"Customers/Growth",0,2,0,2,199],["2026-07-28",7,1,"AL",1,"",0,"Systems/Ops",1,2,1,3,835],["2026-07-28",16,1,"Diksha",1,"v2",0,"Customers/Growth",2,2,1,2,2463],["2026-07-28",20,1,"Diksha",1,"v1",0,"Marketing",2,2,0,2,943],["2026-07-28",21,1,"Diksha",1,"nv1",4,"Marketing",2,0,4,1,268],["2026-07-28",23,1,"Diksha",1,"nv1",0,"Customers/Growth",2,2,0,2,339],["2026-07-28",23,1,"Diksha",1,"nv2",0,"Networking",2,0,4,3,238],["2026-07-30",1,3,"Diksha",0,"v1",-1,"",-1,-1,0,1,62]],"old_clicks":[["2026-04-07","Christian",11.0],["2026-04-08","Christian",25.0],["2026-04-09","Christian",12.0],["2026-04-10","Christian",23.0],["2026-04-11","Christian",16.0],["2026-04-12","Christian",5.0],["2026-04-13","Christian",25.0],["2026-04-14","Christian",32.0],["2026-04-15","Christian",17.0],["2026-04-16","Christian",4.0],["2026-04-17","Christian",32.0],["2026-04-18","Christian",7.0],["2026-04-19","Christian",11.0],["2026-04-20","Christian",7.0],["2026-04-21","Christian",31.0],["2026-04-22","Christian",16.0],["2026-04-23","Christian",14.0],["2026-04-24","Christian",24.0],["2026-04-25","Christian",15.0],["2026-04-26","Christian",9.0],["2026-04-27","Christian",7.0],["2026-04-28","Christian",18.0],["2026-04-29","Christian",20.0],["2026-04-30","Christian",26.0],["2026-05-01","Christian",6.0],["2026-05-02","Christian",6.0],["2026-05-03","Christian",1.0],["2026-05-04","Christian",5.0],["2026-05-05","Christian",1.0],["2026-05-06","Christian",0.0],["2026-05-07","Christian",0.0],["2026-05-08","Christian",0.0],["2026-05-09","Christian",1.0],["2026-05-10","Christian",2.0],["2026-05-11","Christian",2.0],["2026-05-12","Christian",2.0],["2026-05-13","Christian",1.0],["2026-05-20","Christian",5.0],["2026-05-27","Christian",75.0],["2026-06-03","Christian",8.0],["2026-06-10","Christian",3.0],["2026-06-11","Christian",36.0],["2026-06-12","Christian",1.0],["2026-06-13","Christian",1.0],["2026-06-14","Christian",1.0],["2026-06-18","Christian",2.0],["2026-06-23","Christian",4.0],["2026-06-25","Christian",4.0],["2026-06-26","Christian",3.0],["2026-06-30","Christian",77.0],["2026-07-03","Christian",1.0],["2026-07-06","Christian",63.0],["2026-07-14","Christian",2.0],["2026-07-15","Christian",3.0],["2026-07-20","Christian",2.0],["2026-07-21","Christian",1.0],["2026-07-22","Christian",4.0],["2026-07-26","Christian",1.0],["2026-07-29","Christian",1.0],["2026-04-07","AL",10.0],["2026-04-08","AL",13.0],["2026-04-09","AL",2.0],["2026-04-10","AL",3.0],["2026-04-11","AL",6.0],["2026-04-12","AL",1.0],["2026-04-13","AL",3.0],["2026-04-14","AL",9.0],["2026-04-15","AL",8.0],["2026-04-16","AL",9.0],["2026-04-17","AL",7.0],["2026-04-18","AL",2.0],["2026-04-19","AL",1.0],["2026-04-20","AL",2.0],["2026-04-21","AL",1.0],["2026-04-22","AL",2.0],["2026-04-23","AL",1.0],["2026-04-24","AL",5.0],["2026-04-25","AL",0.0],["2026-04-26","AL",1.0],["2026-04-27","AL",0.0],["2026-04-28","AL",1.0],["2026-04-29","AL",2.0],["2026-04-30","AL",0.0],["2026-05-01","AL",2.0],["2026-05-02","AL",1.0],["2026-05-03","AL",0.0],["2026-05-04","AL",0.0],["2026-05-05","AL",0.0],["2026-05-06","AL",0.0],["2026-05-07","AL",1.0],["2026-05-08","AL",3.0],["2026-05-09","AL",0.0],["2026-05-10","AL",0.0],["2026-05-11","AL",0.0],["2026-05-12","AL",3.0],["2026-05-13","AL",0.0],["2026-05-20","AL",4.0],["2026-05-27","AL",2.0],["2026-06-03","AL",1.0],["2026-06-10","AL",2.0],["2026-06-13","AL",1.0],["2026-06-19","AL",1.0],["2026-06-22","AL",1.0],["2026-06-26","AL",1.0],["2026-06-30","AL",1.0],["2026-07-07","AL",1.0],["2026-07-17","AL",1.0],["2026-07-21","AL",1.0],["2026-07-24","AL",1.0],["2026-07-26","AL",3.0],["2026-07-27","AL",1.0],["2026-07-28","AL",1.0],["2026-04-30","Mohammed",0.0],["2026-05-01","Mohammed",0.0],["2026-05-02","Mohammed",2.0],["2026-05-03","Mohammed",0.0],["2026-05-04","Mohammed",15.0],["2026-05-05","Mohammed",5.0],["2026-05-06","Mohammed",8.0],["2026-05-07","Mohammed",3.0],["2026-05-08","Mohammed",0.0],["2026-05-09","Mohammed",3.0],["2026-05-10","Mohammed",0.0],["2026-05-11","Mohammed",0.0],["2026-05-12","Mohammed",2.0],["2026-05-13","Mohammed",0.0],["2026-05-20","Mohammed",0.0],["2026-05-27","Mohammed",0.0],["2026-06-03","Mohammed",0.0],["2026-06-10","Mohammed",0.0],["2026-04-30","Kevin",0.0],["2026-05-01","Kevin",0.0],["2026-05-02","Kevin",0.0],["2026-05-03","Kevin",0.0],["2026-05-04","Kevin",5.0],["2026-05-05","Kevin",0.0],["2026-05-06","Kevin",0.0],["2026-05-07","Kevin",1.0],["2026-05-08","Kevin",0.0],["2026-05-09","Kevin",0.0],["2026-05-10","Kevin",0.0],["2026-05-11","Kevin",4.0],["2026-05-12","Kevin",5.0],["2026-05-13","Kevin",14.0],["2026-05-20","Kevin",23.0],["2026-05-27","Kevin",40.0],["2026-06-03","Kevin",41.0],["2026-06-10","Kevin",46.0],["2026-06-11","Kevin",3.0],["2026-06-12","Kevin",11.0],["2026-06-13","Kevin",4.0],["2026-06-14","Kevin",1.0],["2026-06-15","Kevin",2.0],["2026-06-16","Kevin",12.0],["2026-06-17","Kevin",0.0],["2026-06-18","Kevin",21.0],["2026-06-19","Kevin",9.0],["2026-06-20","Kevin",2.0],["2026-06-21","Kevin",2.0],["2026-06-22","Kevin",3.0],["2026-06-23","Kevin",2.0],["2026-06-24","Kevin",0.0],["2026-06-25","Kevin",5.0],["2026-06-26","Kevin",1.0],["2026-06-28","Kevin",2.0],["2026-06-29","Kevin",1.0],["2026-06-30","Kevin",1.0],["2026-07-02","Kevin",1.0],["2026-07-04","Kevin",1.0],["2026-07-05","Kevin",1.0],["2026-07-06","Kevin",1.0],["2026-07-07","Kevin",6.0],["2026-07-08","Kevin",2.0],["2026-07-09","Kevin",1.0],["2026-07-16","Kevin",1.0],["2026-07-18","Kevin",2.0],["2026-07-19","Kevin",1.0],["2026-07-26","Kevin",1.0],["2026-07-27","Kevin",1.0],["2026-04-30","David",0.0],["2026-05-01","David",1.0],["2026-05-02","David",2.0],["2026-05-03","David",11.0],["2026-05-04","David",1.0],["2026-05-05","David",1.0],["2026-05-06","David",0.0],["2026-05-07","David",0.0],["2026-05-08","David",0.0],["2026-05-09","David",0.0],["2026-05-10","David",3.0],["2026-05-11","David",9.0],["2026-05-12","David",4.0],["2026-05-13","David",0.0],["2026-05-20","David",27.0],["2026-05-27","David",27.0],["2026-06-03","David",3.0],["2026-06-10","David",0.0],["2026-06-15","David",2.0],["2026-06-16","David",1.0],["2026-06-29","David",1.0],["2026-07-07","David",1.0],["2026-07-23","David",1.0],["2026-07-24","David",4.0],["2026-07-25","David",2.0],["2026-06-15","John",6.0],["2026-06-16","John",1.0],["2026-06-17","John",1.0],["2026-06-18","John",7.0],["2026-06-19","John",5.0],["2026-06-20","John",4.0],["2026-06-21","John",2.0],["2026-06-22","John",1.0],["2026-06-23","John",6.0],["2026-06-24","John",0.0],["2026-06-26","John",1.0],["2026-06-30","John",8.0],["2026-07-01","John",2.0],["2026-07-02","John",3.0],["2026-07-03","John",8.0],["2026-07-04","John",5.0],["2026-07-05","John",2.0],["2026-07-06","John",5.0],["2026-07-07","John",2.0],["2026-07-13","John",1.0],["2026-07-14","John",1.0],["2026-07-20","John",1.0],["2026-07-22","John",1.0],["2026-06-24","Diksha",6.0],["2026-06-25","Diksha",8.0],["2026-06-26","Diksha",16.0],["2026-06-27","Diksha",13.0],["2026-06-28","Diksha",3.0],["2026-06-29","Diksha",5.0],["2026-06-30","Diksha",8.0],["2026-07-01","Diksha",15.0],["2026-07-02","Diksha",1.0],["2026-07-05","Diksha",1.0],["2026-07-07","Diksha",1.0],["2026-07-18","Diksha",1.0],["2026-07-19","Diksha",2.0],["2026-07-27","Diksha",1.0]],"new_clicks":[["2026-07-02",5.0,0.0,3.0,1.0,3.0,4.0,0.0],["2026-07-03",3.0,8.0,1.0,0.0,1.0,4.0,3.0],["2026-07-04",2.0,0.0,1.0,0.0,2.0,0.0,0.0],["2026-07-05",1.0,0.0,0.0,0.0,0.0,0.0,0.0],["2026-07-06",5.0,8.0,1.0,1.0,2.0,1.0,1.0],["2026-07-07",1.0,3.0,10.0,1.0,4.0,3.0,0.0],["2026-07-08",0.0,11.0,4.0,0.0,3.0,6.0,1.0],["2026-07-09",0.0,9.0,4.0,0.0,3.0,4.0,1.0],["2026-07-10",0.0,7.0,4.0,4.0,3.0,2.0,2.0],["2026-07-11",0.0,2.0,0.0,0.0,0.0,0.0,1.0],["2026-07-12",0.0,0.0,1.0,0.0,1.0,4.0,0.0],["2026-07-13",0.0,7.0,2.0,0.0,3.0,1.0,0.0],["2026-07-14",0.0,2.0,6.0,2.0,0.0,1.0,4.0],["2026-07-15",0.0,9.0,3.0,0.0,1.0,2.0,5.0],["2026-07-16",3.0,8.0,2.0,2.0,1.0,3.0,2.0],["2026-07-17",0.0,5.0,2.0,4.0,0.0,2.0,0.0],["2026-07-18",0.0,3.0,0.0,0.0,0.0,0.0,2.0],["2026-07-19",1.0,0.0,0.0,0.0,0.0,0.0,0.0],["2026-07-20",0.0,9.0,7.0,3.0,1.0,2.0,3.0],["2026-07-21",0.0,7.0,7.0,3.0,2.0,1.0,3.0],["2026-07-22",0.0,16.0,3.0,3.0,1.0,3.0,9.0],["2026-07-23",0.0,15.0,1.0,4.0,5.0,1.0,2.0],["2026-07-24",0.0,11.0,0.0,3.0,1.0,3.0,0.0],["2026-07-25",0.0,4.0,0.0,4.0,1.0,1.0,0.0],["2026-07-26",0.0,0.0,0.0,0.0,0.0,0.0,0.0],["2026-07-27",0.0,20.0,0.0,6.0,2.0,4.0,1.0],["2026-07-28",0.0,13.0,0.0,3.0,4.0,1.0,1.0],["2026-07-29",1.0,4.0,0.0,1.0,1.0,0.0,2.0]],"old_logs":[["2026-04-07","AL","Follow up to complete the survey",50.0],["2026-04-07","AL","Onboarding Member",14.0],["2026-04-07","Christian","Follow up to complete the survey",30.0],["2026-04-07","Christian","Onboarding Member",12.0],["2026-04-08","AL","Follow up to complete the survey",53.0],["2026-04-08","AL","Onboarding Member",22.0],["2026-04-08","Christian","Follow up to complete the survey",88.0],["2026-04-08","Christian","Onboarding Member",18.0],["2026-04-09","Christian","Follow up to complete the survey",15.0],["2026-04-09","Christian","Onboarding Member",21.0],["2026-04-10","Christian","Follow up to complete the survey",55.0],["2026-04-10","Christian","Onboarding Member",21.0],["2026-04-11","Christian","Onboarding Member",16.0],["2026-04-12","Christian","Follow up to complete the survey",50.0],["2026-04-13","Christian","Follow up to complete the survey",80.0],["2026-04-13","Christian","Onboarding Member",25.0],["2026-04-14","AL","Follow up to complete the survey",63.0],["2026-04-14","AL","Onboarding Member",17.0],["2026-04-14","Christian","Follow up to complete the survey",70.0],["2026-04-14","Christian","Onboarding Member",13.0],["2026-04-15","AL","Follow up to complete the survey",150.0],["2026-04-15","AL","Onboarding Member",10.0],["2026-04-15","Christian","Follow up to complete the survey",0.0],["2026-04-15","Christian","Onboarding Member",7.0],["2026-04-16","Christian","Onboarding Member",13.0],["2026-04-17","AL","Follow up to complete the survey",120.0],["2026-04-17","AL","Onboarding Member",17.0],["2026-04-17","Christian","Follow up to complete the survey",70.0],["2026-04-17","Christian","Onboarding Member",7.0],["2026-04-19","Christian","Onboarding Member",21.0],["2026-04-20","Christian","Follow up to complete the survey",75.0],["2026-04-20","Christian","Onboarding Member",13.0],["2026-04-21","Christian","Follow up to complete the survey",50.0],["2026-04-21","Christian","Onboarding Member",15.0],["2026-04-22","Christian","Follow up to complete the survey",55.0],["2026-04-22","Christian","Onboarding Member",21.0],["2026-04-24","AL","Follow up to complete the survey",100.0],["2026-04-24","AL","Onboarding Member",11.0],["2026-04-25","Christian","Follow up to complete the survey",35.0],["2026-04-25","Christian","Onboarding Member",23.0],["2026-04-26","Christian","Follow up to complete the survey",10.0],["2026-04-26","Christian","Onboarding Member",25.0],["2026-04-27","Christian","Follow up to complete the survey",55.0],["2026-04-27","Christian","Onboarding Member",21.0],["2026-04-28","Christian","Follow up to complete the survey",25.0],["2026-04-28","Christian","Onboarding Member",19.0],["2026-04-29","Christian","Follow up to complete the survey",0.0],["2026-04-29","Christian","Onboarding Member",30.0],["2026-05-01","AL","Follow up to complete the survey",50.0],["2026-05-02","Mohammed","Onboarding Member",5.0],["2026-05-04","Mohammed","Onboarding Member",16.0],["2026-05-05","Mohammed","Onboarding Member",22.0],["2026-05-06","Mohammed","Onboarding Member",21.0],["2026-05-07","Mohammed","Onboarding Member",27.0],["2026-05-19","Kevin","Onboarding Member",300.0],["2026-05-26","Kevin","Onboarding Member",76.0],["2026-05-27","Kevin","Onboarding Member",30.0],["2026-05-28","Kevin","Follow up to complete the survey",27.0],["2026-05-28","Kevin","Onboarding Member",27.0],["2026-06-01","Kevin","Onboarding Member",50.0],["2026-06-02","Kevin","Follow up to complete the survey",30.0],["2026-06-02","Kevin","Onboarding Member",50.0],["2026-06-04","Kevin","Onboarding Member",46.0],["2026-06-08","Kevin","Onboarding Member",50.0],["2026-06-12","Kevin","Onboarding Member",50.0],["2026-06-13","Kevin","Onboarding Member",20.0],["2026-06-16","Kevin","Onboarding Member",50.0],["2026-06-17","Kevin","Onboarding Member",50.0],["2026-06-18","Kevin","Onboarding Member",40.0],["2026-06-23","Kevin","Onboarding Member",34.0],["2026-06-24","Diksha","Onboarding Member",5.0],["2026-06-25","Diksha","Follow up to complete the survey",5.0],["2026-06-25","Diksha","Onboarding Member",13.0],["2026-06-26","Diksha","Follow up to complete the survey",15.0],["2026-06-26","Diksha","Onboarding Member",25.0],["2026-06-29","Diksha","Follow up to complete the survey",12.0],["2026-06-29","Diksha","Onboarding Member",17.0],["2026-06-30","Diksha","Follow up to complete the survey",13.0],["2026-06-30","Diksha","Onboarding Member",15.0],["2026-07-01","Diksha","Follow up to complete the survey",9.0],["2026-07-01","Diksha","Onboarding Member",20.0],["2026-07-02","John","Follow up to complete the survey",13.0],["2026-07-02","John","Onboarding Member",27.0],["2026-07-02","Kevin","Follow up to complete the survey",25.0],["2026-07-02","Kevin","Onboarding Member",25.0],["2026-07-03","Diksha","Follow up to complete the survey",15.0],["2026-07-03","Diksha","Onboarding Member",20.0],["2026-07-03","John","Follow up to complete the survey",15.0],["2026-07-03","John","Onboarding Member",41.0],["2026-07-06","Diksha","Follow up to complete the survey",38.0],["2026-07-06","Diksha","Onboarding Member",17.0],["2026-07-06","John","Follow up to complete the survey",19.0],["2026-07-06","John","Onboarding Member",25.0],["2026-07-07","John","Follow up to complete the survey",70.0],["2026-07-07","John","Onboarding Member",36.0],["2026-07-08","Diksha","Follow up to complete the survey",22.0],["2026-07-08","Diksha","Onboarding Member",15.0],["2026-07-08","John","Follow up to complete the survey",31.0],["2026-07-08","John","Onboarding Member",22.0]],"new_logs":[{"d":"2026-07-09","rep":"Diksha","on":10,"fu1":15,"fu2":10,"fuc":3,"mb":0,"mh":0,"dc":0,"df":2,"sales":0.0,"c_on":"","c_fu1":"","c_fu2":"","offers":[]},{"d":"2026-07-09","rep":"John","on":22,"fu1":14,"fu2":13,"fuc":4,"mb":1,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"","c_fu1":"","c_fu2":"","offers":[]},{"d":"2026-07-10","rep":"Diksha","on":22,"fu1":10,"fu2":14,"fuc":4,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-B","c_fu1":"FU1-C","c_fu2":"FU2-C","offers":["Millionaires Mentorship"]},{"d":"2026-07-13","rep":"Diksha","on":14,"fu1":21,"fu2":11,"fuc":3,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-B","c_fu1":"FU1-C","c_fu2":"FU2-C","offers":["Millionaires Mentorship","Eprenz Story"]},{"d":"2026-07-13","rep":"John","on":15,"fu1":10,"fu2":14,"fuc":2,"mb":0,"mh":0,"dc":0,"df":0,"sales":1.0,"c_on":"ON-B","c_fu1":"FU1-C","c_fu2":"FU2-C","offers":["Millionaires Mentorship"]},{"d":"2026-07-14","rep":"Diksha","on":10,"fu1":14,"fu2":12,"fuc":1,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Millionaires Mentorship","Eprenz Story"]},{"d":"2026-07-14","rep":"John","on":17,"fu1":15,"fu2":10,"fuc":2,"mb":0,"mh":0,"dc":0,"df":1,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Millionaires Mentorship"]},{"d":"2026-07-15","rep":"Diksha","on":14,"fu1":8,"fu2":13,"fuc":4,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Millionaires Mentorship","Eprenz Club"]},{"d":"2026-07-16","rep":"Diksha","on":14,"fu1":13,"fu2":7,"fuc":2,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Eprenz Club"]},{"d":"2026-07-17","rep":"Diksha","on":17,"fu1":13,"fu2":11,"fuc":1,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Millionaires Mentorship","Eprenz Club"]},{"d":"2026-07-17","rep":"John","on":15,"fu1":15,"fu2":10,"fuc":12,"mb":0,"mh":0,"dc":0,"df":1,"sales":0.0,"c_on":"ON-B","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Eprenz Story"]},{"d":"2026-07-17","rep":"John","on":15,"fu1":13,"fu2":10,"fuc":12,"mb":1,"mh":0,"dc":0,"df":1,"sales":0.0,"c_on":"ON-B","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Eprenz Story"]},{"d":"2026-07-17","rep":"John","on":19,"fu1":15,"fu2":10,"fuc":1,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-B","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Eprenz Story"]},{"d":"2026-07-20","rep":"Diksha","on":20,"fu1":16,"fu2":10,"fuc":1,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Eprenz Club"]},{"d":"2026-07-21","rep":"Diksha","on":22,"fu1":13,"fu2":14,"fuc":4,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Eprenz Club"]},{"d":"2026-07-22","rep":"Diksha","on":22,"fu1":19,"fu2":13,"fuc":6,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-A","c_fu2":"FU2-A","offers":["Millionaires Mentorship","Eprenz Club"]},{"d":"2026-07-23","rep":"Diksha","on":16,"fu1":16,"fu2":18,"fuc":3,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-C","c_fu1":"FU1-B","c_fu2":"FU2-B","offers":["Millionaires Mentorship","Eprenz Club"]},{"d":"2026-07-24","rep":"Diksha","on":24,"fu1":14,"fu2":10,"fuc":1,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-B","c_fu2":"FU2-B","offers":["Millionaires Mentorship","GFIS Speaker"]},{"d":"2026-07-27","rep":"Diksha","on":36,"fu1":15,"fu2":14,"fuc":12,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-B","c_fu2":"FU2-B","offers":["Eprenz Club"]},{"d":"2026-07-28","rep":"Diksha","on":16,"fu1":28,"fu2":14,"fuc":6,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-A","c_fu1":"FU1-B","c_fu2":"FU2-B","offers":["Discovery only"]},{"d":"2026-07-29","rep":"Diksha","on":12,"fu1":14,"fu2":26,"fuc":3,"mb":0,"mh":0,"dc":0,"df":0,"sales":0.0,"c_on":"ON-D","c_fu1":"FU1-B","c_fu2":"FU2-B","offers":["Eprenz Club"]}],"mn_daily":[["2026-04-07",3.0,14.0],["2026-04-08",2.0,16.0],["2026-04-09",2.0,6.0],["2026-04-10",2.0,3.0],["2026-04-11",0.0,5.0],["2026-04-12",1.0,3.0],["2026-04-13",2.0,10.0],["2026-04-14",1.0,18.0],["2026-04-15",2.0,11.0],["2026-04-16",1.0,4.0],["2026-04-17",1.0,14.0],["2026-04-18",3.0,3.0],["2026-04-19",0.0,5.0],["2026-04-20",0.0,1.0],["2026-04-21",1.0,6.0],["2026-04-22",1.0,12.0],["2026-04-23",1.0,3.0],["2026-04-24",2.0,9.0],["2026-04-25",0.0,2.0],["2026-04-26",1.0,5.0],["2026-04-27",0.0,4.0],["2026-04-28",0.0,9.0],["2026-04-29",2.0,8.0],["2026-04-30",2.0,8.0],["2026-05-01",0.0,7.0],["2026-05-02",0.0,4.0],["2026-05-03",0.0,6.0],["2026-05-04",1.0,6.0],["2026-05-05",3.0,4.0],["2026-05-06",1.0,4.0],["2026-05-07",1.0,1.0],["2026-05-08",0.0,1.0],["2026-05-09",0.0,2.0],["2026-05-10",0.0,3.0],["2026-05-11",0.0,3.0],["2026-05-12",1.0,8.0],["2026-05-13",0.0,5.0],["2026-05-14",1.0,3.0],["2026-05-15",0.0,0.0],["2026-05-16",0.0,1.0],["2026-05-17",2.0,6.0],["2026-05-18",0.0,5.0],["2026-05-19",1.0,5.0],["2026-05-20",1.0,1.0],["2026-05-21",0.0,0.0],["2026-05-22",0.0,0.0],["2026-05-23",0.0,0.0],["2026-05-24",0.0,0.0],["2026-05-25",0.0,0.0],["2026-05-26",0.0,0.0],["2026-05-27",8.0,39.0],["2026-05-28",0.0,0.0],["2026-05-29",0.0,0.0],["2026-05-30",0.0,0.0],["2026-05-31",0.0,0.0],["2026-06-01",0.0,0.0],["2026-06-02",0.0,0.0],["2026-06-03",3.0,23.0],["2026-06-04",0.0,0.0],["2026-06-05",0.0,0.0],["2026-06-06",0.0,0.0],["2026-06-07",0.0,0.0],["2026-06-08",0.0,0.0],["2026-06-09",0.0,0.0],["2026-06-10",7.0,25.0],["2026-06-11",1.0,3.0],["2026-06-12",0.0,5.0],["2026-06-13",0.0,2.0],["2026-06-14",1.0,1.0],["2026-06-15",0.0,0.0],["2026-06-16",1.0,3.0],["2026-06-17",1.0,3.0],["2026-06-18",0.0,11.0],["2026-06-19",0.0,8.0],["2026-06-20",0.0,3.0],["2026-06-21",2.0,2.0],["2026-06-22",1.0,1.0],["2026-06-23",1.0,4.0],["2026-06-24",2.0,7.0],["2026-06-25",2.0,8.0],["2026-06-26",1.0,8.0],["2026-06-27",0.0,4.0],["2026-06-28",2.0,4.0],["2026-06-29",1.0,4.0],["2026-06-30",3.0,7.0],["2026-07-01",3.0,4.0],["2026-07-02",2.0,5.0],["2026-07-03",3.0,11.0],["2026-07-04",1.0,4.0],["2026-07-05",0.0,0.0],["2026-07-06",1.0,4.0],["2026-07-07",2.0,6.0],["2026-07-08",3.0,5.0],["2026-07-09",2.0,6.0],["2026-07-10",1.0,5.0],["2026-07-11",1.0,1.0],["2026-07-12",2.0,1.0],["2026-07-13",0.0,3.0],["2026-07-14",2.0,5.0],["2026-07-15",2.0,4.0],["2026-07-16",2.0,3.0],["2026-07-17",0.0,1.0],["2026-07-18",0.0,1.0],["2026-07-19",0.0,1.0],["2026-07-20",2.0,5.0],["2026-07-21",1.0,7.0],["2026-07-22",1.0,6.0],["2026-07-23",1.0,5.0],["2026-07-24",1.0,5.0],["2026-07-25",1.0,4.0],["2026-07-26",1.0,2.0],["2026-07-27",1.0,11.0],["2026-07-28",1.0,7.0],["2026-07-29",0.0,0.0]],"dq":{"log_rows":21,"date_blank":2,"date_mismatch":6}};
+const R={DATE:0,HOUR:1,WD:2,REP:3,COMP:4,LP:5,READY:6,CHAL:7,MATCH:8,PART:9,REV:10,STAGE:11,TT:12};
+const REPS=['Christian','Kevin','Diksha','AL','David','John','Mohammed'];
+const INACTIVE=new Set(['Christian','AL','Mohammed']);
+const DEPARTED=new Set(['John']);
+const PAL={Christian:'#1A3329',Kevin:'#C4943A',Diksha:'#5E7D6C',AL:'#8A9B8F',David:'#B4533A',John:'#7A6248',Mohammed:'#C9BFA8'};
+const VARS=[{k:'nv1',label:'A',name:'No Video 1'},{k:'nv2',label:'B',name:'No Video 2'},{k:'v1',label:'C',name:'Video 1'},{k:'v2',label:'D',name:'Video 2'}];
+const VCOL={nv1:'#1A3329',nv2:'#5E7D6C',v1:'#C4943A',v2:'#B4533A'};
+const AB_START='2026-07-02', NEW_LOG_START=D.new_logs[0].d, LAST_DAY='2026-07-30';
+const STAGES=[['on','Onboarding','#1A3329'],['fu1','Follow-up 1','#C4943A'],['fu2','Follow-up 2','#5E7D6C'],['fuc','Post-completion','#B4533A']];
+const TPL={
+ 'ON-A':'Almost approved, complete the Compass',
+ 'ON-B':'Thanks for requesting to join, personalised profile note',
+ 'ON-C':'Pre-approved, Compass gives you a Snapshot and next step',
+ 'ON-D':'Welcome, what would make this community valuable for you',
+ 'FU1-A':'Checking in, would you still like to complete the Compass',
+ 'FU1-B':'Would you still like to join, Compass is the final step',
+ 'FU1-C':'Curious, are you running, building, or exploring',
+ 'FU2-A':'Quick question, exploring an idea, building, or already running',
+ 'FU2-B':'Quick question, starting, growing, profitable, or preparing to exit',
+ 'FU2-C':'Just checking, exploring, building, or already running'};
+const isQual=r=>r[R.COMP]===1&&r[R.READY]>=2&&r[R.MATCH]>=1;
+const isHot=r=>r[R.READY]>=3&&r[R.MATCH]===2;
+let PERIOD='W', SEL=new Set(REPS), DRILL=null;
+function bucket(ds,p){const d=new Date(ds+'T00:00:00');
+ if(p==='M')return ds.slice(0,7);
+ if(p==='Q')return d.getFullYear()+'-Q'+(Math.floor(d.getMonth()/3)+1);
+ const t=new Date(d);t.setDate(t.getDate()+3-((t.getDay()+6)%7));
+ const w1=new Date(t.getFullYear(),0,4);
+ return t.getFullYear()+'-W'+String(1+Math.round(((t-w1)/864e5-3+((w1.getDay()+6)%7))/7)).padStart(2,'0');}
+function bLab(b,p){if(p==='W')return b.replace('-W',' W');
+ if(p==='M'){const[y,m]=b.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+y;}
+ return b.replace('-',' ');}
+const fmt=n=>n>=1000?(n/1000).toFixed(1).replace('.0','')+'k':Math.round(n*10)/10;
+const pct=(a,b)=>b>0?Math.round(a/b*1000)/10:0;
+const recs=()=>D.recs.filter(r=>SEL.has(r[R.REP]));
+const logs=()=>D.new_logs.filter(l=>SEL.has(l.rep));
+Chart.defaults.font.family="'DM Sans',sans-serif";Chart.defaults.color='#6B7A72';Chart.defaults.borderColor='#E3DED2';
+let charts={};
+function mk(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),cfg);}
+const legend={position:'bottom',labels:{boxWidth:10,font:{size:11}}};
+
+// chips
+REPS.forEach(r=>{const c=document.createElement('button');c.className='chip';
+ c.innerHTML=`<span class="dot" style="background:${PAL[r]}"></span>${r}`;
+ c.onclick=()=>{if(SEL.has(r)&&SEL.size===1)SEL=new Set(REPS);
+  else if(SEL.size===REPS.length)SEL=new Set([r]);
+  else if(SEL.has(r))SEL.delete(r);else SEL.add(r);
+  document.querySelectorAll('.chip').forEach((el,i)=>el.classList.toggle('off',!SEL.has(REPS[i])));renderAll();};
+ document.getElementById('chips').appendChild(c);});
+
+function buildPeriods(p){const M={};const g=b=>M[b]=M[b]||{visits:0,resp:0,comp:0,qual:0,hot:0,out:0,on:0,fu1:0,fu2:0,fuc:0,yes:0,join:0};
+ recs().forEach(r=>{const x=g(bucket(r[R.DATE],p));x.resp++;x.comp+=r[R.COMP];if(isQual(r))x.qual++;if(isHot(r))x.hot++;});
+ D.old_clicks.forEach(([d,r,c])=>{if(SEL.has(r))g(bucket(d,p)).visits+=+c;});
+ D.new_clicks.forEach(r=>{const x=g(bucket(r[0],p));
+  if(SEL.has('Kevin'))x.visits+=r[1];if(SEL.has('Diksha'))x.visits+=r[2];if(SEL.has('John'))x.visits+=r[3];
+  x.visits+=r[4]+r[5]+r[6]+r[7];});
+ D.old_logs.forEach(([d,r,m,v])=>{if(SEL.has(r)){const x=g(bucket(d,p));x.out+=+v;x.on+=+v;}});
+ logs().forEach(l=>{const x=g(bucket(l.d,p));x.on+=l.on;x.fu1+=l.fu1;x.fu2+=l.fu2;x.fuc+=l.fuc;x.out+=l.on+l.fu1+l.fu2+l.fuc;});
+ D.mn_daily.forEach(([d,j,y])=>{const x=g(bucket(d,p));x.join+=j;x.yes+=y;});
+ return Object.keys(M).sort().map(b=>({b,...M[b]}));}
+function pdelta(now,prev,rate){if(prev==null)return['','fl'];
+ if(rate){const d=Math.round((now-prev)*10)/10;return[(d>0?'▲ +':d<0?'▼ ':'• ')+d+' pp vs prev',d>0?'up':d<0?'dn':'fl'];}
+ if(prev===0)return['new','fl'];const d=Math.round((now-prev)/prev*100);
+ return[(d>0?'▲ +':d<0?'▼ ':'• ')+d+'% vs prev '+({W:'week',M:'month',Q:'quarter'})[PERIOD],d>0?'up':d<0?'dn':'fl'];}
+
+function renderKPIs(){const P=buildPeriods(PERIOD),cur=P[P.length-1]||{},prev=P[P.length-2]||null;
+ const pn=bLab(cur.b||'',PERIOD),v=(o,k)=>o?o[k]:null;
+ const sr=o=>o&&o.visits>0?pct(o.resp,o.visits):0, cr=o=>o&&o.resp>0?pct(o.comp,o.resp):0, jt=o=>o&&o.yes>0?pct(o.join,o.yes):0;
+ const cards=[
+  {n:fmt(cur.out||0),l:'Outreach messages',d:pdelta(cur.out||0,v(prev,'out'))},
+  {n:fmt(cur.visits||0),l:'Survey visits',d:pdelta(cur.visits||0,v(prev,'visits'))},
+  {n:sr(cur)+'%',l:'Visit → start rate',d:pdelta(sr(cur),prev?sr(prev):null,1)},
+  {n:fmt(cur.resp||0),l:'Responses',d:pdelta(cur.resp||0,v(prev,'resp'))},
+  {n:fmt(cur.comp||0),l:'Completed',d:pdelta(cur.comp||0,v(prev,'comp'))},
+  {n:cr(cur)+'%',l:'Completion rate',d:pdelta(cr(cur),prev?cr(prev):null,1)},
+  {n:fmt(cur.qual||0),l:'Qualified leads',d:pdelta(cur.qual||0,v(prev,'qual'))},
+  {n:fmt(cur.hot||0),l:'Hot leads',d:pdelta(cur.hot||0,v(prev,'hot'))},
+  {n:fmt(cur.join||0)+'/'+fmt(cur.yes||0),l:'MN joined / yes',d:pdelta(jt(cur),prev?jt(prev):null,1)}];
+ document.getElementById('kpiRow').innerHTML=cards.map(k=>
+  `<div class="kpi"><div class="plab">${pn}</div><div class="num">${k.n}</div><div class="lab">${k.l}</div><div class="sub ${k.d[1]}">${k.d[0]}</div></div>`).join('');}
+
+function renderCompare(){const all=buildPeriods(PERIOD),N={W:8,M:6,Q:4}[PERIOD],P=all.slice(-N);
+ const cur=P[P.length-1],prev=P[P.length-2]||null;
+ const sr=o=>o.visits>0?pct(o.resp,o.visits):0,cr=o=>o.resp>0?pct(o.comp,o.resp):0,jt=o=>o.yes>0?pct(o.join,o.yes):0;
+ const rows=[['Outreach messages',o=>o.out,0],['Survey visits',o=>o.visits,0],['Responses',o=>o.resp,0],['Visit → start %',sr,1],
+  ['Completed',o=>o.comp,0],['Completion %',cr,1],['Qualified leads',o=>o.qual,0],['Hot leads',o=>o.hot,0],
+  ['MN said yes',o=>o.yes,0],['MN joined',o=>o.join,0],['Join-through %',jt,1]];
+ const dt=(n,p,rate)=>{if(p==null)return'<span class="fl">–</span>';
+  if(rate){const d=Math.round((n-p)*10)/10;return`<span class="${d>0?'up':d<0?'dn':'fl'}">${d>0?'+':''}${d} pp</span>`;}
+  if(p===0)return'<span class="fl">new</span>';const d=Math.round((n-p)/p*100);
+  return`<span class="${d>0?'up':d<0?'dn':'fl'}">${d>0?'+':''}${d}%</span>`;};
+ let h='<thead><tr><th>Metric</th>'+P.map((o,i)=>`<th class="r ${i===P.length-1?'cur':''}">${bLab(o.b,PERIOD)}${i===P.length-1?' *':''}</th>`).join('')+'<th class="r">Δ vs prev</th></tr></thead><tbody>';
+ rows.forEach(([n,fn,rate])=>{h+='<tr><td>'+n+'</td>'+P.map((o,i)=>`<td class="r ${i===P.length-1?'cur':''}">${rate?fn(o)+'%':fmt(fn(o))}</td>`).join('')+`<td class="r">${dt(fn(cur),prev?fn(prev):null,rate)}</td></tr>`;});
+ document.getElementById('cmpTable').innerHTML=h+'</tbody>';
+ document.getElementById('cmpHint').textContent=`Last ${P.length} ${({W:'weeks',M:'months',Q:'quarters'})[PERIOD]} side by side · * latest period incomplete, data through Jul 30 · respects rep filter`;}
+
+function totals(){const rr=recs();const t={resp:rr.length,comp:rr.filter(r=>r[R.COMP]===1).length,
+ qual:rr.filter(isQual).length,hot:rr.filter(isHot).length,visits:0,out:0};
+ D.old_clicks.forEach(([d,r,c])=>{if(SEL.has(r))t.visits+=+c;});
+ D.new_clicks.forEach(r=>{if(SEL.has('Kevin'))t.visits+=r[1];if(SEL.has('Diksha'))t.visits+=r[2];if(SEL.has('John'))t.visits+=r[3];t.visits+=r[4]+r[5]+r[6]+r[7];});
+ D.old_logs.forEach(([d,r,m,v])=>{if(SEL.has(r))t.out+=+v;});
+ logs().forEach(l=>t.out+=l.on+l.fu1+l.fu2+l.fuc);
+ return t;}
+
+function renderFunnel(){const t=totals();
+ const yes=D.mn_daily.reduce((s,r)=>s+r[2],0),join=D.mn_daily.reduce((s,r)=>s+r[1],0);
+ const steps=[['Outreach messages',t.out],['Survey visits',t.visits],['Responses',t.resp],['Completed',t.comp],['Qualified leads',t.qual],['Hot leads',t.hot],['Said yes to MN',yes],['Joined MN',join]];
+ const max=steps[0][1]||1;
+ document.getElementById('funnelBox').innerHTML=steps.map((s,i)=>{
+  const c=i===0?'':pct(s[1],steps[i-1][1])+'% of prev';
+  const col=s[0].includes('Qualified')||s[0].includes('Hot')?'#5E7D6C':(i>=6?'#C4943A':'#1A3329');
+  return `<div class="f-row"><div class="f-lab">${s[0]}</div><div class="f-wrap"><div class="f-bar" style="width:${Math.max(4,s[1]/max*100)}%;background:${col}">${fmt(s[1])}</div></div><div class="f-pct">${c}</div></div>`;}).join('');}
+
+function repTotals(){const rt={};REPS.forEach(r=>rt[r]={t:0,c:0,q:0,h:0,visits:0,out:0,on:0,fu1:0,fu2:0,fuc:0,days:0});
+ D.recs.forEach(r=>{const x=rt[r[R.REP]];if(!x)return;x.t++;x.c+=r[R.COMP];if(isQual(r))x.q++;if(isHot(r))x.h++;});
+ D.old_clicks.forEach(([d,r,c])=>{if(rt[r])rt[r].visits+=+c;});
+ D.new_clicks.forEach(r=>{rt.Kevin.visits+=r[1];rt.Diksha.visits+=r[2];rt.John.visits+=r[3];});
+ D.old_logs.forEach(([d,r,m,v])=>{if(rt[r]){rt[r].out+=+v;rt[r].on+=+v;}});
+ D.new_logs.forEach(l=>{const x=rt[l.rep];if(!x)return;x.on+=l.on;x.fu1+=l.fu1;x.fu2+=l.fu2;x.fuc+=l.fuc;x.out+=l.on+l.fu1+l.fu2+l.fuc;x.days++;});
+ return rt;}
+
+function spark(rep){const wk={};D.recs.filter(r=>r[R.REP]===rep).forEach(r=>{const b=bucket(r[R.DATE],'W');wk[b]=(wk[b]||0)+1;});
+ const ks=Object.keys(wk).sort(),vs=ks.map(k=>wk[k]);if(!vs.length)return'';
+ const mx=Math.max(...vs),W=84,H=22;
+ return `<svg class="spark" width="${W}" height="${H}"><polyline points="${vs.map((v,i)=>`${(i/(vs.length-1||1)*W).toFixed(1)},${(H-2-v/mx*(H-4)).toFixed(1)}`).join(' ')}" fill="none" stroke="${PAL[rep]}" stroke-width="2"/></svg>`;}
+
+function renderRepTable(){const rt=window._rt=repTotals();
+ const rows=REPS.slice().sort((a,b)=>rt[b].t-rt[a].t);
+ const rates=rows.map(r=>pct(rt[r].c,rt[r].t)),best=Math.max(...rates),worst=Math.min(...rates);
+ document.getElementById('repTable').innerHTML=`<thead><tr><th>Rep</th><th class="r">Outreach</th><th class="r">Visits</th><th class="r">Resp</th><th class="r">Start %</th><th class="r">Compl</th><th class="r">Compl %</th><th class="r">Qual</th><th class="r">Hot</th><th class="r">Resp/100 msgs</th><th>Trend</th></tr></thead><tbody>`+
+ rows.map(r=>{const x=rt[r],cr=pct(x.c,x.t);
+  const st=DEPARTED.has(r)?'<span class="tag gone">LEFT TEAM</span>':(INACTIVE.has(r)?'<span class="tag off">INACTIVE</span>':'<span class="tag on">ACTIVE</span>');
+  return `<tr class="click" data-rep="${r}" ${DRILL===r?'class="sel click"':''}><td class="rep-name">${r}${st}</td>
+  <td class="r">${fmt(x.out)}</td><td class="r">${fmt(x.visits)}</td><td class="r">${x.t}</td>
+  <td class="r">${x.visits>0?pct(x.t,x.visits)+'%':'–'}</td><td class="r">${x.c}</td>
+  <td class="r ${cr===best?'best':cr===worst?'worst':''}">${cr}%</td><td class="r"><b>${x.q}</b></td><td class="r">${x.h}</td>
+  <td class="r">${x.out>0?pct(x.t,x.out):'–'}</td><td>${spark(r)}</td></tr>`;}).join('')+'</tbody>';
+ document.querySelectorAll('#repTable tbody tr').forEach(tr=>tr.onclick=()=>openDrill(tr.dataset.rep));}
+
+function openDrill(rep){DRILL=rep;
+ document.querySelectorAll('#repTable tbody tr').forEach(tr=>tr.classList.toggle('sel',tr.dataset.rep===rep));
+ document.getElementById('drill').classList.add('open');
+ document.getElementById('drillName').textContent=rep+(DEPARTED.has(rep)?' (left team)':INACTIVE.has(rep)?' (inactive)':'');
+ const x=window._rt[rep],rr=D.recs.filter(r=>r[R.REP]===rep);
+ const tts=rr.filter(r=>r[R.COMP]===1&&r[R.TT]>0).map(r=>r[R.TT]).sort((a,b)=>a-b);
+ const med=tts.length?Math.round(tts[Math.floor(tts.length/2)]/60):0;
+ document.getElementById('drillKpis').innerHTML=[[x.t,'Responses'],[pct(x.c,x.t)+'%','Completion'],[x.q,'Qualified'],[x.h,'Hot'],
+  [x.visits>0?pct(x.t,x.visits)+'%':'–','Visit→start'],[x.out>0?pct(x.t,x.out):'–','Resp/100 msgs'],
+  [med+' min','Median time'],[x.days||'–','Days logged']]
+  .map(k=>`<div class="dk"><div class="num">${k[0]}</div><div class="lab">${k[1]}</div></div>`).join('');
+ const wk={};rr.forEach(r=>{const b=bucket(r[R.DATE],'W');wk[b]=wk[b]||[0,0];wk[b][0]++;wk[b][1]+=r[R.COMP];});
+ const ks=Object.keys(wk).sort();
+ mk('chDrill',{type:'bar',data:{labels:ks.map(k=>bLab(k,'W')),datasets:[
+  {label:'Completed',data:ks.map(k=>wk[k][1]),backgroundColor:PAL[rep]},
+  {label:'Partial',data:ks.map(k=>wk[k][0]-wk[k][1]),backgroundColor:'#E3DED2'}]},
+  options:{maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend}}});
+ const used={};D.new_logs.filter(l=>l.rep===rep).forEach(l=>['c_on','c_fu1','c_fu2'].forEach(k=>{if(l[k])used[l[k]]=(used[l[k]]||0)+1;}));
+ const uk=Object.keys(used).sort();
+ document.getElementById('drillTpl').innerHTML=uk.length?
+  `<table><thead><tr><th>Code</th><th class="r">Days used</th><th>Template</th></tr></thead><tbody>`+
+  uk.map(k=>`<tr><td><b>${k}</b></td><td class="r">${used[k]}</td><td style="white-space:normal;font-size:12px">${TPL[k]||'other'}</td></tr>`).join('')+'</tbody></table>'
+  :'<div class="note">No template logs for this rep. Only Diksha and John logged with the new method.</div>';
+ document.getElementById('drill').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function closeDrill(){DRILL=null;document.getElementById('drill').classList.remove('open');
+ document.querySelectorAll('#repTable tbody tr').forEach(tr=>tr.classList.remove('sel'));}
+
+function renderPeriodCharts(){const rr=recs(),reps=REPS.filter(r=>SEL.has(r));
+ const m={};rr.forEach(r=>{const b=bucket(r[R.DATE],PERIOD);m[b]=m[b]||{};m[b][r[R.REP]]=(m[b][r[R.REP]]||0)+1;});
+ const bs=Object.keys(m).sort();
+ mk('chTrend',{type:'bar',data:{labels:bs.map(b=>bLab(b,PERIOD)),datasets:reps.map(r=>({label:r,data:bs.map(b=>m[b][r]||0),backgroundColor:PAL[r]}))},
+  options:{maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend}}});
+ const rt=window._rt;
+ const qs=reps.slice().sort((a,b)=>rt[b].q-rt[a].q);
+ mk('chQual',{type:'bar',data:{labels:qs,datasets:[{label:'Qualified',data:qs.map(r=>rt[r].q),backgroundColor:qs.map(r=>PAL[r])},{label:'of which hot',data:qs.map(r=>rt[r].h),backgroundColor:'#C4943A'}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend}}});
+ const cm={};
+ D.old_clicks.forEach(([d,r,c])=>{if(!SEL.has(r))return;const b=bucket(d,PERIOD);cm[b]=cm[b]||{};cm[b][r]=(cm[b][r]||0)+ +c;});
+ D.new_clicks.forEach(row=>{const b=bucket(row[0],PERIOD);cm[b]=cm[b]||{};
+  if(SEL.has('Kevin'))cm[b].Kevin=(cm[b].Kevin||0)+row[1];
+  if(SEL.has('Diksha'))cm[b].Diksha=(cm[b].Diksha||0)+row[2];
+  if(SEL.has('John'))cm[b].John=(cm[b].John||0)+row[3];});
+ const cbs=Object.keys(cm).sort();
+ mk('chClicks',{type:'bar',data:{labels:cbs.map(b=>bLab(b,PERIOD)),datasets:reps.map(r=>({label:r,data:cbs.map(b=>cm[b][r]||0),backgroundColor:PAL[r]}))},
+  options:{maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend}}});
+ const sr=reps.filter(r=>rt[r].visits>=30).sort((a,b)=>pct(rt[b].t,rt[b].visits)-pct(rt[a].t,rt[a].visits));
+ mk('chStart',{type:'bar',data:{labels:sr,datasets:[{label:'Visit to start %',data:sr.map(r=>pct(rt[r].t,rt[r].visits)),backgroundColor:sr.map(r=>PAL[r])}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+ const mn={};D.mn_daily.forEach(([d,j,y])=>{const b=bucket(d,PERIOD);mn[b]=mn[b]||[0,0];mn[b][0]+=j;mn[b][1]+=y;});
+ const nb=Object.keys(mn).sort(),nl=nb.map(b=>bLab(b,PERIOD));
+ mk('chMN',{type:'bar',data:{labels:nl,datasets:[{label:'Said yes',data:nb.map(b=>mn[b][1]),backgroundColor:'#5E7D6C'},{label:'Joined',data:nb.map(b=>mn[b][0]),backgroundColor:'#C4943A'}]},
+  options:{maintainAspectRatio:false,plugins:{legend}}});
+ let cum=0;const loss=nb.map(b=>{cum+=mn[b][1]-mn[b][0];return cum;});
+ mk('chMNRate',{type:'line',data:{labels:nl,datasets:[
+  {label:'Join-through %',data:nb.map(b=>pct(mn[b][0],mn[b][1])),borderColor:'#1A3329',tension:.3,borderWidth:2,yAxisID:'y'},
+  {label:'Cumulative lost members',data:loss,borderColor:'#B4533A',borderDash:[5,4],tension:.3,borderWidth:2,yAxisID:'y2'}]},
+  options:{maintainAspectRatio:false,plugins:{legend},scales:{y:{ticks:{callback:v=>v+'%'}},y2:{position:'right',grid:{display:false}}}}});
+ document.getElementById('rangeLbl').textContent='Apr 7 – Jul 30, 2026 · '+({W:'weekly',M:'monthly',Q:'quarterly'})[PERIOD];}
+
+// ===== OUTREACH ENGINE =====
+function renderEngine(){const L=logs();
+ const tot={on:0,fu1:0,fu2:0,fuc:0,mb:0,mh:0,dc:0,df:0,sales:0};
+ L.forEach(l=>Object.keys(tot).forEach(k=>tot[k]+=l[k]));
+ const days=new Set(L.map(l=>l.d)).size||1;
+ const respAfter=D.recs.filter(r=>r[R.DATE]>=NEW_LOG_START&&SEL.has(r[R.REP]));
+ document.getElementById('engKpis').innerHTML=[
+  {n:fmt(tot.on+tot.fu1+tot.fu2+tot.fuc),l:'Messages logged',s:days+' days logged'},
+  {n:fmt(tot.on),l:'Onboarding',s:(tot.on/days).toFixed(1)+' per day'},
+  {n:fmt(tot.fu1+tot.fu2),l:'Survey follow-ups',s:'FU1 '+tot.fu1+' · FU2 '+tot.fu2},
+  {n:fmt(tot.fuc),l:'Post-completion',s:pct(tot.fuc,respAfter.filter(r=>r[R.COMP]===1).length)+'% of completions'},
+  {n:tot.mb+' / '+tot.mh,l:'Meetings booked / held',s:tot.mh===0?'none held yet':''},
+  {n:tot.dc,l:'Deals created',s:'$'+fmt(tot.sales)+' logged sales'}
+ ].map(k=>`<div class="kpi"><div class="num">${k.n}</div><div class="lab">${k.l}</div><div class="sub fl">${k.s}</div></div>`).join('');
+ const dd=[...new Set(L.map(l=>l.d))].sort();
+ mk('chStages',{type:'bar',data:{labels:dd.map(d=>d.slice(5)),datasets:STAGES.map(([k,lab,col])=>({label:lab,data:dd.map(d=>L.filter(l=>l.d===d).reduce((s,l)=>s+l[k],0)),backgroundColor:col}))},
+  options:{maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend}}});
+ const casc=[['Onboarding messages',tot.on],['First follow-ups',tot.fu1],['Second follow-ups',tot.fu2],['Responses in window',respAfter.length],['Completed in window',respAfter.filter(r=>r[R.COMP]===1).length],['Post-completion follow-ups',tot.fuc]];
+ const mx=casc[0][1]||1;
+ document.getElementById('cascadeBox').innerHTML=casc.map((s,i)=>{
+  const c=i===0?'':pct(s[1],casc[i-1][1])+'%';
+  return `<div class="f-row"><div class="f-lab" style="width:150px;font-size:11.5px">${s[0]}</div><div class="f-wrap" style="height:28px"><div class="f-bar" style="width:${Math.max(5,s[1]/mx*100)}%;background:${i>=3?'#C4943A':'#1A3329'};font-size:12.5px">${s[1]}</div></div><div class="f-pct" style="width:52px">${c}</div></div>`;}).join('');
+ document.getElementById('cascadeNote').textContent=`Follow-up load is ${pct(tot.fu1+tot.fu2,tot.on)}% of onboarding volume. Only ${pct(tot.fuc,respAfter.filter(r=>r[R.COMP]===1).length)}% of completions got a post-completion follow-up, and that is the message that carries the offer.`;
+ const dm={};D.recs.filter(r=>r[R.DATE]>=NEW_LOG_START&&SEL.has(r[R.REP])).forEach(r=>dm[r[R.DATE]]=(dm[r[R.DATE]]||0)+1);
+ mk('chEffort',{type:'bar',data:{labels:dd.map(d=>d.slice(5)),datasets:[
+  {type:'bar',label:'Messages logged',data:dd.map(d=>L.filter(l=>l.d===d).reduce((s,l)=>s+l.on+l.fu1+l.fu2+l.fuc,0)),backgroundColor:'#E3DED2',yAxisID:'y'},
+  {type:'line',label:'Responses that day',data:dd.map(d=>dm[d]||0),borderColor:'#C4943A',borderWidth:2.5,tension:.3,yAxisID:'y2'}]},
+  options:{maintainAspectRatio:false,plugins:{legend},scales:{y:{title:{display:true,text:'messages'}},y2:{position:'right',grid:{display:false},title:{display:true,text:'responses'}}}}});
+ let oldMsgs=0,oldDays=new Set();D.old_logs.forEach(([d,r,m,v])=>{if(SEL.has(r)){oldMsgs+=+v;oldDays.add(d);}});
+ const newMsgs=tot.on+tot.fu1+tot.fu2+tot.fuc;
+ document.getElementById('oldNewBox').innerHTML=`<table><thead><tr><th>Metric</th><th class="r">Old way</th><th class="r">New way</th></tr></thead><tbody>
+ <tr><td>Period covered</td><td class="r">Apr 7 – Jul 8</td><td class="r"><b>Jul 9 – Jul 30</b></td></tr>
+ <tr><td>Days with logs</td><td class="r">${oldDays.size}</td><td class="r"><b>${days}</b></td></tr>
+ <tr><td>Messages logged</td><td class="r">${fmt(oldMsgs)}</td><td class="r"><b>${fmt(newMsgs)}</b></td></tr>
+ <tr><td>Messages per logged day</td><td class="r">${(oldMsgs/(oldDays.size||1)).toFixed(1)}</td><td class="r"><b>${(newMsgs/days).toFixed(1)}</b></td></tr>
+ <tr><td>Stages tracked</td><td class="r">2</td><td class="r"><b>4 + meetings, deals, sales</b></td></tr>
+ <tr><td>Message text captured</td><td class="r">no</td><td class="r"><b>yes</b></td></tr></tbody></table>
+ <div class="note">Old way counted a single message total per medium. New way separates onboarding from three follow-up stages and records the actual script used, which is what makes template performance measurable at all.</div>`;}
+
+// ===== TEMPLATES =====
+function tplStats(){
+ const S={};
+ const add=(code,stage,l)=>{if(!code)return;S[code]=S[code]||{code,stage,days:0,msgs:0,resp:0,comp:0,qual:0,dates:new Set()};
+  const s=S[code];s.days++;s.dates.add(l.d);s.msgs+=stage==='on'?l.on:stage==='fu1'?l.fu1:l.fu2;};
+ logs().forEach(l=>{add(l.c_on,'on',l);add(l.c_fu1,'fu1',l);add(l.c_fu2,'fu2',l);});
+ // attribute responses by rep-day
+ const byRepDay={};
+ D.recs.filter(r=>SEL.has(r[R.REP])).forEach(r=>{const k=r[R.REP]+'|'+r[R.DATE];byRepDay[k]=byRepDay[k]||[0,0,0];
+  byRepDay[k][0]++;byRepDay[k][1]+=r[R.COMP];if(isQual(r))byRepDay[k][2]++;});
+ logs().forEach(l=>{const v=byRepDay[l.rep+'|'+l.d]||[0,0,0];
+  ['c_on','c_fu1','c_fu2'].forEach(k=>{const c=l[k];if(c&&S[c]){S[c].resp+=v[0];S[c].comp+=v[1];S[c].qual+=v[2];}});});
+ return Object.values(S);}
+
+function renderTemplates(){const S=tplStats();
+ const order={on:0,fu1:1,fu2:2};
+ S.sort((a,b)=>order[a.stage]-order[b.stage]||b.msgs-a.msgs);
+ const bestOn=S.filter(s=>s.stage==='on'&&s.msgs>=30).sort((a,b)=>pct(b.resp,b.msgs)-pct(a.resp,a.msgs))[0];
+ document.getElementById('tplTable').innerHTML=`<thead><tr><th>Code</th><th>Stage</th><th>Template</th><th class="r">Days used</th><th class="r">Msgs</th><th class="r">Resp</th><th class="r">Compl</th><th class="r">Compl %</th><th class="r">Resp/100 msgs</th></tr></thead><tbody>`+
+ S.map(s=>`<tr><td><b>${s.code}</b>${s===bestOn?'<span class="tag lead">BEST</span>':''}</td>
+  <td><span class="pill">${s.stage==='on'?'Onboarding':s.stage==='fu1'?'Follow-up 1':'Follow-up 2'}</span></td>
+  <td style="white-space:normal;font-size:12px;max-width:290px">${TPL[s.code]||'unclassified'}</td>
+  <td class="r">${s.days}</td><td class="r">${s.msgs}</td><td class="r">${s.resp}</td><td class="r">${s.comp}</td>
+  <td class="r">${pct(s.comp,s.resp)}%</td><td class="r"><b>${s.msgs>0?pct(s.resp,s.msgs):'–'}</b></td></tr>`).join('')+'</tbody>';
+ const on=S.filter(s=>s.stage==='on').sort((a,b)=>pct(b.resp,b.msgs)-pct(a.resp,a.msgs));
+ mk('chTplOn',{type:'bar',data:{labels:on.map(s=>s.code),datasets:[{label:'Responses per 100 messages',data:on.map(s=>pct(s.resp,s.msgs)),backgroundColor:on.map((s,i)=>i===0?'#C4943A':'#1A3329')}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{afterBody:it=>{const s=on[it[0].dataIndex];return TPL[s.code]||'';}}}}}});
+ const fu=S.filter(s=>s.stage!=='on').sort((a,b)=>pct(b.comp,b.resp)-pct(a.comp,a.resp));
+ mk('chTplFu',{type:'bar',data:{labels:fu.map(s=>s.code),datasets:[{label:'Completion % on days used',data:fu.map(s=>pct(s.comp,s.resp)),backgroundColor:fu.map(s=>s.stage==='fu1'?'#C4943A':'#5E7D6C')}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>v+'%'}}}}});
+ document.getElementById('tplLib').innerHTML=Object.keys(TPL).map(k=>{
+  const s=S.find(x=>x.code===k);
+  return `<div style="margin-bottom:9px"><b>${k}</b> <span class="pill">${s?s.days+' days · '+s.msgs+' msgs':'not used in window'}</span><div class="tpl-body">${TPL[k]}</div></div>`;}).join('');}
+
+function renderOffers(){const cnt={};logs().forEach(l=>l.offers.forEach(o=>cnt[o]=(cnt[o]||0)+1));
+ const ks=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+ mk('chOffers',{type:'doughnut',data:{labels:ks,datasets:[{data:ks.map(k=>cnt[k]),backgroundColor:['#1A3329','#C4943A','#5E7D6C','#B4533A','#C9BFA8','#8A9B8F']}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11}}}}}});
+ const rr=recs(),ch={};rr.forEach(r=>{if(r[R.CHAL])ch[r[R.CHAL]]=(ch[r[R.CHAL]]||0)+1;});
+ const top=Object.keys(ch).sort((a,b)=>ch[b]-ch[a]).slice(0,5);
+ const mentor=cnt['Millionaires Mentorship']||0,club=cnt['Eprenz Club']||0,story=cnt['Eprenz Story']||0;
+ const totOff=Object.values(cnt).reduce((a,b)=>a+b,0)||1;
+ document.getElementById('offerGap').innerHTML=`<table><thead><tr><th>Stated challenge</th><th class="r">Respondents</th><th class="r">Share</th></tr></thead><tbody>`+
+ top.map(k=>`<tr><td>${k}</td><td class="r">${ch[k]}</td><td class="r">${pct(ch[k],rr.length)}%</td></tr>`).join('')+'</tbody></table>'+
+ `<div class="note">Reps lead with Millionaires Mentorship in ${pct(mentor,totOff)}% of post-completion messages and Eprenz Club in ${pct(club,totOff)}%, while ${pct(ch['Customers/Growth']||0,rr.length)}% of respondents name customer acquisition as their blocker. Eprenz Story appears in ${pct(story,totOff)}% of pitches despite no respondent naming visibility as their top challenge. Closest match between what is asked for and what is offered is the fastest lever on conversion.</div>`;}
+
+function renderQuality(){const rr=recs();
+ const RN=['Not ready / no answer','$1–25','$26–250','$251–850','$851–2.5k','$2.5k–10k','$10k+'];
+ const rc=[0,0,0,0,0,0,0];rr.forEach(r=>{if(r[R.READY]>=0)rc[r[R.READY]]++;});
+ mk('chReady',{type:'doughnut',data:{labels:RN,datasets:[{data:rc,backgroundColor:['#E3DED2','#C9BFA8','#8A9B8F','#5E7D6C','#C4943A','#B4533A','#1A3329']}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11}}}}}});
+ const ch={};rr.forEach(r=>{if(r[R.CHAL])ch[r[R.CHAL]]=(ch[r[R.CHAL]]||0)+1;});
+ const ck=Object.keys(ch).sort((a,b)=>ch[b]-ch[a]).slice(0,8);
+ mk('chChal',{type:'bar',data:{labels:ck,datasets:[{data:ck.map(k=>ch[k]),backgroundColor:'#1A3329'}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+ const SN=['No business','Planning to start','Starting','Growing','Profitable'],sc=[0,0,0,0,0];
+ rr.forEach(r=>{if(r[R.STAGE]>=0)sc[r[R.STAGE]]++;});
+ mk('chStage',{type:'bar',data:{labels:SN,datasets:[{data:sc,backgroundColor:['#C9BFA8','#8A9B8F','#5E7D6C','#C4943A','#1A3329']}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+ const VN=['Pre-revenue / $0','<$50K','$50–150K','$150–500K','$500K–1M','$1M–7.5M','$7.5M+'],vc=[0,0,0,0,0,0,0];
+ rr.forEach(r=>{if(r[R.REV]>=0)vc[r[R.REV]]++;});
+ mk('chRev',{type:'bar',data:{labels:VN,datasets:[{data:vc,backgroundColor:'#5E7D6C'}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}});}
+
+function renderHeat(){const rr=recs(),grid=Array.from({length:7},()=>Array(24).fill(0));
+ rr.forEach(r=>grid[r[R.WD]][r[R.HOUR]]++);
+ const mx=Math.max(...grid.flat())||1,days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+ let h='<div></div>';for(let i=0;i<24;i++)h+=`<div class="toplab">${i%3===0?i:''}</div>`;
+ days.forEach((d,wd)=>{h+=`<div class="hlab">${d}</div>`;
+  for(let i=0;i<24;i++){const v=grid[wd][i];
+   h+=`<div class="cell" style="background:${v===0?'var(--soft)':`rgba(26,51,41,${0.12+v/mx*0.85})`}" data-t="${d} ${i}:00 · ${v} responses"></div>`;}});
+ document.getElementById('heatmap').innerHTML=h;
+ document.getElementById('hmLegend').innerHTML=`<span>Fewer</span>${[0.12,0.35,0.6,0.97].map(a=>`<span class="sw" style="background:rgba(26,51,41,${a})"></span>`).join('')}<span>More</span>`;
+ const flat=[];days.forEach((d,wd)=>{for(let i=0;i<24;i++)flat.push([d,i,grid[wd][i]]);});
+ flat.sort((a,b)=>b[2]-a[2]);
+ const dayTot=days.map((d,i)=>[d,grid[i].reduce((a,b)=>a+b,0)]).sort((a,b)=>b[1]-a[1]);
+ document.getElementById('hmNote').textContent=`Peak windows: ${flat.slice(0,3).map(x=>x[0]+' '+x[1]+':00 ('+x[2]+')').join(', ')}. Strongest days: ${dayTot.slice(0,3).map(x=>x[0]).join(', ')}; weakest: ${dayTot[6][0]}. Send follow-ups one to two hours before peak windows.`;}
+
+function ztest(c1,n1,c2,n2){if(!n1||!n2)return{p:1};
+ const p1=c1/n1,p2=c2/n2,pp=(c1+c2)/(n1+n2),se=Math.sqrt(pp*(1-pp)*(1/n1+1/n2));
+ if(!se)return{p:1};const z=(p1-p2)/se,t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2);
+ return{p:2*d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))))};}
+
+function renderAB(){const vc={nv1:0,nv2:0,v1:0,v2:0};
+ D.new_clicks.forEach(r=>{vc.nv2+=r[4];vc.nv1+=r[5];vc.v1+=r[6];vc.v2+=r[7];});
+ const vr={};VARS.forEach(v=>vr[v.k]={t:0,c:0});
+ D.recs.forEach(r=>{if(vr[r[R.LP]]){vr[r[R.LP]].t++;vr[r[R.LP]].c+=r[R.COMP];}});
+ const sc=VARS.map(v=>({...v,clk:vc[v.k],t:vr[v.k].t,c:vr[v.k].c,ctr:pct(vr[v.k].t,vc[v.k]),comp:pct(vr[v.k].c,vr[v.k].t)}));
+ const win=sc.filter(v=>v.t>=5).sort((a,b)=>(b.comp*.5+b.ctr*.5)-(a.comp*.5+a.ctr*.5))[0];
+ document.getElementById('varGrid').innerHTML=sc.map(v=>`
+  <div class="var-card ${v===win?'win':''}">${v===win?'<div class="crown">LEADING</div>':''}
+   <div class="vl">Variant ${v.label}</div><div class="vn">${v.name} landing page</div>
+   <div class="vm"><span>Visits</span><b>${v.clk}</b></div>
+   <div class="vm"><span>Responses</span><b>${v.t}</b></div>
+   <div class="vm"><span>Completed</span><b>${v.c}</b></div>
+   <div class="vm"><span>Visit → start</span><b>${v.ctr}%</b></div>
+   <div class="vm"><span>Completion rate</span><b style="color:${v.comp>=70?'#5E7D6C':v.comp<40&&v.t>0?'#B4533A':'inherit'}">${v.comp}%</b></div></div>`).join('');
+ mk('chVarClicks',{type:'bar',data:{labels:D.new_clicks.map(r=>r[0].slice(5)),datasets:VARS.map(v=>({label:v.label+' · '+v.name,data:D.new_clicks.map(r=>({nv2:r[4],nv1:r[5],v1:r[6],v2:r[7]})[v.k]),backgroundColor:VCOL[v.k]}))},
+  options:{maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend}}});
+ mk('chVarFunnel',{type:'bar',data:{labels:VARS.map(v=>v.label+' · '+v.name),datasets:[
+  {label:'Visits',data:VARS.map(v=>vc[v.k]),backgroundColor:'#E3DED2'},
+  {label:'Responses',data:VARS.map(v=>vr[v.k].t),backgroundColor:'#5E7D6C'},
+  {label:'Completed',data:VARS.map(v=>vr[v.k].c),backgroundColor:'#C4943A'}]},
+  options:{maintainAspectRatio:false,plugins:{legend}}});
+ const nvC=vr.nv1.c+vr.nv2.c,nvT=vr.nv1.t+vr.nv2.t,vC=vr.v1.c+vr.v2.c,vT=vr.v1.t+vr.v2.t;
+ const s1=ztest(nvC,nvT,vC,vT);
+ const nvK=vc.nv1+vc.nv2,vK=vc.v1+vc.v2;
+ const s2=ztest(nvT,nvK,vT,vK);
+ const totK=Object.values(vc).reduce((a,b)=>a+b,0),totT=Object.values(vr).reduce((a,b)=>a+b.t,0);
+ const days=D.new_clicks.length,perDay=totT/days;
+ const need=Math.max(0,Math.ceil((30*4-totT)/Math.max(perDay,0.1)));
+ const sig=p=>p<0.05?'significant':p<0.2?'weak signal':'not significant';
+ document.getElementById('sigBox').innerHTML=`<div class="it">Statistical verdict after ${days} days</div>
+ On completion: <b>No Video (A+B)</b> ${pct(nvC,nvT)}% (${nvC}/${nvT}) against <b>Video (C+D)</b> ${pct(vC,vT)}% (${vC}/${vT}), p = ${s1.p.toFixed(2)}, <b>${sig(s1.p)}</b>.<br>
+ On visit to start: <b>No Video</b> ${pct(nvT,nvK)}% (${nvT}/${nvK}) against <b>Video</b> ${pct(vT,vK)}% (${vT}/${vK}), p = ${s2.p.toFixed(2)}, <b>${sig(s2.p)}</b>.<br><br>
+ ${totK} visits and ${totT} tagged responses so far, roughly ${perDay.toFixed(1)} tagged responses per day. About <b>${need} more days</b> to reach 30 per variant. The test is starved because most rep traffic still uses untagged links: only ${pct(totT,recs().filter(r=>r[R.DATE]>=AB_START).length)}% of responses since Jul 2 carry a variant tag.`;}
+
+function renderInsights(){const rr=recs(),rt=window._rt,t=totals();
+ const yes=D.mn_daily.reduce((s,r)=>s+r[2],0),join=D.mn_daily.reduce((s,r)=>s+r[1],0);
+ const qual=rr.filter(isQual),hot=rr.filter(isHot);
+ const ch={};rr.forEach(r=>{if(r[R.CHAL])ch[r[R.CHAL]]=(ch[r[R.CHAL]]||0)+1;});
+ const chTop=Object.entries(ch).sort((a,b)=>b[1]-a[1])[0];
+ const S=tplStats(),onT=S.filter(s=>s.stage==='on'&&s.msgs>=30).sort((a,b)=>pct(b.resp,b.msgs)-pct(a.resp,a.msgs));
+ const L=logs(),ld=new Set(L.map(l=>l.d)).size;
+ const start=pct(t.resp,t.visits);
+ const jul=D.recs.filter(r=>r[R.DATE]>='2026-07-01'&&SEL.has(r[R.REP]));
+ document.getElementById('insBox').innerHTML=`
+ <div class="ins"><div class="it">Team shape has changed</div>
+  John has left and Christian, AL and Mohammed are inactive, so <b>Diksha now carries onboarding</b>: ${L.filter(l=>l.rep==='Diksha').length} of ${L.length} logged days and ${fmt(rt.Diksha.out)} of the recorded outreach. Her ${rt.Diksha.t} responses convert at ${pct(rt.Diksha.c,rt.Diksha.t)}% with a ${pct(rt.Diksha.t,rt.Diksha.visits)}% visit to start rate, the strongest on the team. Single point of failure: one person now owns the top of the funnel.</div>
+ <div class="ins"><div class="it">Volume holds, depth does not</div>
+  ${rr.length} responses all-in, ${rr.filter(r=>r[R.COMP]===1).length} completed (${pct(rr.filter(r=>r[R.COMP]===1).length,rr.length)}%), but only <b>${qual.length} qualified</b> (${pct(qual.length,rr.length)}%) and <b>${hot.length} hot</b>. ${pct(rr.filter(r=>r[R.READY]===0).length,rr.filter(r=>r[R.READY]>=0).length)}% of those who answered say they are not ready to invest. The funnel is filling with community members, not buyers, and that is a targeting question, not a rep effort question.</div>
+ <div class="ins"><div class="it">Best performing script</div>
+  ${onT.length?`<b>${onT[0].code}</b> leads onboarding at ${pct(onT[0].resp,onT[0].msgs)} responses per 100 messages against ${onT.length>1?pct(onT[1].resp,onT[1].msgs)+' for '+onT[1].code:'no comparison yet'}. Template: "${TPL[onT[0].code]}".`:'Not enough logged days yet to rank onboarding scripts.'} Follow-up load runs at ${pct(L.reduce((s,l)=>s+l.fu1+l.fu2,0),L.reduce((s,l)=>s+l.on,0))}% of onboarding volume, so chase effort is roughly matching first touch.</div>
+ <div class="ins"><div class="it">Two leaks worth more than more messages</div>
+  ${100-start}% of survey visits never start the survey (${fmt(t.visits-t.resp)} visits lost), and only <b>${pct(join,yes)}%</b> of the ${fmt(yes)} who said yes to Mighty Networks actually joined (${fmt(yes-join)} warm members lost). Both are fixed with pages and automations, not headcount.</div>`;
+
+ document.getElementById('actBox').innerHTML=`
+ <div class="act"><div><b>Remove the single point of failure on onboarding</b><p>Diksha is now the only consistent logger and the main onboarding rep. If she is out for a week the top of the funnel stops. Cross-train one backup on her exact script set (${onT.length?onT[0].code:'ON-A'} plus FU1-A and FU2-A) and give that person a weekly minimum.</p><div class="impact">Impact: high · Effort: low</div></div></div>
+ <div class="act"><div><b>Automate the Mighty Networks invite</b><p>${fmt(yes)} said yes, ${fmt(join)} joined. A same-day invite plus one follow-up at 72 hours on the existing backlog is worth roughly ${Math.round((yes-join)*0.25)} members at a conservative 25 point lift, with no new outreach.</p><div class="impact">Impact: high · Effort: low</div></div></div>
+ <div class="act"><div><b>Standardise on the winning scripts and stop rotating</b><p>${S.filter(s=>s.stage==='on').length} different onboarding scripts and ${S.filter(s=>s.stage!=='on').length} follow-up scripts were used across ${ld} logged days. That is too much variation for the volume, nothing reaches significance. Freeze on the two best per stage for four weeks, then compare.</p><div class="impact">Impact: high · Effort: low</div></div></div>
+ <div class="act"><div><b>Move every rep link onto the lp-tagged test links</b><p>Only a small share of responses since Jul 2 carry a variant tag, so the landing page test cannot conclude and the winning page cannot be rolled out to fix the visit to start rate.</p><div class="impact">Impact: medium · Effort: low</div></div></div>
+ <div class="act"><div><b>Pitch what people actually asked for</b><p>"${chTop?chTop[0]:''}" is named by ${chTop?pct(chTop[1],rr.length):0}% of respondents, yet post-completion messages lead with mentorship and community. Rewrite the post-completion template around the stated challenge and measure completion to meeting.</p><div class="impact">Impact: medium · Effort: medium</div></div></div>
+ <div class="act"><div><b>Close the meetings gap in the log</b><p>${L.reduce((s,l)=>s+l.mb,0)} meetings booked and ${L.reduce((s,l)=>s+l.mh,0)} held were logged in ${ld} days, with $${fmt(L.reduce((s,l)=>s+l.sales,0))} in sales. Either the funnel truly stops at survey completion, or meetings are not being logged. Confirm which, because every revenue metric depends on it.</p><div class="impact">Impact: high · Effort: low</div></div></div>`;}
+
+function renderDQ(){const L=D.new_logs;
+ const days=new Set(L.map(l=>l.d)).size;
+ const start=new Date(NEW_LOG_START+'T00:00:00'),end=new Date(LAST_DAY+'T00:00:00');
+ const span=Math.round((end-start)/864e5)+1;
+ const activeReps=['Diksha','John'];
+ document.getElementById('dqBox').innerHTML=[
+  {n:D.recs.length,l:'Survey responses',w:0},
+  {n:L.length,l:'Rep log entries',w:0},
+  {n:days+' / '+span,l:'Days with any log',w:days<span*0.7},
+  {n:D.dq.date_mismatch+D.dq.date_blank,l:'Log date issues',w:1},
+  {n:L.reduce((s,l)=>s+l.mh,0),l:'Meetings held logged',w:1},
+  {n:'$'+L.reduce((s,l)=>s+l.sales,0),l:'Sales logged',w:1}
+ ].map(k=>`<div class="dq ${k.w?'warn':''}"><div class="num">${k.n}</div><div class="lab">${k.l}</div></div>`).join('');
+ const dates=[];for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1))dates.push(d.toISOString().slice(0,10));
+ let h='<table><thead><tr><th>Rep</th>'+dates.map(d=>`<th class="r" style="font-size:9px">${d.slice(8)}</th>`).join('')+'</tr></thead><tbody>';
+ activeReps.forEach(rep=>{h+=`<tr><td class="rep-name">${rep}${DEPARTED.has(rep)?'<span class="tag gone">LEFT</span>':''}</td>`+
+  dates.map(d=>{const has=L.some(l=>l.rep===rep&&l.d===d);
+   const wd=new Date(d+'T00:00:00').getDay();const we=wd===0||wd===6;
+   return `<td class="r" style="color:${has?'#5E7D6C':we?'#C9BFA8':'#B4533A'};font-weight:700">${has?'✓':we?'·':'✗'}</td>`;}).join('')+'</tr>';});
+ document.getElementById('covBox').innerHTML=h+'</tbody></table>'+
+  `<div class="note">Dots mark weekends. ${D.dq.date_mismatch} entries had an activity date that did not match the submission date and ${D.dq.date_blank} were left blank, so dates here are derived from submission time. Fixing the date field in the form removes this guesswork.</div>`;}
+
+function exportCSV(){const rt=window._rt;
+ let csv='Rep,Status,Outreach,Visits,Responses,Start rate %,Completed,Completion %,Qualified,Hot,Resp per 100 msgs\n';
+ REPS.forEach(r=>{const x=rt[r];
+  csv+=`${r},${DEPARTED.has(r)?'Left team':INACTIVE.has(r)?'Inactive':'Active'},${x.out},${x.visits},${x.t},${x.visits>0?pct(x.t,x.visits):''},${x.c},${pct(x.c,x.t)},${x.q},${x.h},${x.out>0?pct(x.t,x.out):''}\n`;});
+ csv+='\nCode,Stage,Days used,Messages,Responses,Completed,Completion %,Resp per 100 msgs\n';
+ tplStats().forEach(s=>{csv+=`${s.code},${s.stage},${s.days},${s.msgs},${s.resp},${s.comp},${pct(s.comp,s.resp)},${s.msgs>0?pct(s.resp,s.msgs):''}\n`;});
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+ a.download='eprenz_kpi_export.csv';a.click();}
+
+function renderAll(){renderKPIs();renderCompare();renderFunnel();renderRepTable();renderPeriodCharts();
+ renderEngine();renderTemplates();renderOffers();renderQuality();renderHeat();renderAB();renderInsights();renderDQ();
+ if(DRILL)openDrill(DRILL);}
+document.querySelectorAll('.toggle button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.toggle button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');PERIOD=b.dataset.p;renderKPIs();renderCompare();renderPeriodCharts();});
+renderAll();
 </script>
 </body>
 </html>
